@@ -308,7 +308,7 @@ class VariantSelectionController {
     }
 
     private Drawable getDialogTitleButtonDrawable(int optionIndex) {
-        if (theme.getStyle() == ProductDetailsTheme.Style.DARK) {
+        if (theme.getStyle() == ShopifyTheme.Style.DARK) {
             return activity.getResources().getDrawable(optionIndex == 0 ? R.drawable.ic_close_black_24dp : R.drawable.ic_arrow_back_black_24dp);
         } else {
             return activity.getResources().getDrawable(optionIndex == 0 ? R.drawable.ic_close_white_24dp : R.drawable.ic_arrow_back_white_24dp);
