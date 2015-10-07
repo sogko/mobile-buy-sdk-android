@@ -25,6 +25,7 @@
 package com.shopify.buy.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.internal.CollectionImage;
 
 import java.util.Date;
@@ -153,6 +154,13 @@ public class Collection extends ShopifyObject {
      */
     public String getCollectionId() {
         return collectionId;
+    }
+
+    /**
+     * @return A collection object created using the values in the JSON string.
+     */
+    public static Collection fromJson(String json) {
+        return BuyClientFactory.createDefaultGson().fromJson(json, Collection.class);
     }
 
 }
