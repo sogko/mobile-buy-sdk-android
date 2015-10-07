@@ -38,25 +38,22 @@ import android.view.WindowManager;
 
 import com.shopify.buy.R;
 import com.shopify.buy.model.Product;
+import com.shopify.buy.ui.common.BaseActivity;
 import com.shopify.buy.utils.DeviceUtils;
 
 /**
  * Activity that shows the details of a {@link Product}.
  */
-public class ProductDetailsActivity extends AppCompatActivity implements ProductDetailsListener {
+public class ProductDetailsActivity extends BaseActivity implements ProductDetailsListener {
 
     protected ProductDetailsFragment productDetailsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (DeviceUtils.isTablet(getResources())) {
-            makeActivityDialog();
-
-        }
-        
         super.onCreate(savedInstanceState);
 
+        // TODO we should be able refactor most of this into the base class
         if (savedInstanceState == null) {
             productDetailsFragment = getFragment();
 
@@ -86,19 +83,6 @@ public class ProductDetailsActivity extends AppCompatActivity implements Product
         setContentView(R.layout.activity_product_details);
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            onNewIntent(getIntent());
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-    }
 
     // ProductDetailsListener Callbacks
 
@@ -124,30 +108,4 @@ public class ProductDetailsActivity extends AppCompatActivity implements Product
         setResult(resultCode, intent);
     }
 
-    private void makeActivityDialog() {
-        // Turn on rotation for large devices
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-
-        // Get the full screen size
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels;
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-
-        // Adjust the screen size to make it a dialog
-        if (screenHeight > screenWidth) {// portrait mode
-            params.width = Math.round(screenWidth * 0.80f);
-            params.height = Math.min(Math.round(params.width * 1.25f), screenHeight);
-        } else {
-            // landscape
-            params.height = Math.round(screenHeight * 0.85f);
-            params.width = Math.min(Math.round(params.height * 0.80f), screenWidth);
-        }
-
-        // Update the window with our new settings
-        getWindow().setAttributes(params);
-    }
 }
