@@ -35,6 +35,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.ProductVariant;
+import com.shopify.buy.ui.cart.CartFragment;
+
 /**
  * Base class for all activities in the app. Manages the ProgressDialog that is displayed while network activity is occurring.
  */
