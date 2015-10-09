@@ -60,12 +60,10 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
 
     @Override
     protected BaseConfig getConfig() {
-        if (config != null) {
-            return config;
-        } else {
+        if (config == null) {
             config = new CollectionListConfig();
-            return config;
         }
+        return config;
     }
 
     public CollectionListBuilder setCollections(List<Collection> collections) {
