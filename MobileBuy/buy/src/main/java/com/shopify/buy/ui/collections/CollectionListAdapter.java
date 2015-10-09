@@ -22,53 +22,8 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui;
+package com.shopify.buy.ui.collections;
 
-import android.os.Bundle;
-
-import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.common.BaseConfig;
-
-/***
- * Used to serialize data for the {@link ProductDetailsActivity}.
- */
-class ProductDetailsConfig extends BaseConfig {
-
-    public static final String EXTRA_SHOP_PRODUCT_ID = "com.shopify.buy.ui.PRODUCT_ID";
-    public static final String EXTRA_SHOP_PRODUCT = "com.shopify.buy.ui.PRODUCT";
-
-    private String productId;
-    private Product product;
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (productId != null) {
-            bundle.putString(EXTRA_SHOP_PRODUCT_ID, productId);
-        }
-
-        if (product != null) {
-            bundle.putString(EXTRA_SHOP_PRODUCT, product.toJsonString());
-        }
-
-        return bundle;
-    }
-
+public class CollectionListAdapter {
 
 }
