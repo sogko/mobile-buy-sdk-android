@@ -28,16 +28,14 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import com.shopify.buy.model.Cart;
-import com.shopify.buy.model.ProductVariant;
-import com.shopify.buy.ui.cart.CartFragment;
 
 /**
  * Base class for all activities in the app. Manages the ProgressDialog that is displayed while network activity is occurring.
@@ -69,6 +67,15 @@ public class NavDrawerActivity extends Activity {
 
             navDrawer.setItemChecked(position, true);
             drawerLayout.closeDrawer(navDrawer);
+
+            // fun times
+            if (position == 3) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.setData(Uri.parse("http://media.boingboing.net/wp-content/uploads/2015/10/KeXMN9.gif"));
+                intent.setPackage("com.android.chrome");
+                startActivity(intent);
+            }
         }
     }
 

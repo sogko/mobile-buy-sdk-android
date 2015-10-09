@@ -24,7 +24,6 @@
 
 package com.shopify.buy.ui.cart;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -36,8 +35,9 @@ import android.widget.ListView;
 import com.shopify.buy.R;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
+import com.shopify.buy.ui.common.BaseFragment;
 
-public class CartFragment extends Fragment {
+public class CartFragment extends BaseFragment {
 
     protected Cart cart;
 
