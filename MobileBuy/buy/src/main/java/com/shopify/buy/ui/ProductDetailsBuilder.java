@@ -46,7 +46,7 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
      * @param context context to use for starting the {@code Activity}
      */
     public ProductDetailsBuilder(Context context) {
-        super(context);
+        this(context, null);
     }
 
     /**
@@ -62,12 +62,10 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     @Override
     protected BaseConfig getConfig() {
-        if (config != null) {
-            return config;
-        } else {
+        if (config == null) {
             config = new ProductDetailsConfig();
-            return config;
         }
+        return config;
     }
 
     public ProductDetailsBuilder setProductId(String productId) {
