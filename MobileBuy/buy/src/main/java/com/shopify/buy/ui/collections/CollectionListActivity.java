@@ -22,31 +22,17 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui;
+package com.shopify.buy.ui.collections;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.shopify.buy.R;
-import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseActivity;
-import com.shopify.buy.utils.DeviceUtils;
 
-/**
- * Activity that shows the details of a {@link Product}.
- */
-public class ProductDetailsActivity extends BaseActivity implements ProductDetailsListener {
+public class CollectionListActivity extends BaseActivity {
 
-    protected ProductDetailsFragment productDetailsFragment;
+    protected CollectionListFragment collectionListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,57 +41,31 @@ public class ProductDetailsActivity extends BaseActivity implements ProductDetai
 
         // TODO we should be able refactor most of this into the base class
         if (savedInstanceState == null) {
-            productDetailsFragment = getFragment();
+            collectionListFragment = getFragment();
 
             Intent intent = getIntent();
             if (intent != null) {
-                productDetailsFragment.setArguments(intent.getExtras());
+                collectionListFragment.setArguments(intent.getExtras());
             }
 
             getFragmentManager().beginTransaction()
-                    .add(R.id.product_details_activity, productDetailsFragment)
+                    .add(R.id.collection_list_activity, collectionListFragment)
                     .commit();
         } else {
-            productDetailsFragment = (ProductDetailsFragment) getFragmentManager().findFragmentById(R.id.product_details_activity);
+            collectionListFragment = (CollectionListFragment) getFragmentManager().findFragmentById(R.id.collection_list_activity);
         }
 
         initContentView();
     }
 
-    private ProductDetailsFragment getFragment() {
-        if (productDetailsFragment == null) {
-            productDetailsFragment = new ProductDetailsFragment();
+    private CollectionListFragment getFragment() {
+        if (collectionListFragment == null) {
+            collectionListFragment = new CollectionListFragment();
         }
-        return productDetailsFragment;
+        return collectionListFragment;
     }
 
     private void initContentView() {
         setContentView(R.layout.activity_product_details);
     }
-
-
-    // ProductDetailsListener Callbacks
-
-    public void onSuccess(Bundle bundle) {
-        setResult(Activity.RESULT_OK, bundle);
-    }
-
-    public void onFailure(Bundle bundle) {
-        setResult(Activity.RESULT_CANCELED, bundle);
-        finish();
-    }
-
-    public void onCancel(Bundle bundle) {
-        setResult(Activity.RESULT_CANCELED, bundle);
-        finish();
-    }
-
-    private void setResult(int resultCode, Bundle bundle) {
-        Intent intent = getIntent();
-        if (bundle != null) {
-            intent.putExtras(bundle);
-        }
-        setResult(resultCode, intent);
-    }
-
 }

@@ -22,53 +22,15 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui;
+package com.shopify.buy.ui.common;
 
-import android.os.Bundle;
+public class BaseConstants {
 
-import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.common.BaseConfig;
+    public static final String EXTRA_ERROR_CODE = "com.shopify.buy.ui.ERROR_CODE";
+    public static final String EXTRA_ERROR_MESSAGE = "com.shopify.buy.ui.ERROR_MESSAGE";
+    public static final String EXTRA_CHECKOUT = "com.shopify.buy.ui.CHECKOUT";
 
-/***
- * Used to serialize data for the {@link ProductDetailsActivity}.
- */
-class ProductDetailsConfig extends BaseConfig {
-
-    public static final String EXTRA_SHOP_PRODUCT_ID = "com.shopify.buy.ui.PRODUCT_ID";
-    public static final String EXTRA_SHOP_PRODUCT = "com.shopify.buy.ui.PRODUCT";
-
-    private String productId;
-    private Product product;
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (productId != null) {
-            bundle.putString(EXTRA_SHOP_PRODUCT_ID, productId);
-        }
-
-        if (product != null) {
-            bundle.putString(EXTRA_SHOP_PRODUCT, product.toJsonString());
-        }
-
-        return bundle;
-    }
-
+    public static final int ERROR_GET_SHOP_FAILED = 1;
+    public static final int ERROR_GET_PRODUCT_FAILED = 2;
 
 }

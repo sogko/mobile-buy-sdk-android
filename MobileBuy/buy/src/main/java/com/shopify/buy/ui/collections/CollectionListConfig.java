@@ -22,49 +22,44 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui;
+package com.shopify.buy.ui.collections;
 
 import android.os.Bundle;
 
-import com.shopify.buy.model.Product;
+import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseConfig;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /***
- * Used to serialize data for the {@link ProductDetailsActivity}.
+ * Used to serialize data for the {@link CollectionListActivity}.
  */
-class ProductDetailsConfig extends BaseConfig {
+class CollectionListConfig extends BaseConfig {
 
-    public static final String EXTRA_SHOP_PRODUCT_ID = "com.shopify.buy.ui.PRODUCT_ID";
-    public static final String EXTRA_SHOP_PRODUCT = "com.shopify.buy.ui.PRODUCT";
+    public static final String EXTRA_SHOP_COLLECTION = "com.shopify.buy.ui.COLLECTION";
 
-    private String productId;
-    private Product product;
+    private List<Collection> collections;
 
-    public String getProductId() {
-        return productId;
+    public List<Collection> getCollections() {
+        return collections;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setCollections(List<Collection> collections) {
+        this.collections = collections;
     }
 
     public Bundle toBundle() {
         Bundle bundle = super.toBundle();
 
-        if (productId != null) {
-            bundle.putString(EXTRA_SHOP_PRODUCT_ID, productId);
-        }
+        if (collections != null) {
+            ArrayList<String> collectionsStringArray = new ArrayList<>(collections.size());
 
-        if (product != null) {
-            bundle.putString(EXTRA_SHOP_PRODUCT, product.toJsonString());
+            // TODO replace this conversion with Parcelable Models
+            for (Collection collection : collections) {
+                collectionsStringArray.add(collection.toJsonString());
+            }
+            bundle.putStringArrayList(EXTRA_SHOP_COLLECTION, collectionsStringArray);
         }
 
         return bundle;
