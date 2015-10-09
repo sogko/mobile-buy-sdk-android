@@ -31,14 +31,13 @@ import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseConfig;
-import com.shopify.buy.ui.common.BaseIntentBuilder;
+import com.shopify.buy.ui.common.BaseBuilder;
 
 /**
  * Builds an {@link Intent} that can be used to start a {@link ProductDetailsActivity}
  */
-public class ProductDetailsBuilder extends BaseIntentBuilder<ProductDetailsBuilder> {
+public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     /**
      * Create a default ProductDetailsBuilder.
@@ -82,7 +81,20 @@ public class ProductDetailsBuilder extends BaseIntentBuilder<ProductDetailsBuild
         return this;
     }
 
+    @Deprecated
     public Intent build() {
+        return buildIntent();
+    }
+
+    @Override
+    public Intent buildIntent() {
+        Intent intent = super.buildIntent();
+        intent.setClass(context, ProductDetailsActivity.class);
+        return intent;
+    }
+
+    @Override
+    public Bundle buildBundle() {
         // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
         ProductDetailsConfig productDetailsConfig = (ProductDetailsConfig) config;
 
@@ -90,10 +102,8 @@ public class ProductDetailsBuilder extends BaseIntentBuilder<ProductDetailsBuild
             throw new IllegalArgumentException("One of productId or product must be provided, and cannot be empty");
         }
 
-        Intent intent = super.build();
-        intent.setClass(context, ProductDetailsActivity.class);
-        intent.putExtras(productDetailsConfig.toBundle());
-
-        return intent;
+        Bundle bundle = super.buildBundle();
+        bundle.putAll(productDetailsConfig.toBundle());
+        return bundle;
     }
 }

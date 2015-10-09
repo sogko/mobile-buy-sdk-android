@@ -26,15 +26,17 @@ package com.shopify.buy.ui.collections;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseConfig;
-import com.shopify.buy.ui.common.BaseIntentBuilder;
+import com.shopify.buy.ui.common.BaseBuilder;
 
 import java.util.List;
 
-public class CollectionListBuilder extends BaseIntentBuilder<CollectionListBuilder> {
+public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
 
     /**
      * Create a default CollectionListBuilder.
@@ -71,14 +73,18 @@ public class CollectionListBuilder extends BaseIntentBuilder<CollectionListBuild
         return this;
     }
 
-    public Intent build() {
+    public Bundle buildBundle() {
         // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
         CollectionListConfig collectionListConfig = (CollectionListConfig) config;
 
-        Intent intent = super.build();
-        intent.setClass(context, CollectionListActivity.class);
-        intent.putExtras(collectionListConfig.toBundle());
+        Bundle bundle = super.buildBundle();
+        bundle.putAll(collectionListConfig.toBundle());
+        return bundle;
+    }
 
+    public Intent buildIntent() {
+        Intent intent = super.buildIntent();
+        intent.setClass(context, CollectionListActivity.class);
         return intent;
     }
 }
