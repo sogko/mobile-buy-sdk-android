@@ -66,6 +66,7 @@ public class CollectionListActivity extends BaseActivity {
     }
 
     private void initContentView() {
-        setContentView(R.layout.activity_product_details);
+        setContentView(R.layout.activity_collection_list);
     }
+
 }
