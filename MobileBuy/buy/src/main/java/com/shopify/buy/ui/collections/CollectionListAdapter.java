@@ -39,7 +39,7 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     List<Collection> collections;
 
     // Listener used to pass click events back to the fragment or adapter
-    private static ClickListener clickListener;
+    private ClickListener clickListener;
 
     public CollectionListAdapter() {
         super();
@@ -68,6 +68,9 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
         return size;
     }
 
+    public void setClickListener(ClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
@@ -86,19 +89,20 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
         @Override
         public void onClick(View v) {
             if (clickListener != null) {
-                clickListener.onItemClick(getAdapterPosition(), v);
+                int position = getAdapterPosition();
+                clickListener.onItemClick(position, v, collections.get(position));
             }
         }
 
         @Override
         public boolean onLongClick(View v) {
             if (clickListener != null) {
-                clickListener.onItemLongClick(getAdapterPosition(), v);
+                int position = getAdapterPosition();
+                clickListener.onItemLongClick(position, v, collections.get(position));
                 return false;
             }
             return true;
         }
-
     }
 
     public void setCollections(List<Collection> collections) {
@@ -106,8 +110,8 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     }
 
     public interface ClickListener {
-        void onItemClick(int position, View v);
-        void onItemLongClick(int position, View v);
+        void onItemClick(int position, View v, Collection collection);
+        void onItemLongClick(int position, View v, Collection collection);
     }
 }
 

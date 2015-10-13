@@ -28,7 +28,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +46,8 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class CollectionListFragment extends BaseFragment {
+public class CollectionListFragment extends BaseFragment implements CollectionListAdapter.ClickListener {
+    private static final String TAG = CollectionListFragment.class.getSimpleName();
 
     CollectionListFragmentView view;
 
@@ -70,9 +73,11 @@ public class CollectionListFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = (CollectionListFragmentView) inflater.inflate(R.layout.fragment_collection_list, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setAdapter(new CollectionListAdapter());
+        CollectionListAdapter adapter = new CollectionListAdapter();
+        adapter.setClickListener(this);
+        recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return view;
     }
 
@@ -123,12 +128,20 @@ public class CollectionListFragment extends BaseFragment {
         } else {
             // TODO this is temporary.  The view should pull down the progressview when it has populated its subviews
             if (progressDialog.isShowing()) {
-                dismissProgressDialog();
-            }
+                dismissProgressDialog();}
             CollectionListAdapter adapter = (CollectionListAdapter) recyclerView.getAdapter();
             adapter.setCollections(collections);
             adapter.notifyDataSetChanged();
         }
     }
 
+    @Override
+    public void onItemClick(int position, View viewHolder, Collection collection) {
+        Log.i(TAG, "Collection Item clicked");
+    }
+
+    @Override
+    public void onItemLongClick(int position, View viewHolder, Collection collection) {
+        Log.i(TAG, "Collection Item long clicked");
+    }
 }
