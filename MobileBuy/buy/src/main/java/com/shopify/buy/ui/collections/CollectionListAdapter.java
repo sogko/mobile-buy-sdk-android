@@ -38,6 +38,9 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
 
     List<Collection> collections;
 
+    // Listener used to pass click events back to the fragment or adapter
+    private static ClickListener clickListener;
+
     public CollectionListAdapter() {
         super();
     }
@@ -66,18 +69,45 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     }
 
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
         public TextView collectionNameView;
 
         public ViewHolder(View itemView) {
             super(itemView);
+
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+
             collectionNameView = (TextView)itemView.findViewById(R.id.collection_name);
+
         }
+
+        @Override
+        public void onClick(View v) {
+            if (clickListener != null) {
+                clickListener.onItemClick(getAdapterPosition(), v);
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (clickListener != null) {
+                clickListener.onItemLongClick(getAdapterPosition(), v);
+                return false;
+            }
+            return true;
+        }
+
     }
 
     public void setCollections(List<Collection> collections) {
         this.collections = collections;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+        void onItemLongClick(int position, View v);
     }
 }
 
