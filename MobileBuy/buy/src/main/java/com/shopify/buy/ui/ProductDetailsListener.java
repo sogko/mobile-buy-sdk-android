@@ -30,7 +30,7 @@ import android.os.Bundle;
 /**
  * Listener for passing state back to the {@link ProductDetailsActivity}
  */
-interface ProductDetailsListener {
+public interface ProductDetailsListener {
 
     void onSuccess(Bundle bundle);
 

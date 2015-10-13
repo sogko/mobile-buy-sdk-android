@@ -27,6 +27,7 @@ package com.shopify.buy.ui.products;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseConfig;
 
@@ -34,17 +35,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /***
- * Used to serialize data for the {@link ProductListActivity}.
+ * Used to serialize data for the {@link ProductListFragment}.
  */
 class ProductListConfig extends BaseConfig {
 
     public static final String EXTRA_SHOP_PRODUCTS = "com.shopify.buy.ui.PRODUCTS";
     public static final String EXTRA_SHOP_PRODUCT_IDS = "com.shopify.buy.ui.PRODUCT_IDS";
-    public static final String EXTRA_SHOP_CHANNEL_ID = "com.shopify.buy.ui.CHANNEL_ID";
+    public static final String EXTRA_SHOP_COLLECTION = "com.shopify.buy.ui.COLLECTION";
 
     private List<Product> products;
     private List<String> productIds;
-    private String channelId;
+    private Collection collection;
 
     public List<Product> getProducts() {
         return products;
@@ -54,8 +55,8 @@ class ProductListConfig extends BaseConfig {
         return productIds;
     }
 
-    public String getChannelId() {
-        return channelId;
+    public Collection getCollection() {
+        return collection;
     }
 
     public void setProducts(List<Product> products) {
@@ -64,7 +65,7 @@ class ProductListConfig extends BaseConfig {
 
     public void setProductIds(List<String> productIds) { this.productIds = productIds; }
 
-    public void setChannelId(String channelId) { this.channelId = channelId; }
+    public void setCollection(Collection collection) { this.collection = collection; }
 
     public Bundle toBundle() {
         Bundle bundle = super.toBundle();
@@ -83,8 +84,8 @@ class ProductListConfig extends BaseConfig {
             bundle.putStringArrayList(EXTRA_SHOP_PRODUCT_IDS, new ArrayList<>(productIds));
         }
 
-        if (!TextUtils.isEmpty(channelId)) {
-            bundle.putString(EXTRA_SHOP_CHANNEL_ID, channelId);
+        if (collection != null) {
+            bundle.putString(EXTRA_SHOP_COLLECTION, collection.toJsonString());
         }
 
         return bundle;

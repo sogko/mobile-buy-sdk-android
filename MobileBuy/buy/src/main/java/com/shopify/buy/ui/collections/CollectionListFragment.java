@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import com.shopify.buy.R;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.ui.products.ProductListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,8 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
 
     private List<Collection> collections;
     RecyclerView recyclerView;
+
+    private Listener listener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,6 +102,10 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
         showCollectionsIfReady();
     }
 
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
     private void fetchCollections() {
         buyClient.getCollections(new Callback<List<Collection>>() {
             @Override
@@ -139,10 +146,22 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     @Override
     public void onItemClick(int position, View viewHolder, Collection collection) {
         Log.i(TAG, "Collection Item clicked");
+        if (listener != null) {
+            listener.onItemClick(collection);
+        }
     }
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Collection collection) {
         Log.i(TAG, "Collection Item long clicked");
+        if (listener != null) {
+            listener.onItemLongClick(collection);
+        }
+    }
+
+    // TODO - should these pass the view and position as well?
+    public interface Listener {
+        void onItemClick(Collection collection);
+        void onItemLongClick(Collection collection);
     }
 }

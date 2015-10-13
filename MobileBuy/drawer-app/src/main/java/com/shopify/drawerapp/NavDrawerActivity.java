@@ -37,8 +37,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.shopify.buy.model.Collection;
+import com.shopify.buy.model.Product;
+import com.shopify.buy.ui.ProductDetailsActivity;
+import com.shopify.buy.ui.ProductDetailsBuilder;
+import com.shopify.buy.ui.ProductDetailsFragment;
+import com.shopify.buy.ui.ProductDetailsListener;
+import com.shopify.buy.ui.ProductDetailsTheme;
 import com.shopify.buy.ui.collections.CollectionListBuilder;
 import com.shopify.buy.ui.collections.CollectionListFragment;
+import com.shopify.buy.ui.products.ProductListBuilder;
+import com.shopify.buy.ui.products.ProductListFragment;
 
 /**
  * Base class for all activities in the app. Manages the ProgressDialog that is displayed while network activity is occurring.
@@ -80,8 +89,9 @@ public class NavDrawerActivity extends Activity {
                         .setApplicationName(getString(R.string.app_name))
                         .buildBundle();
 
-                Fragment fragment = new CollectionListFragment();
+                CollectionListFragment fragment = new CollectionListFragment();
                 fragment.setArguments(bundle);
+                fragment.setListener(new CollectionListListener());
                 loadFragment(fragment);
             }
 
@@ -106,4 +116,78 @@ public class NavDrawerActivity extends Activity {
         fragmentTransaction.commit();
     }
 
+
+    private class CollectionListListener implements CollectionListFragment.Listener {
+
+        @Override
+        public void onItemClick(Collection collection) {
+            Bundle bundle = new ProductListBuilder(NavDrawerActivity.this)
+                    .setApiKey(getString(R.string.shopify_api_key))
+                    .setChannelid(getString(R.string.channel_id))
+                    .setShopDomain(getString(R.string.shop_url))
+                    .setApplicationName(getString(R.string.app_name))
+                    .setCollection(collection)
+                    .buildBundle();
+
+            ProductListFragment fragment = new ProductListFragment();
+            fragment.setArguments(bundle);
+            fragment.setListener(new ProductListListener());
+            loadFragment(fragment);
+        }
+
+        @Override
+        public void onItemLongClick(Collection collection) {
+            // do nothing
+        }
+
+    }
+
+    private class ProductListListener implements ProductListFragment.Listener {
+        // TODO get the shop somewhere central and pass in here
+
+        // TODO make the theme in a central place
+        ProductDetailsTheme theme = new ProductDetailsTheme(ProductDetailsTheme.Style.LIGHT, R.color.default_accent, true);
+
+        @Override
+        public void onItemClick(Product product) {
+            Intent intent = new ProductDetailsBuilder(NavDrawerActivity.this)
+                    .setApiKey(getString(R.string.shopify_api_key))
+                    .setChannelid(getString(R.string.channel_id))
+                    .setShopDomain(getString(R.string.shop_url))
+                    .setApplicationName(getString(R.string.app_name))
+                    .setProduct(product)
+                    .setTheme(theme)
+//                    .setWebReturnToUrl(getString(R.string.web_return_to_url))
+//                    .setWebReturnToLabel(getString(R.string.web_return_to_label))
+                    .build();
+            NavDrawerActivity.this.startActivityForResult(intent, 1);
+
+
+        }
+
+        @Override
+        public void onItemLongClick(Product product) {
+            // do nothing
+        }
+
+    }
+
+    private class ProductListener implements ProductDetailsListener {
+
+        @Override
+        public void onSuccess(Bundle bundle) {
+            // TODO fill this in
+        }
+
+        @Override
+        public void onFailure(Bundle bundle) {
+            // TODO fill this in
+        }
+
+        @Override
+        public void onCancel(Bundle bundle) {
+            // TODO fill this in
+        }
+
+    }
 }

@@ -76,6 +76,11 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
         return this;
     }
 
+    public ProductListBuilder setCollection(Collection collection) {
+        ((ProductListConfig) config).setCollection(collection);
+        return this;
+    }
+
     public Bundle buildBundle() {
         // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
         ProductListConfig collectionListConfig = (ProductListConfig) config;
@@ -85,9 +90,4 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
         return bundle;
     }
 
-    public Intent buildIntent() {
-        Intent intent = super.buildIntent();
-        intent.setClass(context, ProductListActivity.class);
-        return intent;
-    }
 }

@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shopify.buy.R;
+import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseFragment;
 
@@ -53,9 +54,11 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
 
     private List<Product> products;
     private List<String> productIds;
-    private String collectionId;
+    private Collection collection;
 
     RecyclerView recyclerView;
+
+    Listener listener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,7 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
             productIds = bundle.getStringArrayList(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS);
 
         } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_CHANNEL_ID)) {
-            collectionId = bundle.getString(ProductListConfig.EXTRA_SHOP_CHANNEL_ID);
+            collection = Collection.fromJson(bundle.getString(ProductListConfig.EXTRA_SHOP_COLLECTION));
         }
     }
 
@@ -108,8 +111,11 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
         showProductsIfReady();
     }
 
-    private void fetchProducts() {
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
 
+    private void fetchProducts() {
         Callback callback  = new Callback<List<Product>>() {
             @Override
             public void success(List<Product> products, Response response) {
@@ -123,12 +129,12 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
             }
         };
 
-        if (productIds.size() > 0) {
+        if (productIds != null && productIds.size() > 0) {
             buyClient.getProducts(productIds, callback);
 
-        } else if (!TextUtils.isEmpty(collectionId)) {
+        } else if (collection != null) {
             // TODO we will need to implement paging. For now fetch the first page.
-            buyClient.getProducts(1, collectionId, callback);
+            buyClient.getProducts(1, collection.getCollectionId(), callback);
 
         } else {
             //TODO - get all the products or throw error?
@@ -160,10 +166,21 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
         Log.i(TAG, "ProductList Item clicked");
+        if (listener != null) {
+            listener.onItemClick(product);
+        }
     }
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
         Log.i(TAG, "ProductList Item long clicked");
+        if (listener != null) {
+            listener.onItemLongClick(product);
+        }
+    }
+
+    public interface Listener {
+        void onItemClick(Product product);
+        void onItemLongClick(Product product);
     }
 }

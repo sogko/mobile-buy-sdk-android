@@ -48,7 +48,7 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
     }
 
     /**
-     * Constructor that will use an existing {@link BuyClient} to configure the {@link CollectionListActivity}.
+     * Constructor that will use an existing {@link BuyClient} to configure the {@link CollectionListFragment}.
      *
      * @param context context to use for launching the {@code Activity}
      * @param client  the {@link BuyClient} to use to configure the CollectionListActivity
@@ -79,9 +79,4 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
         return bundle;
     }
 
-    public Intent buildIntent() {
-        Intent intent = super.buildIntent();
-        intent.setClass(context, CollectionListActivity.class);
-        return intent;
-    }
 }
