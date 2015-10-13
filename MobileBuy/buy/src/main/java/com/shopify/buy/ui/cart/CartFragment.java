@@ -26,6 +26,7 @@ package com.shopify.buy.ui.cart;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,14 +36,46 @@ import android.widget.ListView;
 import com.shopify.buy.R;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
+import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.utils.CurrencyFormatter;
+
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class CartFragment extends BaseFragment {
 
     protected Cart cart;
+    protected NumberFormat currencyFormat;
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle bundle = getArguments();
+
+        // Retrieve the cart if it was provided
+        String cartJsonString = bundle.getString(CartConfig.EXTRA_CART);
+        if (!TextUtils.isEmpty(cartJsonString)) {
+            cart = Cart.fromJson(cartJsonString);
+        }
+
+        fetchShopIfNecessary(new Callback<Shop>() {
+            @Override
+            public void success(Shop shop, Response response) {
+                currencyFormat = CurrencyFormatter.getFormatter(Locale.getDefault(), shop.getCurrency());
+                showCartIfReady();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO
+            }
+        });
     }
 
     @Nullable
@@ -54,9 +87,15 @@ public class CartFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        showCartIfReady();
+    }
 
-        ListView listView = (ListView) view.findViewById(R.id.cart_list_view);
-        listView.setAdapter(new ArrayAdapter<CartLineItem>(getActivity(), R.layout.cart_line_item_view, cart.getLineItems()) {
+    private void showCartIfReady() {
+        if (currencyFormat == null) {
+            return;
+        }
+
+        final ArrayAdapter<CartLineItem> adapter = new ArrayAdapter<CartLineItem>(getActivity(), R.layout.cart_line_item_view, cart.getLineItems()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;
@@ -65,9 +104,16 @@ public class CartFragment extends BaseFragment {
                     view = View.inflate(getContext(), R.layout.cart_line_item_view, null);
                 }
 
-                ((CartLineItemView) view).setLineItem(getItem(position));
+                ((CartLineItemView) view).setLineItem(getItem(position), currencyFormat);
 
                 return view;
+            }
+        };
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((ListView) getView().findViewById(R.id.cart_list_view)).setAdapter(adapter);
             }
         });
     }
