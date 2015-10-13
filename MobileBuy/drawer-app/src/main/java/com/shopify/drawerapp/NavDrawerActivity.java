@@ -146,7 +146,7 @@ public class NavDrawerActivity extends Activity {
         // TODO get the shop somewhere central and pass in here
 
         // TODO make the theme in a central place
-        ProductDetailsTheme theme = new ProductDetailsTheme(ProductDetailsTheme.Style.LIGHT, R.color.default_accent, true);
+        ProductDetailsTheme theme = new ProductDetailsTheme(getResources());
 
         @Override
         public void onItemClick(Product product) {
