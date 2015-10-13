@@ -37,7 +37,7 @@ import java.util.List;
  */
 class CollectionListConfig extends BaseConfig {
 
-    public static final String EXTRA_SHOP_COLLECTION = "com.shopify.buy.ui.COLLECTION";
+    public static final String EXTRA_SHOP_COLLECTIONS = "com.shopify.buy.ui.COLLECTIONS";
 
     private List<Collection> collections;
 
@@ -59,7 +59,7 @@ class CollectionListConfig extends BaseConfig {
             for (Collection collection : collections) {
                 collectionsStringArray.add(collection.toJsonString());
             }
-            bundle.putStringArrayList(EXTRA_SHOP_COLLECTION, collectionsStringArray);
+            bundle.putStringArrayList(EXTRA_SHOP_COLLECTIONS, collectionsStringArray);
         }
 
         return bundle;

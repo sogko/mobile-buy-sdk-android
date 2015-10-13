@@ -22,21 +22,21 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.ui.products;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.shopify.buy.R;
-import com.shopify.buy.model.Collection;
+import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseFragment;
 
 import java.util.ArrayList;
@@ -46,12 +46,15 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class CollectionListFragment extends BaseFragment implements CollectionListAdapter.ClickListener {
-    private static final String TAG = CollectionListFragment.class.getSimpleName();
+public class ProductListFragment extends BaseFragment implements ProductListAdapter.ClickListener {
+    private static final String TAG = ProductListFragment.class.getSimpleName();
 
-    CollectionListFragmentView view;
+    ProductListFragmentView view;
 
-    private List<Collection> collections;
+    private List<Product> products;
+    private List<String> productIds;
+    private String collectionId;
+
     RecyclerView recyclerView;
 
     @Override
@@ -60,24 +63,31 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
 
         Bundle bundle = getArguments();
 
-        // Retrieve the list of collections if they were provided
-        ArrayList<String> collectionsArrayList = bundle.getStringArrayList(CollectionListConfig.EXTRA_SHOP_COLLECTIONS);
-        if (collectionsArrayList != null && collectionsArrayList.size() > 0) {
-            for (String collectionString : collectionsArrayList) {
-                collections.add(Collection.fromJson(collectionString));
+        // Retrieve the list of products if they were provided
+        if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCTS)) {
+            ArrayList<String> productsArrayList = bundle.getStringArrayList(ProductListConfig.EXTRA_SHOP_PRODUCTS);
+            if (productsArrayList != null && productsArrayList.size() > 0) {
+                for (String productString : productsArrayList) {
+                    products.add(Product.fromJson(productString));
+                }
             }
+        } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS)) {
+            productIds = bundle.getStringArrayList(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS);
+
+        } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_CHANNEL_ID)) {
+            collectionId = bundle.getString(ProductListConfig.EXTRA_SHOP_CHANNEL_ID);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = (CollectionListFragmentView) inflater.inflate(R.layout.fragment_collection_list, container, false);
+        view = (ProductListFragmentView) inflater.inflate(R.layout.fragment_product_list, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        CollectionListAdapter adapter = new CollectionListAdapter();
+        ProductListAdapter adapter = new ProductListAdapter();
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         return view;
     }
 
@@ -87,37 +97,48 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
         viewCreated = true;
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
 
         // Fetch the Collections if we don't have them
-        if (collections == null) {
-            fetchCollections();
+        if (products == null) {
+            fetchProducts();
         }
-        showCollectionsIfReady();
+        showProductsIfReady();
     }
 
-    private void fetchCollections() {
-        buyClient.getCollections(new Callback<List<Collection>>() {
+    private void fetchProducts() {
+
+        Callback callback  = new Callback<List<Product>>() {
             @Override
-            public void success(List<Collection> collections, Response response) {
-                CollectionListFragment.this.collections = collections;
-                showCollectionsIfReady();
+            public void success(List<Product> products, Response response) {
+                ProductListFragment.this.products = products;
+                showProductsIfReady();
             }
 
             @Override
             public void failure(RetrofitError error) {
                 // TODO add error case listeners
             }
-        });
+        };
+
+        if (productIds.size() > 0) {
+            buyClient.getProducts(productIds, callback);
+
+        } else if (!TextUtils.isEmpty(collectionId)) {
+            // TODO we will need to implement paging. For now fetch the first page.
+            buyClient.getProducts(1, collectionId, callback);
+
+        } else {
+            //TODO - get all the products or throw error?
+        }
     }
 
-    private void showCollectionsIfReady() {
-        if (!viewCreated || collections == null) {
+    private void showProductsIfReady() {
+        if (!viewCreated || products == null) {
             if (!progressDialog.isShowing()) {
-                // TODO Proper message
+                // TODO proper message
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_product_details), new Runnable() {
                     @Override
                     public void run() {
@@ -130,19 +151,19 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
             // TODO this is temporary.  The view should pull down the progressview when it has populated its subviews
             if (progressDialog.isShowing()) {
                 dismissProgressDialog();}
-            CollectionListAdapter adapter = (CollectionListAdapter) recyclerView.getAdapter();
-            adapter.setCollections(collections);
+            ProductListAdapter adapter = (ProductListAdapter) recyclerView.getAdapter();
+            adapter.setProducts(products);
             adapter.notifyDataSetChanged();
         }
     }
 
     @Override
-    public void onItemClick(int position, View viewHolder, Collection collection) {
-        Log.i(TAG, "Collection Item clicked");
+    public void onItemClick(int position, View viewHolder, Product product) {
+        Log.i(TAG, "ProductList Item clicked");
     }
 
     @Override
-    public void onItemLongClick(int position, View viewHolder, Collection collection) {
-        Log.i(TAG, "Collection Item long clicked");
+    public void onItemLongClick(int position, View viewHolder, Product product) {
+        Log.i(TAG, "ProductList Item long clicked");
     }
 }
