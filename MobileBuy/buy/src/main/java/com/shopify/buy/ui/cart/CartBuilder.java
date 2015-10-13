@@ -65,10 +65,4 @@ public class CartBuilder extends BaseBuilder<CartBuilder> {
         return bundle;
     }
 
-    public Intent buildIntent() {
-        Intent intent = super.buildIntent();
-        intent.setClass(context, CartActivity.class);
-        return intent;
-    }
-
 }

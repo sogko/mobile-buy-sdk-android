@@ -144,24 +144,6 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     @Override
     public void onItemClick(int position, View viewHolder, Collection collection) {
         Log.i(TAG, "Collection Item clicked");
-
-        // TODO temporary code for testing cart fragment
-        buyClient.getProducts(1, collection.getCollectionId(), new Callback<List<Product>>() {
-            @Override
-            public void success(List<Product> products, Response response) {
-                Cart cart = new Cart();
-                for (Product product : products) {
-                    cart.addVariant(product.getVariants().get(0));
-                }
-                Intent intent = new CartBuilder(getActivity(), buyClient).setCart(cart).buildIntent();
-                startActivity(intent);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
     }
 
     @Override
