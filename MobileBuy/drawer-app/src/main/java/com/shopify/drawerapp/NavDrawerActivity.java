@@ -37,6 +37,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.shopify.buy.ui.collections.CollectionListBuilder;
+import com.shopify.buy.ui.collections.CollectionListFragment;
+
 /**
  * Base class for all activities in the app. Manages the ProgressDialog that is displayed while network activity is occurring.
  */
@@ -67,6 +70,20 @@ public class NavDrawerActivity extends Activity {
 
             navDrawer.setItemChecked(position, true);
             drawerLayout.closeDrawer(navDrawer);
+
+            // TODO - make this into a switch statement
+            if (position == 0) {
+                Bundle bundle = new CollectionListBuilder(NavDrawerActivity.this)
+                        .setApiKey(getString(R.string.shopify_api_key))
+                        .setChannelid(getString(R.string.channel_id))
+                        .setShopDomain(getString(R.string.shop_url))
+                        .setApplicationName(getString(R.string.app_name))
+                        .buildBundle();
+
+                Fragment fragment = new CollectionListFragment();
+                fragment.setArguments(bundle);
+                loadFragment(fragment);
+            }
 
             // fun times
             if (position == 3) {

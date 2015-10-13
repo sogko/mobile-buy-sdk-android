@@ -26,6 +26,11 @@ package com.shopify.buy.ui.collections;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,10 +42,17 @@ import com.shopify.buy.ui.common.BaseFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CollectionListFragment extends BaseFragment {
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+public class CollectionListFragment extends BaseFragment implements CollectionListAdapter.ClickListener {
+    private static final String TAG = CollectionListFragment.class.getSimpleName();
+
     CollectionListFragmentView view;
 
     private List<Collection> collections;
+    RecyclerView recyclerView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +62,7 @@ public class CollectionListFragment extends BaseFragment {
 
         // Retrieve the list of collections if they were provided
         ArrayList<String> collectionsArrayList = bundle.getStringArrayList(CollectionListConfig.EXTRA_SHOP_COLLECTION);
-        if (collectionsArrayList.size() > 0) {
+        if (collectionsArrayList != null && collectionsArrayList.size() > 0) {
             for (String collectionString : collectionsArrayList) {
                 collections.add(Collection.fromJson(collectionString));
             }
@@ -60,6 +72,12 @@ public class CollectionListFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = (CollectionListFragmentView) inflater.inflate(R.layout.fragment_collection_list, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        CollectionListAdapter adapter = new CollectionListAdapter();
+        adapter.setClickListener(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return view;
     }
 
@@ -74,17 +92,56 @@ public class CollectionListFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
 
-        // TODO fetch the collections if necessary
-//
-//        // fetch the Shop and Product data if we don't have them already
-//        if (product == null && !TextUtils.isEmpty(productId)) {
-//            fetchProduct(productId);
-//        }
-//        if (shop == null) {
-//            fetchShop();
-//        }
-//
-//        showProductIfReady();
+        // Fetch the Collections if we don't have them
+        if (collections == null) {
+            fetchCollections();
+        }
+        showCollectionsIfReady();
     }
 
+    private void fetchCollections() {
+        buyClient.getCollections(new Callback<List<Collection>>() {
+            @Override
+            public void success(List<Collection> collections, Response response) {
+                CollectionListFragment.this.collections = collections;
+                showCollectionsIfReady();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO add error case listeners
+            }
+        });
+    }
+
+    private void showCollectionsIfReady() {
+        if (!viewCreated || collections == null) {
+            if (!progressDialog.isShowing()) {
+                showProgressDialog(getString(R.string.loading), getString(R.string.loading_product_details), new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().finish();
+                    }
+                });
+            }
+            return;
+        } else {
+            // TODO this is temporary.  The view should pull down the progressview when it has populated its subviews
+            if (progressDialog.isShowing()) {
+                dismissProgressDialog();}
+            CollectionListAdapter adapter = (CollectionListAdapter) recyclerView.getAdapter();
+            adapter.setCollections(collections);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onItemClick(int position, View viewHolder, Collection collection) {
+        Log.i(TAG, "Collection Item clicked");
+    }
+
+    @Override
+    public void onItemLongClick(int position, View viewHolder, Collection collection) {
+        Log.i(TAG, "Collection Item long clicked");
+    }
 }

@@ -24,6 +24,94 @@
 
 package com.shopify.buy.ui.collections;
 
-public class CollectionListAdapter {
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.shopify.buy.R;
+import com.shopify.buy.model.Collection;
 
+import java.util.List;
+
+public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAdapter.ViewHolder> {
+
+    List<Collection> collections;
+
+    // Listener used to pass click events back to the fragment or adapter
+    private ClickListener clickListener;
+
+    public CollectionListAdapter() {
+        super();
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.collection_list_item, viewGroup, false);
+        ViewHolder viewHolder = new ViewHolder(v);
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        Collection collection = collections.get(i);
+        viewHolder.collectionNameView.setText(collection.getTitle());
+    }
+
+    @Override
+    public int getItemCount() {
+        int size = 0;
+        if (collections != null) {
+            size = collections.size();
+        }
+        return size;
+    }
+
+    public void setClickListener(ClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+
+        public TextView collectionNameView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+
+            collectionNameView = (TextView)itemView.findViewById(R.id.collection_name);
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (clickListener != null) {
+                int position = getAdapterPosition();
+                clickListener.onItemClick(position, v, collections.get(position));
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (clickListener != null) {
+                int position = getAdapterPosition();
+                clickListener.onItemLongClick(position, v, collections.get(position));
+                return false;
+            }
+            return true;
+        }
+    }
+
+    public void setCollections(List<Collection> collections) {
+        this.collections = collections;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v, Collection collection);
+        void onItemLongClick(int position, View v, Collection collection);
+    }
 }
+
