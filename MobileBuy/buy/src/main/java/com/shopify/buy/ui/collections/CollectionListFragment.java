@@ -24,6 +24,8 @@
 
 package com.shopify.buy.ui.collections;
 
+import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -36,7 +38,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shopify.buy.R;
+import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Collection;
+import com.shopify.buy.model.Product;
+import com.shopify.buy.ui.cart.CartBuilder;
+import com.shopify.buy.ui.cart.CartFragment;
 import com.shopify.buy.ui.common.BaseFragment;
 
 import java.util.ArrayList;

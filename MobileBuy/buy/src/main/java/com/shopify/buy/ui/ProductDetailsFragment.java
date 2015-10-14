@@ -106,12 +106,6 @@ public class ProductDetailsFragment extends BaseFragment {
             product = Product.fromJson(bundle.getString(ProductDetailsConfig.EXTRA_SHOP_PRODUCT));
             variant = product.getVariants().get(0);
         }
-
-        // If we have a full shop object in the bundle, we don't need to fetch it
-        if (bundle.containsKey(ProductDetailsConfig.EXTRA_SHOP_SHOP)) {
-            shop = Shop.fromJson(bundle.getString(ProductDetailsConfig.EXTRA_SHOP_SHOP));
-        }
-
     }
 
     @Override
@@ -136,9 +130,18 @@ public class ProductDetailsFragment extends BaseFragment {
         if (product == null && !TextUtils.isEmpty(productId)) {
             fetchProduct(productId);
         }
-        if (shop == null) {
-            fetchShop();
-        }
+
+        fetchShopIfNecessary(new Callback<Shop>() {
+            @Override
+            public void success(Shop shop, Response response) {
+                showProductIfReady();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                productDetailsListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_SHOP_FAILED, BuyClient.getErrorBody(error)));
+            }
+        });
 
         showProductIfReady();
     }
@@ -179,7 +182,7 @@ public class ProductDetailsFragment extends BaseFragment {
     }
 
     private void configureCheckoutButton() {
-        checkoutButton = (Button)view.findViewById(R.id.checkout_button);
+        checkoutButton = (Button) view.findViewById(R.id.checkout_button);
 
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,21 +199,6 @@ public class ProductDetailsFragment extends BaseFragment {
                         cancelledCheckout.set(true);
                     }
                 });
-            }
-        });
-    }
-
-    private void fetchShop() {
-        buyClient.getShop(new Callback<Shop>() {
-            @Override
-            public void success(Shop shop, Response response) {
-                ProductDetailsFragment.this.shop = shop;
-                showProductIfReady();
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                productDetailsListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_SHOP_FAILED, BuyClient.getErrorBody(error)));
             }
         });
     }

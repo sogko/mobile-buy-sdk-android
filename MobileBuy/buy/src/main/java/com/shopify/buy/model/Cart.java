@@ -24,6 +24,8 @@
 
 package com.shopify.buy.model;
 
+import com.shopify.buy.dataprovider.BuyClientFactory;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -152,6 +154,14 @@ public class Cart {
      */
     public void clear() {
         lineItems.clear();
+    }
+
+    public String toJsonString() {
+        return BuyClientFactory.createDefaultGson().toJson(this);
+    }
+
+    public static Cart fromJson(String json) {
+        return BuyClientFactory.createDefaultGson().fromJson(json, Cart.class);
     }
 
 }
