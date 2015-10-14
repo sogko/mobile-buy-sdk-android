@@ -25,8 +25,8 @@
 package com.shopify.buy.ui.products;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 
+import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseConfig;
@@ -71,13 +71,8 @@ class ProductListConfig extends BaseConfig {
         Bundle bundle = super.toBundle();
 
         if (products != null) {
-            ArrayList<String> productsStringArray = new ArrayList<>(products.size());
-
-            // TODO replace this conversion with Parcelable Models
-            for (Product product : products) {
-                productsStringArray.add(product.toJsonString());
-            }
-            bundle.putStringArrayList(EXTRA_SHOP_PRODUCTS, productsStringArray);
+            String productsJson = BuyClientFactory.createDefaultGson().toJson(products);
+            bundle.putString(EXTRA_SHOP_PRODUCTS, productsJson);
         }
 
         if (productIds != null) {
