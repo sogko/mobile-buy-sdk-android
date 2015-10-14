@@ -22,30 +22,16 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.cart;
+package com.shopify.buy.ui.common;
 
-import android.content.Context;
+import android.os.Bundle;
 
-import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BaseConfig;
+public interface CheckoutListener {
 
-public class CartBuilder extends BaseBuilder<CartBuilder> {
+    void onSuccess(Bundle bundle);
 
-    public CartBuilder(Context context) {
-        super(context);
-    }
+    void onFailure(Bundle bundle);
 
-    public CartBuilder(Context context, BuyClient client) {
-        super(context, client);
-    }
-
-    @Override
-    protected BaseConfig getConfig() {
-        if (config == null) {
-            config = new BaseConfig();
-        }
-        return config;
-    }
+    void onCancel(Bundle bundle);
 
 }

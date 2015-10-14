@@ -24,6 +24,43 @@
 
 package com.shopify.buy.ui.cart;
 
-public class CartFragmentView {
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.support.v4.graphics.ColorUtils;
+import android.util.AttributeSet;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+
+import com.shopify.buy.R;
+
+public class CartFragmentView extends RelativeLayout {
+
+    public CartFragmentView(Context context) {
+        super(context);
+    }
+
+    public CartFragmentView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+
+        ViewGroup checkoutButtonContainer = (ViewGroup) findViewById(R.id.checkout_button_container);
+        checkoutButtonContainer.setBackgroundColor(getResources().getColor(R.color.default_accent));
+
+        int disabledTextAlpha = 64; // 0.25 * 255
+        int textColor = getResources().getColor(R.color.light_dialog_title);
+        ((Button) findViewById(R.id.checkout_button)).setTextColor(new ColorStateList(
+                new int[][]{
+                        new int[]{-android.R.attr.state_enabled},
+                        new int[]{android.R.attr.state_enabled}
+                },
+                new int[]{
+                        ColorUtils.setAlphaComponent(textColor, disabledTextAlpha), textColor,}
+        ));
+
+    }
 
 }

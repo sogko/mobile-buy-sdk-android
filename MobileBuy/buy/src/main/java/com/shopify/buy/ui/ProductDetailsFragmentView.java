@@ -37,7 +37,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
@@ -96,7 +95,9 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     private ViewGroup imageAreaWrapper;
     private Drawable imageOverlayBackgroundDrawable;
 
-    // variables for the checkout button
+    // variables for the 'add to cart' and checkout button
+    private View bottomButtonsContainer;
+    private ViewGroup addToCartButtonContainer;
     private ViewGroup checkoutButtonContainer;
 
     // variables for the image pager
@@ -165,8 +166,8 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
      * Sets the models and fills in the subviews with data
      *
      * @param fragment the fragment that owns this view
-     * @param product the product to display
-     * @param variant the variant to display
+     * @param product  the product to display
+     * @param variant  the variant to display
      */
     public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant) {
         this.fragment = fragment;
@@ -177,6 +178,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
 
     /**
      * Updates the product details and image for the currently selected variant
+     *
      * @param variant the {@link ProductVariant} to display
      */
     public void setVariant(ProductVariant variant) {
@@ -260,13 +262,14 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         initializeImageArea();
         initializeActionBar();
         initializeImageOverlay();
-        initializeCheckoutButton();
+        initializeBottomButtons();
         populateSubviews();
         fragment.dismissProgressDialog();
     }
 
     /**
      * Get the display size.
+     *
      * @return display size in {@link Point}.
      */
     private Point getDisplaySize() {
@@ -287,6 +290,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
 
     /**
      * Get the Action Bar height.
+     *
      * @return the action bar height in pixels.
      */
     private int getActionBarHeightPixels() {
@@ -351,9 +355,9 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
 
         // hide or show the checkout button
         if (grow && !imageAreaIsExpanded) {
-            hideCheckoutButton(IMAGE_AREA_FEATURES_ANIMATION_DURATION);
+            hideBottomButtons(IMAGE_AREA_FEATURES_ANIMATION_DURATION);
         } else if (!grow && imageAreaIsExpanded) {
-            showCheckoutButton(IMAGE_AREA_FEATURES_ANIMATION_DURATION);
+            showBottomButtons(IMAGE_AREA_FEATURES_ANIMATION_DURATION);
         }
 
         // Animate the image changing size
@@ -391,12 +395,12 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         anim.start();
     }
 
-    public void hideCheckoutButton(long duration) {
-        checkoutButtonContainer.animate().setDuration(duration).y(getHeight()).start();
+    public void hideBottomButtons(long duration) {
+        bottomButtonsContainer.animate().setDuration(duration).y(getHeight()).start();
     }
 
-    public void showCheckoutButton(long duration) {
-        checkoutButtonContainer.animate().setDuration(duration).y(getHeight() - checkoutButtonContainer.getHeight()).start();
+    public void showBottomButtons(long duration) {
+        bottomButtonsContainer.animate().setDuration(duration).y(getHeight() - checkoutButtonContainer.getHeight()).start();
     }
 
     /**
@@ -462,7 +466,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
      * Changes the appearance of the image area and {@link AppBarLayout} as the {@code AppBarLayout} collapses.
      *
      * @param appBarLayout the layout that is being offset
-     * @param offset the current offset
+     * @param offset       the current offset
      */
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
@@ -500,7 +504,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
                 imagePager.beginFakeDrag();
             }
         } else {
-            if(imagePager.isFakeDragging()) {
+            if (imagePager.isFakeDragging()) {
                 imagePager.endFakeDrag();
             }
         }
@@ -546,14 +550,27 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         imageOverlay.setBackgroundDrawable(imageOverlayBackgroundDrawable);
     }
 
-    private void initializeCheckoutButton() {
+    private void initializeBottomButtons() {
+        bottomButtonsContainer = findViewById(R.id.buttons_container);
+
+        int disabledTextAlpha = 64; // 0.25 * 255
+
+        addToCartButtonContainer = (ViewGroup) findViewById(R.id.cart_button_container);
+        addToCartButtonContainer.setBackgroundColor(theme.getCheckoutLabelColor(getResources()));
+
+        ((Button) findViewById(R.id.cart_button)).setTextColor(new ColorStateList(
+                new int[][]{
+                        new int[]{-android.R.attr.state_enabled},
+                        new int[]{android.R.attr.state_enabled}
+                },
+                new int[]{
+                        ColorUtils.setAlphaComponent(theme.getAccentColor(), disabledTextAlpha), theme.getAccentColor(),}
+        ));
+
         checkoutButtonContainer = (ViewGroup) findViewById(R.id.checkout_button_container);
         checkoutButtonContainer.setBackgroundColor(theme.getAccentColor());
 
-        Button checkoutButton = (Button) findViewById(R.id.checkout_button);
-
-        int disabledTextAlpha = 64; // 0.25 * 255
-        checkoutButton.setTextColor(new ColorStateList(
+        ((Button) findViewById(R.id.checkout_button)).setTextColor(new ColorStateList(
                 new int[][]{
                         new int[]{-android.R.attr.state_enabled},
                         new int[]{android.R.attr.state_enabled}
@@ -584,7 +601,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         textViewPrice.setTextColor(theme.getAccentColor());
 
         // Product "compare at" price (appears below the actual price with a strikethrough style)
-        TextView textViewCompareAtPrice = (TextView)findViewById(R.id.product_compare_at_price);
+        TextView textViewCompareAtPrice = (TextView) findViewById(R.id.product_compare_at_price);
         if (!variant.isAvailable()) {
             textViewCompareAtPrice.setVisibility(View.VISIBLE);
             textViewCompareAtPrice.setText(getResources().getString(R.string.sold_out));

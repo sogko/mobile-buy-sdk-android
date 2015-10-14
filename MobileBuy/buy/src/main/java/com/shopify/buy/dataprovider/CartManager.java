@@ -22,35 +22,26 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.cart;
-
-import android.os.Bundle;
+package com.shopify.buy.dataprovider;
 
 import com.shopify.buy.model.Cart;
-import com.shopify.buy.ui.common.BaseConfig;
 
-public class CartConfig extends BaseConfig {
+public class CartManager {
 
-    public static final String EXTRA_CART = "com.shopify.buy.ui.CART";
+    private static CartManager instance = new CartManager();
 
-    private Cart cart;
+    public static CartManager getInstance() {
+        return instance;
+    }
+
+    private final Cart cart;
+
+    private CartManager() {
+        cart = new Cart();
+    }
 
     public Cart getCart() {
         return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (cart != null) {
-            bundle.putString(EXTRA_CART, cart.toJsonString());
-        }
-
-        return bundle;
     }
 
 }

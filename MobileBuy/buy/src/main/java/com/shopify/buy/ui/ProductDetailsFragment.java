@@ -25,34 +25,29 @@
 package com.shopify.buy.ui;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.CartManager;
 import com.shopify.buy.model.Cart;
-import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.utils.CurrencyFormatter;
 
-import java.net.HttpURLConnection;
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -61,9 +56,7 @@ import retrofit.client.Response;
 /**
  * The fragment that controls the presentation of the {@link Product} details.
  */
-public class ProductDetailsFragment extends BaseFragment {
-
-    private ProductDetailsListener productDetailsListener;
+public class ProductDetailsFragment extends CheckoutFragment {
 
     private ProductDetailsFragmentView view;
 
@@ -72,9 +65,8 @@ public class ProductDetailsFragment extends BaseFragment {
     private String productId;
 
     private ProductDetailsTheme theme;
-    private Button checkoutButton;
-
-    private final AtomicBoolean cancelledCheckout = new AtomicBoolean(false);
+    private Button addToCartButton;
+    private boolean showCartButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +80,7 @@ public class ProductDetailsFragment extends BaseFragment {
         viewCreated = true;
 
         initTheme();
-        configureCheckoutButton();
+        configureAddToCartButton();
     }
 
     @Override
@@ -96,6 +88,8 @@ public class ProductDetailsFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         Bundle bundle = getArguments();
+
+        showCartButton = bundle.getBoolean(ProductDetailsConfig.EXTRA_SHOW_CART_BUTTON);
 
         // Retrieve the id of the Product we are going to display
         productId = bundle.getString(ProductDetailsConfig.EXTRA_SHOP_PRODUCT_ID);
@@ -113,7 +107,7 @@ public class ProductDetailsFragment extends BaseFragment {
             if (view.isImageAreaExpanded()) {
                 view.setImageAreaSize(false);
             } else {
-                productDetailsListener.onCancel(null);
+                checkoutListener.onCancel(null);
             }
             return true;
         }
@@ -138,7 +132,7 @@ public class ProductDetailsFragment extends BaseFragment {
 
             @Override
             public void failure(RetrofitError error) {
-                productDetailsListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_SHOP_FAILED, BuyClient.getErrorBody(error)));
+                checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_SHOP_FAILED, BuyClient.getErrorBody(error)));
             }
         });
 
@@ -148,8 +142,14 @@ public class ProductDetailsFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        checkoutButton.setEnabled(true);
-        cancelledCheckout.set(false);
+        addToCartButton.setEnabled(true);
+    }
+
+    @Override
+    protected Cart getCartForCheckout() {
+        Cart cart = new Cart();
+        cart.addVariant(variant);
+        return cart;
     }
 
     @Override
@@ -159,7 +159,7 @@ public class ProductDetailsFragment extends BaseFragment {
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            productDetailsListener = (ProductDetailsListener) activity;
+            checkoutListener = (ProductDetailsListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnProductDetailsCompletedListener");
         }
@@ -180,26 +180,21 @@ public class ProductDetailsFragment extends BaseFragment {
         view.setTheme(theme);
     }
 
-    private void configureCheckoutButton() {
-        checkoutButton = (Button) view.findViewById(R.id.checkout_button);
+    private void configureAddToCartButton() {
+        if (showCartButton) {
+            view.findViewById(R.id.cart_button_container).setVisibility(View.VISIBLE);
 
-        checkoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                view.setVariant(variant);
-                checkoutButton.setEnabled(false);
-                cancelledCheckout.set(false);
-                createWebCheckout();
-
-                showProgressDialog(getString(R.string.loading), getString(R.string.loading_checkout_page), new Runnable() {
-                    @Override
-                    public void run() {
-                        checkoutButton.setEnabled(true);
-                        cancelledCheckout.set(true);
-                    }
-                });
-            }
-        });
+            addToCartButton = (Button) view.findViewById(R.id.cart_button);
+            addToCartButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CartManager.getInstance().getCart().addVariant(variant);
+                    Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            view.findViewById(R.id.cart_button_container).setVisibility(View.GONE);
+        }
     }
 
     private void fetchProduct(final String productId) {
@@ -213,13 +208,13 @@ public class ProductDetailsFragment extends BaseFragment {
                     ProductDetailsFragment.this.variant = variant;
                     showProductIfReady();
                 } else {
-                    productDetailsListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, "Product id not found: " + productId));
+                    checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, "Product id not found: " + productId));
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                productDetailsListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, BuyClient.getErrorBody(error)));
+                checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, BuyClient.getErrorBody(error)));
             }
         });
     }
@@ -264,99 +259,4 @@ public class ProductDetailsFragment extends BaseFragment {
         }
     };
 
-    /**
-     * Creates a checkout for use with the web checkout flow
-     */
-    private void createWebCheckout() {
-        // Build a Cart with the selected ProductVariant
-        Cart cart = new Cart();
-        cart.addVariant(variant);
-
-        // Create the checkout using our Cart
-        buyClient.createCheckout(new Checkout(cart), new Callback<Checkout>() {
-            @Override
-            public void success(Checkout checkout, Response response) {
-                if (response.getStatus() == HttpURLConnection.HTTP_CREATED) {
-                    // Start the web checkout
-                    launchWebCheckout(checkout);
-                } else {
-                    onCheckoutFailure();
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                onCheckoutFailure();
-            }
-        });
-
-    }
-
-    /**
-     * Show the error message in a {@link Snackbar}
-     */
-    private void onCheckoutFailure() {
-        dismissProgressDialog();
-
-        CoordinatorLayout snackbarLayout = (CoordinatorLayout) view.findViewById(R.id.snackbar_location);
-
-        Snackbar snackbar = Snackbar.make(snackbarLayout, R.string.default_checkout_error, Snackbar.LENGTH_SHORT);
-        View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(getResources().getColor(R.color.error_background));
-
-        snackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onShown(Snackbar snackbar) {
-                super.onShown(snackbar);
-                checkoutButton.setEnabled(false);
-            }
-
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                checkoutButton.setEnabled(true);
-            }
-        });
-
-        snackbar.show();
-    }
-
-    /**
-     * Launch Chrome, and open the correct url for our {@code Checkout}
-     *
-     * @param checkout
-     */
-    private void launchWebCheckout(Checkout checkout) {
-        // if the user dismissed the progress dialog before we got here, abort
-        if (cancelledCheckout.getAndSet(false)) {
-            return;
-        }
-
-        dismissProgressDialog();
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.setData(Uri.parse(checkout.getWebUrl()));
-
-        try {
-            intent.setPackage("com.android.chrome");
-            startActivity(intent);
-
-        } catch (Exception launchChromeException) {
-            try {
-                // Chrome could not be opened, attempt to us other launcher
-                intent.setPackage(null);
-                startActivity(intent);
-
-            } catch (Exception launchOtherException) {
-                onCheckoutFailure();
-                return;
-            }
-        }
-
-        // The checkout was successfully started, let the listener know.
-        Bundle bundle = new Bundle();
-        bundle.putString(ProductDetailsConstants.EXTRA_CHECKOUT, checkout.toJsonString());
-        productDetailsListener.onSuccess(bundle);
-    }
 }
