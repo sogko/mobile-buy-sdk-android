@@ -145,7 +145,7 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
         if (!viewCreated || products == null) {
             if (!progressDialog.isShowing()) {
                 // TODO proper message
-                showProgressDialog(getString(R.string.loading), getString(R.string.loading_product_details), new Runnable() {
+                showProgressDialog(getString(R.string.loading), getString(R.string.loading_collection_details), new Runnable() {
                     @Override
                     public void run() {
                         getActivity().finish();
@@ -154,9 +154,9 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
             }
             return;
         } else {
-            // TODO this is temporary.  The view should pull down the progressview when it has populated its subviews
             if (progressDialog.isShowing()) {
-                dismissProgressDialog();}
+                dismissProgressDialog();
+            }
             ProductListAdapter adapter = (ProductListAdapter) recyclerView.getAdapter();
             adapter.setProducts(products);
             adapter.notifyDataSetChanged();

@@ -131,7 +131,7 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
         if (!viewCreated || collections == null) {
             if (!progressDialog.isShowing()) {
                 // TODO Proper message
-                showProgressDialog(getString(R.string.loading), getString(R.string.loading_product_details), new Runnable() {
+                showProgressDialog(getString(R.string.loading), getString(R.string.loading_collections), new Runnable() {
                     @Override
                     public void run() {
                         getActivity().finish();
@@ -142,7 +142,8 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
         } else {
             // TODO this is temporary.  The view should pull down the progressview when it has populated its subviews
             if (progressDialog.isShowing()) {
-                dismissProgressDialog();}
+                dismissProgressDialog();
+            }
             CollectionListAdapter adapter = (CollectionListAdapter) recyclerView.getAdapter();
             adapter.setCollections(collections);
             adapter.notifyDataSetChanged();
