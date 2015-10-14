@@ -22,40 +22,65 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.ui.products;
 
 import android.os.Bundle;
 
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Collection;
+import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /***
- * Used to serialize data for the {@link CollectionListActivity}.
+ * Used to serialize data for the {@link ProductListFragment}.
  */
-class CollectionListConfig extends BaseConfig {
+class ProductListConfig extends BaseConfig {
 
-    public static final String EXTRA_SHOP_COLLECTIONS = "com.shopify.buy.ui.COLLECTIONS";
+    public static final String EXTRA_SHOP_PRODUCTS = "com.shopify.buy.ui.PRODUCTS";
+    public static final String EXTRA_SHOP_PRODUCT_IDS = "com.shopify.buy.ui.PRODUCT_IDS";
+    public static final String EXTRA_SHOP_COLLECTION = "com.shopify.buy.ui.COLLECTION";
 
-    private List<Collection> collections;
+    private List<Product> products;
+    private List<String> productIds;
+    private Collection collection;
 
-    public List<Collection> getCollections() {
-        return collections;
+    public List<Product> getProducts() {
+        return products;
     }
 
-    public void setCollections(List<Collection> collections) {
-        this.collections = collections;
+    public List<String> getProductIds() {
+        return productIds;
     }
+
+    public Collection getCollection() {
+        return collection;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public void setProductIds(List<String> productIds) { this.productIds = productIds; }
+
+    public void setCollection(Collection collection) { this.collection = collection; }
 
     public Bundle toBundle() {
         Bundle bundle = super.toBundle();
 
-        if (collections != null) {
-            String productsJson = BuyClientFactory.createDefaultGson().toJson(collections);
-            bundle.putString(EXTRA_SHOP_COLLECTIONS, productsJson);
+        if (products != null) {
+            String productsJson = BuyClientFactory.createDefaultGson().toJson(products);
+            bundle.putString(EXTRA_SHOP_PRODUCTS, productsJson);
+        }
+
+        if (productIds != null) {
+            bundle.putStringArrayList(EXTRA_SHOP_PRODUCT_IDS, new ArrayList<>(productIds));
+        }
+
+        if (collection != null) {
+            bundle.putString(EXTRA_SHOP_COLLECTION, collection.toJsonString());
         }
 
         return bundle;

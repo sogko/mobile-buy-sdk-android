@@ -53,7 +53,6 @@ public class ProductDetailsActivity extends BaseActivity implements ProductDetai
 
         super.onCreate(savedInstanceState);
 
-        // TODO we should be able refactor most of this into the base class
         if (savedInstanceState == null) {
             productDetailsFragment = getFragment();
 
