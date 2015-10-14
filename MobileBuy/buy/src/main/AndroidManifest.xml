@@ -14,6 +14,14 @@
             android:theme="@style/CustomActionBarTheme">
         </activity>
 
+        <activity
+            android:name=".ui.cart.CartActivity"
+            android:label=""
+            android:launchMode="singleTask"
+            android:screenOrientation="userPortrait"
+            android:theme="@style/CustomActionBarTheme">
+        </activity>
+
     </application>
 
 </manifest>

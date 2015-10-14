@@ -25,11 +25,16 @@ package com.shopify.buy.ui.cart;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.shopify.buy.R;
 import com.shopify.buy.model.CartLineItem;
+import com.shopify.buy.model.OptionValue;
+
+import java.text.NumberFormat;
+import java.util.List;
 
 public class CartLineItemView extends LinearLayout {
 
@@ -43,16 +48,6 @@ public class CartLineItemView extends LinearLayout {
         super(context, attrs);
     }
 
-    public void setLineItem(CartLineItem lineItem) {
-        this.lineItem = lineItem;
-
-        quantityPicker.setLineItem(lineItem);
-
-        titleTextView.setText("Kick Scooter");
-        priceTextView.setText("$15.00");
-        variantTextView.setText("Adult • Mikado • 5\" Wheel Radius");
-    }
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -63,4 +58,30 @@ public class CartLineItemView extends LinearLayout {
 
         quantityPicker = (QuantityPicker) findViewById(R.id.quantity_picker);
     }
+
+    public void setLineItem(CartLineItem lineItem, NumberFormat currencyFormat) {
+        this.lineItem = lineItem;
+
+        quantityPicker.setLineItem(lineItem);
+
+        titleTextView.setText(lineItem.getVariant().getProductTitle());
+
+        String priceWithCurrency = currencyFormat.format(Double.parseDouble(lineItem.getPrice()));
+        priceTextView.setText(priceWithCurrency);
+
+        List<OptionValue> optionValues = lineItem.getVariant().getOptionValues();
+        if (optionValues != null && !optionValues.isEmpty()) {
+            StringBuilder variantString = new StringBuilder(optionValues.get(0).getValue());
+            for (int i = 1; i < optionValues.size(); i++) {
+                variantString.append(" • ");
+                variantString.append(optionValues.get(i).getValue());
+            }
+            variantTextView.setVisibility(View.VISIBLE);
+            variantTextView.setText(variantString.toString());
+        } else {
+            variantTextView.setVisibility(View.GONE);
+        }
+
+    }
+
 }

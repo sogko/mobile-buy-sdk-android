@@ -34,13 +34,18 @@ import android.view.View;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
+import com.shopify.buy.model.Shop;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class BaseFragment extends Fragment {
 
     protected boolean viewCreated;
     protected BuyClient buyClient;
     protected ProgressDialog progressDialog;
+    protected Shop shop;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -69,6 +74,11 @@ public class BaseFragment extends Fragment {
         String webReturnToUrl = bundle.getString(BaseConfig.EXTRA_WEB_RETURN_TO_URL);
         String webReturnToLabel = bundle.getString(BaseConfig.EXTRA_WEB_RETURN_TO_LABEL);
 
+        // If we have a full shop object in the bundle, we won't need to fetch it
+        if (bundle.containsKey(BaseConfig.EXTRA_SHOP_SHOP)) {
+            shop = Shop.fromJson(bundle.getString(BaseConfig.EXTRA_SHOP_SHOP));
+        }
+
         // Create the BuyClient
         buyClient = BuyClientFactory.getBuyClient(shopDomain, apiKey, channelId, applicationName);
 
@@ -80,6 +90,25 @@ public class BaseFragment extends Fragment {
         if (!TextUtils.isEmpty(webReturnToLabel)) {
             buyClient.setWebReturnToLabel(webReturnToLabel);
         }
+    }
+
+    protected void fetchShopIfNecessary(final Callback<Shop> callback) {
+        if (shop != null) {
+            return;
+        }
+
+        buyClient.getShop(new Callback<Shop>() {
+            @Override
+            public void success(Shop shop, Response response) {
+                BaseFragment.this.shop = shop;
+                callback.success(shop, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
     }
 
     private void initializeProgressDialog() {

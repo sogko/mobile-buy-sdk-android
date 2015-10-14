@@ -70,6 +70,16 @@ public class NavDrawerActivity extends Activity {
         navDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         // TODO loadFragment(fragment) with the first fragment
+        Bundle bundle = new CollectionListBuilder(this)
+                .setApiKey(getString(R.string.shopify_api_key))
+                .setChannelid(getString(R.string.channel_id))
+                .setShopDomain(getString(R.string.shop_url))
+                .setApplicationName(getString(R.string.app_name))
+                .buildBundle();
+
+        Fragment fragment = new CollectionListFragment();
+        fragment.setArguments(bundle);
+        loadFragment(fragment);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
