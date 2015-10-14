@@ -130,7 +130,6 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     private void showCollectionsIfReady() {
         if (!viewCreated || collections == null) {
             if (!progressDialog.isShowing()) {
-                // TODO Proper message
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_collections), new Runnable() {
                     @Override
                     public void run() {

@@ -144,7 +144,6 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
     private void showProductsIfReady() {
         if (!viewCreated || products == null) {
             if (!progressDialog.isShowing()) {
-                // TODO proper message
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_collection_details), new Runnable() {
                     @Override
                     public void run() {
