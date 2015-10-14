@@ -70,6 +70,7 @@ public class NavDrawerActivity extends Activity {
         navDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         // TODO loadFragment(fragment) with the first fragment
+        // TODO this is temporarily loading the collection list
         Bundle bundle = new CollectionListBuilder(this)
                 .setApiKey(getString(R.string.shopify_api_key))
                 .setChannelid(getString(R.string.channel_id))
@@ -77,8 +78,9 @@ public class NavDrawerActivity extends Activity {
                 .setApplicationName(getString(R.string.app_name))
                 .buildBundle();
 
-        Fragment fragment = new CollectionListFragment();
+        CollectionListFragment fragment = new CollectionListFragment();
         fragment.setArguments(bundle);
+        fragment.setListener(new CollectionListListener());
         loadFragment(fragment);
     }
 
@@ -103,15 +105,6 @@ public class NavDrawerActivity extends Activity {
                 fragment.setArguments(bundle);
                 fragment.setListener(new CollectionListListener());
                 loadFragment(fragment);
-            }
-
-            // fun times
-            if (position == 3) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                intent.setData(Uri.parse("http://media.boingboing.net/wp-content/uploads/2015/10/KeXMN9.gif"));
-                intent.setPackage("com.android.chrome");
-                startActivity(intent);
             }
         }
     }
@@ -170,33 +163,14 @@ public class NavDrawerActivity extends Activity {
 //                    .setWebReturnToUrl(getString(R.string.web_return_to_url))
 //                    .setWebReturnToLabel(getString(R.string.web_return_to_label))
                     .build();
+
+            // TODO handle the result
             NavDrawerActivity.this.startActivityForResult(intent, 1);
-
-
         }
 
         @Override
         public void onItemLongClick(Product product) {
             // do nothing
-        }
-
-    }
-
-    private class ProductListener implements ProductDetailsListener {
-
-        @Override
-        public void onSuccess(Bundle bundle) {
-            // TODO fill this in
-        }
-
-        @Override
-        public void onFailure(Bundle bundle) {
-            // TODO fill this in
-        }
-
-        @Override
-        public void onCancel(Bundle bundle) {
-            // TODO fill this in
         }
 
     }
