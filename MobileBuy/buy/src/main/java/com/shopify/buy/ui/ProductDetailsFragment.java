@@ -70,7 +70,6 @@ public class ProductDetailsFragment extends BaseFragment {
     private Product product;
     private ProductVariant variant;
     private String productId;
-    private Shop shop;
 
     private ProductDetailsTheme theme;
     private Button checkoutButton;

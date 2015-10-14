@@ -22,19 +22,19 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui;
+package com.shopify.buy.ui.products;
 
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.RelativeLayout;
 
-import android.os.Bundle;
+public class ProductListFragmentView extends RelativeLayout {
 
-/**
- * Listener for passing state back to the {@link ProductDetailsActivity}
- */
-public interface ProductDetailsListener {
+    public ProductListFragmentView(Context context) {
+        super(context);
+    }
 
-    void onSuccess(Bundle bundle);
-
-    void onFailure(Bundle bundle);
-
-    void onCancel(Bundle bundle);
+    public ProductListFragmentView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 }

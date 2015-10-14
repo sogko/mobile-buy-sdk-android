@@ -22,56 +22,68 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.ui.products;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Collection;
-import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
+import com.shopify.buy.ui.common.BaseConfig;
 
 import java.util.List;
 
-public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
+public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
 
     /**
-     * Create a default CollectionListBuilder.
+     * Create a default ProductListBuilder.
      * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
      *
      * @param context context to use for starting the {@code Activity}
      */
-    public CollectionListBuilder(Context context) {
+    public ProductListBuilder(Context context) {
         super(context);
     }
 
     /**
-     * Constructor that will use an existing {@link BuyClient} to configure the {@link CollectionListFragment}.
+     * Constructor that will use an existing {@link BuyClient} to configure the {@link ProductListFragment}.
      *
      * @param context context to use for launching the {@code Activity}
-     * @param client  the {@link BuyClient} to use to configure the CollectionListActivity
+     * @param client  the {@link BuyClient} to use to configure the ProductListActivity
      */
-    public CollectionListBuilder(Context context, BuyClient client) {
+    public ProductListBuilder(Context context, BuyClient client) {
         super(context, client);
     }
 
     @Override
     protected BaseConfig getConfig() {
         if (config == null) {
-            config = new CollectionListConfig();
+            config = new ProductListConfig();
         }
         return config;
     }
 
-    public CollectionListBuilder setCollections(List<Collection> collections) {
-        ((CollectionListConfig) config).setCollections(collections);
+    public ProductListBuilder setProducts(List<Product> products) {
+        ((ProductListConfig) config).setProducts(products);
+        return this;
+    }
+
+    public ProductListBuilder setProductIds(List<String> productIds) {
+        ((ProductListConfig) config).setProductIds(productIds);
+        return this;
+    }
+
+    public ProductListBuilder setCollection(Collection collection) {
+        ((ProductListConfig) config).setCollection(collection);
         return this;
     }
 
     public Bundle buildBundle() {
         // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
-        CollectionListConfig collectionListConfig = (CollectionListConfig) config;
+        ProductListConfig collectionListConfig = (ProductListConfig) config;
 
         Bundle bundle = super.buildBundle();
         bundle.putAll(collectionListConfig.toBundle());

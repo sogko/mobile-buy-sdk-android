@@ -79,13 +79,7 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
         return this;
     }
 
-    @Deprecated
     public Intent build() {
-        return buildIntent();
-    }
-
-    @Override
-    public Intent buildIntent() {
         Intent intent = super.buildIntent();
         intent.setClass(context, ProductDetailsActivity.class);
         return intent;
