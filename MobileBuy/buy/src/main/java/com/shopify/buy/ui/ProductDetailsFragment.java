@@ -44,6 +44,7 @@ import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.CheckoutFragment;
+import com.shopify.buy.ui.common.CheckoutListener;
 import com.shopify.buy.utils.CurrencyFormatter;
 
 import java.text.NumberFormat;
@@ -159,9 +160,9 @@ public class ProductDetailsFragment extends CheckoutFragment {
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            checkoutListener = (ProductDetailsListener) activity;
+            checkoutListener = (CheckoutListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnProductDetailsCompletedListener");
+            throw new ClassCastException(activity.toString() + " must implement CheckoutListener");
         }
     }
 
