@@ -62,7 +62,7 @@ class ProductDetailsConfig extends BaseConfig {
         return showCartButton;
     }
 
-    public void setShowCartButton(boolean showCartButton) {
+    public void showCartButton(boolean showCartButton) {
         this.showCartButton = showCartButton;
     }
 

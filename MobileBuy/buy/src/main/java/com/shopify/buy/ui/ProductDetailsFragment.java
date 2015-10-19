@@ -189,6 +189,8 @@ public class ProductDetailsFragment extends CheckoutFragment {
                 @Override
                 public void onClick(View v) {
                     CartManager.getInstance().getCart().addVariant(variant);
+
+                    // TODO the toast is just temporary
                     Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
                 }
             });

@@ -79,8 +79,8 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
         return this;
     }
 
-    public ProductDetailsBuilder setShowCartButton(boolean showCartButton) {
-        ((ProductDetailsConfig) config).setShowCartButton(showCartButton);
+    public ProductDetailsBuilder showCartButton(boolean showCartButton) {
+        ((ProductDetailsConfig) config).showCartButton(showCartButton);
         return this;
     }
 

@@ -395,6 +395,16 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         anim.start();
     }
 
+    @Deprecated
+    public void hideCheckoutButton(long duration) {
+        hideBottomButtons(duration);
+    }
+
+    @Deprecated
+    public void showCheckoutButton(long duration) {
+        showBottomButtons(duration);
+    }
+
     public void hideBottomButtons(long duration) {
         bottomButtonsContainer.animate().setDuration(duration).y(getHeight()).start();
     }
