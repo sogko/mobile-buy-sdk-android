@@ -26,6 +26,7 @@ package com.shopify.buy.ui.collections;
 
 import android.os.Bundle;
 
+import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseConfig;
 
@@ -53,13 +54,8 @@ class CollectionListConfig extends BaseConfig {
         Bundle bundle = super.toBundle();
 
         if (collections != null) {
-            ArrayList<String> collectionsStringArray = new ArrayList<>(collections.size());
-
-            // TODO replace this conversion with Parcelable Models
-            for (Collection collection : collections) {
-                collectionsStringArray.add(collection.toJsonString());
-            }
-            bundle.putStringArrayList(EXTRA_SHOP_COLLECTIONS, collectionsStringArray);
+            String productsJson = BuyClientFactory.createDefaultGson().toJson(collections);
+            bundle.putString(EXTRA_SHOP_COLLECTIONS, productsJson);
         }
 
         return bundle;

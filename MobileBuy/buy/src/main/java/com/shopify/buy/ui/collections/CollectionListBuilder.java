@@ -25,7 +25,6 @@
 package com.shopify.buy.ui.collections;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.shopify.buy.dataprovider.BuyClient;

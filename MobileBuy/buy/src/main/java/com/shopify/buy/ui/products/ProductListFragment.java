@@ -35,12 +35,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
+import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
@@ -68,12 +69,12 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
 
         // Retrieve the list of products if they were provided
         if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCTS)) {
-            ArrayList<String> productsArrayList = bundle.getStringArrayList(ProductListConfig.EXTRA_SHOP_PRODUCTS);
-            if (productsArrayList != null && productsArrayList.size() > 0) {
-                for (String productString : productsArrayList) {
-                    products.add(Product.fromJson(productString));
-                }
+            String productsJson = bundle.getString(ProductListConfig.EXTRA_SHOP_PRODUCTS);
+
+            if (!TextUtils.isEmpty(productsJson)) {
+                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
             }
+
         } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS)) {
             productIds = bundle.getStringArrayList(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS);
 
