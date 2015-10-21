@@ -139,7 +139,7 @@ public class ProductVariant extends ShopifyObject {
     }
 
     /**
-     * @return @return The title of the {@link Product} to which this variant belongs.
+     * @return The title of the {@link Product} to which this variant belongs.
      */
     public String getProductTitle() {
         return productTitle;
