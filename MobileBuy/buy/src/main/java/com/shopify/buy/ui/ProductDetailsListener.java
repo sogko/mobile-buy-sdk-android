@@ -24,17 +24,11 @@
 
 package com.shopify.buy.ui;
 
-
-import android.os.Bundle;
+import com.shopify.buy.ui.common.CheckoutListener;
 
 /**
- * Listener for passing state back to the {@link ProductDetailsActivity}
+ * Deprecated. Use {@link CheckoutListener}.
  */
-public interface ProductDetailsListener {
-
-    void onSuccess(Bundle bundle);
-
-    void onFailure(Bundle bundle);
-
-    void onCancel(Bundle bundle);
+@Deprecated
+public interface ProductDetailsListener extends CheckoutListener {
 }

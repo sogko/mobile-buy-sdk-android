@@ -27,7 +27,7 @@ package com.shopify.buy.ui;
 import com.shopify.buy.ui.common.BaseConstants;
 
 /**
- * Common constants used by the {@link ProductDetailsActivity}.
+ * Deprecated. Use {@link BaseConstants}.
  */
 @Deprecated
 class ProductDetailsConstants extends BaseConstants {}

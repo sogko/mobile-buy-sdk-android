@@ -39,12 +39,13 @@ import android.view.WindowManager;
 import com.shopify.buy.R;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseActivity;
+import com.shopify.buy.ui.common.CheckoutListener;
 import com.shopify.buy.utils.DeviceUtils;
 
 /**
  * Activity that shows the details of a {@link Product}.
  */
-public class ProductDetailsActivity extends BaseActivity implements ProductDetailsListener {
+public class ProductDetailsActivity extends BaseActivity implements CheckoutListener {
 
     protected ProductDetailsFragment productDetailsFragment;
 

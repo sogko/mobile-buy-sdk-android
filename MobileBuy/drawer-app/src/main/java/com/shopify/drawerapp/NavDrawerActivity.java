@@ -29,7 +29,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
@@ -37,13 +36,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.ProductDetailsActivity;
 import com.shopify.buy.ui.ProductDetailsBuilder;
-import com.shopify.buy.ui.ProductDetailsFragment;
-import com.shopify.buy.ui.ProductDetailsListener;
 import com.shopify.buy.ui.ProductDetailsTheme;
+import com.shopify.buy.ui.cart.CartBuilder;
+import com.shopify.buy.ui.cart.CartFragment;
 import com.shopify.buy.ui.collections.CollectionListBuilder;
 import com.shopify.buy.ui.collections.CollectionListFragment;
 import com.shopify.buy.ui.products.ProductListBuilder;
@@ -92,19 +91,34 @@ public class NavDrawerActivity extends Activity {
             navDrawer.setItemChecked(position, true);
             drawerLayout.closeDrawer(navDrawer);
 
-            // TODO - make this into a switch statement
-            if (position == 0) {
-                Bundle bundle = new CollectionListBuilder(NavDrawerActivity.this)
-                        .setApiKey(getString(R.string.shopify_api_key))
-                        .setChannelid(getString(R.string.channel_id))
-                        .setShopDomain(getString(R.string.shop_url))
-                        .setApplicationName(getString(R.string.app_name))
-                        .buildBundle();
+            switch (position) {
+                case 0: {
+                    Bundle bundle = new CollectionListBuilder(NavDrawerActivity.this)
+                            .setApiKey(getString(R.string.shopify_api_key))
+                            .setChannelid(getString(R.string.channel_id))
+                            .setShopDomain(getString(R.string.shop_url))
+                            .setApplicationName(getString(R.string.app_name))
+                            .buildBundle();
 
-                CollectionListFragment fragment = new CollectionListFragment();
-                fragment.setArguments(bundle);
-                fragment.setListener(new CollectionListListener());
-                loadFragment(fragment);
+                    CollectionListFragment fragment = new CollectionListFragment();
+                    fragment.setArguments(bundle);
+                    fragment.setListener(new CollectionListListener());
+                    loadFragment(fragment);
+                    break;
+                }
+                case 2: {
+                    Bundle bundle = new CartBuilder(NavDrawerActivity.this)
+                            .setApiKey(getString(R.string.shopify_api_key))
+                            .setChannelid(getString(R.string.channel_id))
+                            .setShopDomain(getString(R.string.shop_url))
+                            .setApplicationName(getString(R.string.app_name))
+                            .buildBundle();
+
+                    CartFragment fragment = new CartFragment();
+                    fragment.setArguments(bundle);
+                    loadFragment(fragment);
+                    break;
+                }
             }
         }
     }
@@ -174,4 +188,5 @@ public class NavDrawerActivity extends Activity {
         }
 
     }
+
 }

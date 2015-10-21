@@ -36,9 +36,11 @@ class ProductDetailsConfig extends BaseConfig {
 
     public static final String EXTRA_SHOP_PRODUCT_ID = "com.shopify.buy.ui.PRODUCT_ID";
     public static final String EXTRA_SHOP_PRODUCT = "com.shopify.buy.ui.PRODUCT";
+    public static final String EXTRA_SHOW_CART_BUTTON = "com.shopify.buy.ui.SHOW_CART_BUTTON";
 
     private String productId;
     private Product product;
+    private boolean showCartButton = true;
 
     public String getProductId() {
         return productId;
@@ -56,6 +58,14 @@ class ProductDetailsConfig extends BaseConfig {
         this.product = product;
     }
 
+    public boolean shouldShowCartButton() {
+        return showCartButton;
+    }
+
+    public void showCartButton(boolean showCartButton) {
+        this.showCartButton = showCartButton;
+    }
+
     public Bundle toBundle() {
         Bundle bundle = super.toBundle();
 
@@ -66,6 +76,8 @@ class ProductDetailsConfig extends BaseConfig {
         if (product != null) {
             bundle.putString(EXTRA_SHOP_PRODUCT, product.toJsonString());
         }
+
+        bundle.putBoolean(EXTRA_SHOW_CART_BUTTON, showCartButton);
 
         return bundle;
     }

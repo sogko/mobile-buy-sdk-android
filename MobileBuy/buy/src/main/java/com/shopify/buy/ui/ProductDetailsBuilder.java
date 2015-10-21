@@ -31,8 +31,8 @@ import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.common.BaseConfig;
 import com.shopify.buy.ui.common.BaseBuilder;
+import com.shopify.buy.ui.common.BaseConfig;
 
 /**
  * Builds an {@link Intent} that can be used to start a {@link ProductDetailsActivity}
@@ -76,6 +76,11 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     public ProductDetailsBuilder setProduct(Product product) {
         ((ProductDetailsConfig) config).setProduct(product);
+        return this;
+    }
+
+    public ProductDetailsBuilder showCartButton(boolean showCartButton) {
+        ((ProductDetailsConfig) config).showCartButton(showCartButton);
         return this;
     }
 
