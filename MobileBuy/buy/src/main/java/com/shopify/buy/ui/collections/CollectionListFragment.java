@@ -24,7 +24,6 @@
 
 package com.shopify.buy.ui.collections;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -40,7 +39,7 @@ import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.dataprovider.CollectionsProvider;
-import com.shopify.buy.dataprovider.DefaultProvider;
+import com.shopify.buy.dataprovider.DefaultCollectionsProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseFragment;
@@ -73,7 +72,7 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
         super.onCreate(savedInstanceState);
 
         if (provider == null) {
-            provider = new DefaultProvider(getActivity());
+            provider = new DefaultCollectionsProvider(getActivity());
         }
 
         Bundle bundle = getArguments();

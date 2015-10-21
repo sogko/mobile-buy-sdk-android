@@ -33,6 +33,7 @@ import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -56,11 +57,13 @@ public class GetCollectionsTask implements Runnable {
 
     @Override
     public void run() {
+        final AtomicBoolean foundInDb = new AtomicBoolean(false);
+
         // check the local database first
         List<Collection> collections = buyDatabase.getCollections();
         if (!CollectionUtils.isEmpty(collections)) {
+            foundInDb.set(true);
             onSuccess(collections, null);
-            return;
         }
 
         // need to fetch from the cloud
@@ -68,12 +71,16 @@ public class GetCollectionsTask implements Runnable {
             @Override
             public void success(List<Collection> collections, Response response) {
                 saveCollections(collections);
-                onSuccess(collections, response);
+                if (!foundInDb.get()) {
+                    onSuccess(collections, response);
+                }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                onFailure(error);
+                if (!foundInDb.get()) {
+                    onFailure(error);
+                }
             }
         });
     }

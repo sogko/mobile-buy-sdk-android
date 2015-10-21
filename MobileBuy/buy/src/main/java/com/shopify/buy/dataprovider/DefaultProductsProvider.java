@@ -25,49 +25,27 @@
 package com.shopify.buy.dataprovider;
 
 import android.content.Context;
-import android.os.Handler;
 
-import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
-import com.shopify.buy.dataprovider.tasks.GetCollectionsTask;
-import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import retrofit.Callback;
 
-public class DefaultProvider implements CollectionsProvider, ProductsProvider {
+public class DefaultProductsProvider extends BaseProviderImpl implements ProductsProvider {
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-    private final BuyDatabase buyDatabase;
-    private final Handler handler;
-
-    public DefaultProvider(Context context) {
-        this.buyDatabase = new BuyDatabase(context);
-        this.handler = new Handler(context.getMainLooper());
+    public DefaultProductsProvider(Context context) {
+        super(context);
     }
 
     @Override
-    public void getCollections(final BuyClient buyClient, final Callback<List<Collection>> callback) {
-        GetCollectionsTask task = new GetCollectionsTask(buyDatabase, buyClient, callback, handler, executorService);
-        executorService.execute(task);
-    }
-
-    @Override
-    public void getCollection(final Long collectionId, final BuyClient buyClient, final Callback<Collection> callback) {
+    public void getProducts(BuyClient buyClient, Callback<List<Product>> callback) {
 
     }
 
     @Override
-    public void getProducts(final BuyClient buyClient, final Callback<List<Product>> callback) {
+    public void getProduct(Long productId, BuyClient buyClient, Callback<Product> callback) {
 
     }
 
-    @Override
-    public void getProduct(final Long productId, final BuyClient buyClient, Callback<Product> callback) {
-
-    }
 }
