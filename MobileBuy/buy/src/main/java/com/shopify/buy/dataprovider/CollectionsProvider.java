@@ -22,29 +22,18 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.storage;
+package com.shopify.buy.dataprovider;
 
 import com.shopify.buy.model.Collection;
-import com.shopify.buy.model.Product;
 
 import java.util.List;
 
-public interface BuyStore {
+import retrofit.Callback;
 
-    void saveCollections(List<Collection> collections);
+public interface CollectionsProvider {
 
-    void saveCollection(Collection collection);
+    void getCollections(BuyClient buyClient, Callback<List<Collection>> callback);
 
-    void getCollections();
-
-    void getCollection(Long collectionId);
-
-    void saveProducts(List<Product> products);
-
-    void saveProduct(Product product);
-
-    void getProducts();
-
-    void getProduct(Long productId);
+    void getCollection(Long collectionId, BuyClient buyClient, Callback<Collection> callback);
 
 }

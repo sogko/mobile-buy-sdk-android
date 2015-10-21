@@ -22,24 +22,18 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.storage;
+package com.shopify.buy.dataprovider;
 
-public class BuyStoreManager {
+import com.shopify.buy.model.Product;
 
-    private BuyStore store;
+import java.util.List;
 
-    private static BuyStoreManager instance = new BuyStoreManager();
+import retrofit.Callback;
 
-    public static BuyStoreManager getInstance() {
-        return instance;
-    }
+public interface ProductsProvider {
 
-    private BuyStoreManager() {
+    void getProducts(BuyClient buyClient, Callback<List<Product>> callback);
 
-    }
-
-    public void setStore(BuyStore store) {
-        this.store = store;
-    }
+    void getProduct(Long productId, BuyClient buyClient, Callback<Product> callback);
 
 }

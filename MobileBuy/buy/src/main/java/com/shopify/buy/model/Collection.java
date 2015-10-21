@@ -85,22 +85,26 @@ public class Collection extends ShopifyObject {
     /**
      * @return The creation date for this collection.
      */
-    private Date getCreatedAtDate() {
+    public Date getCreatedAtDate() {
         return createdAtDate;
     }
 
     /**
      * @return The updated date for this collection.
      */
-    private Date getUpdatedAtDate() {
+    public Date getUpdatedAtDate() {
         return updatedAtDate;
     }
 
     /**
      * @return The publish date for this collection.
      */
-    private Date getPublishedAtDate() {
+    public Date getPublishedAtDate() {
         return publishedAtDate;
+    }
+
+    public CollectionImage getImage() {
+        return image;
     }
 
     /**
