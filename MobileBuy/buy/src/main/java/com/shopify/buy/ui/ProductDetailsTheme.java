@@ -24,74 +24,29 @@
 
 package com.shopify.buy.ui;
 
-import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.shopify.buy.R;
 
 /**
  * Describes the colors and backgrounds to use for the {@link ProductDetailsFragmentView}.
  */
-public class ProductDetailsTheme implements Parcelable {
+@Deprecated
+public class ProductDetailsTheme extends ShopifyTheme implements Parcelable {
 
-    public enum Style {
-        DARK,
-        LIGHT
-    }
-
-    private Style style;
-    private int accentColor = -1;
-    private boolean showProductImageBackground;
-
+    @Deprecated
     public ProductDetailsTheme(Resources res) {
-        style = Style.LIGHT;
-        accentColor = res.getColor(R.color.default_accent);
-        showProductImageBackground = true;
+        super(res);
     }
 
+    @Deprecated
     public ProductDetailsTheme(Style style, int accentColor, boolean showProductImageBackground) {
-        this.style = style;
-        this.accentColor = accentColor;
-        this.showProductImageBackground = showProductImageBackground;
+        super(style, accentColor, showProductImageBackground);
     }
 
-    public Style getStyle() {
-        return style;
-    }
-
-    public void setStyle(Style style) {
-        this.style = style;
-    }
-
-    public int getAccentColor() {
-        return accentColor;
-    }
-
-    public void setAccentColor(int accentColor) {
-        this.accentColor = accentColor;
-    }
-
-    public void setShowProductImageBackground(boolean showProductImageBackground) {
-        this.showProductImageBackground = showProductImageBackground;
-    }
-
-    public boolean shouldShowProductImageBackground() {
-        return showProductImageBackground;
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(style.ordinal());
-        out.writeInt(accentColor);
-        out.writeInt(showProductImageBackground ? 1 : 0);
+    @Deprecated
+    private ProductDetailsTheme(Parcel in) {
+        super(in);
     }
 
     public static final Parcelable.Creator<ProductDetailsTheme> CREATOR = new Parcelable.Creator<ProductDetailsTheme>() {
@@ -103,133 +58,4 @@ public class ProductDetailsTheme implements Parcelable {
             return new ProductDetailsTheme[size];
         }
     };
-
-    private ProductDetailsTheme(Parcel in) {
-        style = Style.values()[in.readInt()];
-        accentColor = in.readInt();
-        showProductImageBackground = in.readInt() != 0;
-    }
-
-    int getBackgroundColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.dark_background);
-            default:
-                return res.getColor(R.color.light_background);
-        }
-    }
-
-    int getAppBarBackgroundColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.dark_low_contrast_background);
-            default:
-                return res.getColor(R.color.light_low_contrast_background);
-        }
-    }
-
-    int getProductTitleColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.dark_product_title);
-            default:
-                return res.getColor(R.color.light_product_title);
-        }
-    }
-
-    int getVariantOptionNameColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.dark_low_contrast_grey);
-            default:
-                return res.getColor(R.color.light_low_contrast_grey);
-        }
-    }
-
-    int getCompareAtPriceColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.body_grey);
-            default:
-                return res.getColor(R.color.body_grey);
-        }
-    }
-
-    int getProductDescriptionColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.body_grey);
-            default:
-                return res.getColor(R.color.body_grey);
-        }
-    }
-
-    int getDividerColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.dark_low_contrast_grey);
-            default:
-                return res.getColor(R.color.light_low_contrast_grey);
-        }
-    }
-
-    int getDialogTitleColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.dark_dialog_title);
-            default:
-                return res.getColor(R.color.light_dialog_title);
-        }
-    }
-
-    int getVariantBreadcrumbBackgroundColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.dark_low_contrast_grey);
-            default:
-                return res.getColor(R.color.light_low_contrast_grey);
-        }
-    }
-
-    int getDialogListItemColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.body_grey);
-            default:
-                return res.getColor(R.color.body_grey);
-        }
-    }
-
-    int getCheckoutLabelColor(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getColor(R.color.dark_dialog_title);
-            default:
-                return res.getColor(R.color.light_dialog_title);
-        }
-    }
-
-    Drawable getCheckmarkDrawable(Context context) {
-        Drawable checkmark;
-        switch (style) {
-            case DARK:
-                checkmark = context.getResources().getDrawable(R.drawable.ic_check_white_24dp);
-                break;
-            default:
-                checkmark = context.getResources().getDrawable(R.drawable.ic_check_black_24dp);
-                break;
-        }
-        checkmark.setColorFilter(new PorterDuffColorFilter(accentColor, PorterDuff.Mode.SRC_IN));
-        return checkmark;
-    }
-
-    Drawable getBackgroundSelectorDrawable(Resources res) {
-        switch (style) {
-            case DARK:
-                return res.getDrawable(R.drawable.dark_background_selector);
-            default:
-                return res.getDrawable(R.drawable.light_background_selector);
-        }
-    }
-
 }

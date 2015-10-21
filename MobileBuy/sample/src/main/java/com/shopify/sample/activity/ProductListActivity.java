@@ -32,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.shopify.buy.ui.ShopifyTheme;
 import com.shopify.sample.R;
 import com.shopify.sample.activity.base.SampleListActivity;
 import com.shopify.sample.dialog.HSVColorPickerDialog;
@@ -87,7 +88,7 @@ public class ProductListActivity extends SampleListActivity {
         ((Switch) findViewById(R.id.theme_style_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                theme.setStyle(isChecked ? ProductDetailsTheme.Style.LIGHT : ProductDetailsTheme.Style.DARK);
+                theme.setStyle(isChecked ? ShopifyTheme.Style.LIGHT : ShopifyTheme.Style.DARK);
             }
         });
 
