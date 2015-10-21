@@ -38,6 +38,8 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
+import com.shopify.buy.dataprovider.CollectionsProvider;
+import com.shopify.buy.dataprovider.DefaultCollectionsProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseFragment;
@@ -49,6 +51,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class CollectionListFragment extends BaseFragment implements CollectionListAdapter.ClickListener {
+
     private static final String TAG = CollectionListFragment.class.getSimpleName();
 
     CollectionListFragmentView view;
@@ -58,9 +61,19 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
 
     private Listener listener;
 
+    private CollectionsProvider provider = null;
+
+    public void setProvider(CollectionsProvider provider) {
+        this.provider = provider;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (provider == null) {
+            provider = new DefaultCollectionsProvider(getActivity());
+        }
 
         Bundle bundle = getArguments();
 
@@ -108,7 +121,7 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     }
 
     private void fetchCollections() {
-        buyClient.getCollections(new Callback<List<Collection>>() {
+        provider.getCollections(buyClient, new Callback<List<Collection>>() {
             @Override
             public void success(List<Collection> collections, Response response) {
                 CollectionListFragment.this.collections = collections;

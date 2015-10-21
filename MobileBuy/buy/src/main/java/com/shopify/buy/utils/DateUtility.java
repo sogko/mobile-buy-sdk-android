@@ -67,5 +67,10 @@ public class DateUtility {
             return new Gson().fromJson(jsonElement, Date.class);
         }
     }
+
+    public static String toString(Date date) {
+        return new SimpleDateFormat(DEFAULT_DATE_PATTERN, Locale.US).format(date);
+    }
+
 }
 
