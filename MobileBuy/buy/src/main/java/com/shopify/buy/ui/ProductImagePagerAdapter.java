@@ -74,10 +74,6 @@ public class ProductImagePagerAdapter extends ViewPagerAdapter {
         return POSITION_NONE;
     }
 
-    private String stripQueryFromUrl(String url) {
-        return url.substring(0, url.lastIndexOf('?'));
-    }
-
     public List<Image> getImages() {
         return images;
     }
@@ -107,7 +103,7 @@ public class ProductImagePagerAdapter extends ViewPagerAdapter {
             // the product image. The placeholder should be displayed using CENTER_INSIDE, while the image should be
             // loaded using Picasso's fit() request method (to reduce memory usage during decoding) and then cropped
             // or fitted into the target view.
-            String imageUrl = stripQueryFromUrl(images.get(pos).getSrc());
+            String imageUrl = ImageUtility.stripQueryFromUrl(images.get(pos).getSrc());
             ImageUtility.loadRemoteImageIntoViewWithoutSize(Picasso.with(context), imageUrl, imageView, maxWidth, maxHeight, false, new Callback() {
                 @Override
                 public void onSuccess() {

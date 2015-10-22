@@ -2,6 +2,7 @@
 <resources>
 
     <!--Common Text Sizes-->
+    <dimen name="text_extra_large">24sp</dimen>
     <dimen name="text_large">20sp</dimen>
     <dimen name="text_medium">18sp</dimen>
     <dimen name="text_small">14sp</dimen>
@@ -21,5 +22,6 @@
     <dimen name="action_bar_height">56dp</dimen>
     <dimen name="loading_indicator_size">24dp</dimen>
     <dimen name="image_top_gradient_size">108dp</dimen>
+    <dimen name="collection_image_bottom_gradient_size">40dp</dimen>
     <dimen name="drop_shadow_size">2dp</dimen>
 </resources>
