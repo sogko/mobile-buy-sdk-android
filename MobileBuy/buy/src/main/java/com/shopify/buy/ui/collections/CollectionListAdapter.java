@@ -24,25 +24,38 @@
 
 package com.shopify.buy.ui.collections;
 
+import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.shopify.buy.R;
 import com.shopify.buy.model.Collection;
+import com.shopify.buy.utils.ImageUtility;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAdapter.ViewHolder> {
 
     List<Collection> collections;
+    Context context;
 
     // Listener used to pass click events back to the fragment or adapter
     private ClickListener clickListener;
 
-    public CollectionListAdapter() {
-        super();
+    public CollectionListAdapter(Activity context) {
+        this.context = context;
     }
 
     @Override
@@ -54,8 +67,10 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         Collection collection = collections.get(i);
+        viewHolder.collection = collection;
+
         viewHolder.collectionNameView.setText(collection.getTitle());
     }
 
@@ -75,15 +90,56 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
         public TextView collectionNameView;
+        public ImageView collectionImageView;
+        public Collection collection;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
             collectionNameView = (TextView)itemView.findViewById(R.id.collection_name);
+            collectionImageView = (ImageView)itemView.findViewById(R.id.collection_image);
 
+            ViewTreeObserver viewTreeObserver = itemView.getViewTreeObserver();
+            if (viewTreeObserver.isAlive()) {
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                            itemView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+
+                        int width = itemView.getWidth();
+                        int height = width * 9/16;
+
+                        ViewGroup.LayoutParams layoutParams = collectionImageView.getLayoutParams();
+                        layoutParams.height = height;
+                        layoutParams.width = width;
+                        collectionImageView.setLayoutParams(layoutParams);
+
+                        if (collection.getImageUrl() != null) {
+
+                            String imageUrl = ImageUtility.stripQueryFromUrl(collection.getImageUrl());
+
+                            ImageUtility.loadImageResourceIntoSizedView(Picasso.with(context), imageUrl, collectionImageView, true, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    // TODO we should have image loading placeholders or spinners
+                                }
+
+                                @Override
+                                public void onError() {
+                                    // TODO we should have image loading placeholders or spinners
+                                }
+                            });
+                        }
+                    }
+                });
+            }
         }
 
         @Override

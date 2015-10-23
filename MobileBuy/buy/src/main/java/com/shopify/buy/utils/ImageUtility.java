@@ -98,6 +98,22 @@ public class ImageUtility {
     }
 
     /**
+     * Load image into an ImageView where the layout has a fixed size
+     */
+    public static void loadImageResourceIntoSizedView(final Picasso imageLoader, String imageSrc, final ImageView imageView, boolean crop, Callback callback) {
+        final int imageWidthPx = imageView.getLayoutParams().width;
+        final int imageHeightPx = imageView.getLayoutParams().height;
+        String imageUrl = getSizedImageUrl(imageSrc, imageWidthPx, imageHeightPx);
+        RequestCreator c = imageLoader.load(imageUrl).resize(imageWidthPx, imageHeightPx);
+        if (crop) {
+            c = c.centerCrop();
+        } else {
+            c = c.centerInside();
+        }
+        c.into(imageView);
+    }
+
+    /**
      * See <a href="http://docs.shopify.com/themes/filters/product-img-url">Product_img_url</a> for details.
      *
      * @param width  The view width, in pixels.
@@ -126,5 +142,9 @@ public class ImageUtility {
         } else {
             return "_2048x2048";
         }
+    }
+
+    public static String stripQueryFromUrl(String url) {
+        return url.substring(0, url.lastIndexOf('?'));
     }
 }
