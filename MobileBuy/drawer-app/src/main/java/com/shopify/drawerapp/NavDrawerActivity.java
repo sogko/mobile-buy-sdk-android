@@ -29,8 +29,13 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.internal.app.ToolbarActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -51,10 +56,12 @@ import com.shopify.buy.ui.products.ProductListFragment;
 /**
  * Base class for all activities in the app. Manages the ProgressDialog that is displayed while network activity is occurring.
  */
-public class NavDrawerActivity extends Activity {
+public class NavDrawerActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ListView navDrawer;
+    private ActionBarDrawerToggle drawerToggle;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +74,33 @@ public class NavDrawerActivity extends Activity {
         navDrawer = (ListView) findViewById(R.id.nav_drawer);
         navDrawer.setAdapter(new ArrayAdapter<>(this, R.layout.nav_drawer_list_item, getResources().getStringArray(R.array.nav_drawer_items)));
         navDrawer.setOnItemClickListener(new DrawerItemClickListener());
+
+
+        toolbar = (Toolbar) findViewById(R.id.drawer_toolbar);
+        // TODO this should be using the appbar color from the theme
+        toolbar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.light_low_contrast_grey)));
+        setSupportActionBar(toolbar);
+
+        // TODO add the drawer indicator icons
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.drawer_open, R.string.drawer_closed) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+              //  getActionBar().setTitle("drawer is closed");
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+              //  getActionBar().setTitle("drawer is open");
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        drawerLayout.setDrawerListener(drawerToggle);
+
 
         // TODO loadFragment(fragment) with the first fragment
         // TODO this is temporarily loading the collection list
