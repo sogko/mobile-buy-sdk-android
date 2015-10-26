@@ -29,13 +29,16 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.internal.app.ToolbarActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -61,6 +64,7 @@ public class NavDrawerActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ListView navDrawer;
     private ActionBarDrawerToggle drawerToggle;
+    private ActionBar actionBar;
     private Toolbar toolbar;
 
     @Override
@@ -75,28 +79,33 @@ public class NavDrawerActivity extends AppCompatActivity {
         navDrawer.setAdapter(new ArrayAdapter<>(this, R.layout.nav_drawer_list_item, getResources().getStringArray(R.array.nav_drawer_items)));
         navDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
-
         toolbar = (Toolbar) findViewById(R.id.drawer_toolbar);
-        // TODO this should be using the appbar color from the theme
+        // TODO this should be using the appbar colors from the theme
         toolbar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.light_low_contrast_grey)));
         setSupportActionBar(toolbar);
 
-        // TODO add the drawer indicator icons
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.drawer_open, R.string.drawer_closed) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-              //  getActionBar().setTitle("drawer is closed");
+                //  getActionBar().setTitle("drawer is closed");
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-              //  getActionBar().setTitle("drawer is open");
+                //  getActionBar().setTitle("drawer is open");
             }
         };
+
+        // Enable the default drawer icon
+        drawerToggle.setDrawerIndicatorEnabled(true);
 
         // Set the drawer toggle as the DrawerListener
         drawerLayout.setDrawerListener(drawerToggle);
@@ -115,6 +124,32 @@ public class NavDrawerActivity extends AppCompatActivity {
         fragment.setArguments(bundle);
         fragment.setListener(new CollectionListListener());
         loadFragment(fragment);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState)
+    {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        // TODO handle any other actionbar items here
+        return super.onOptionsItemSelected(item);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -138,6 +173,7 @@ public class NavDrawerActivity extends AppCompatActivity {
                     fragment.setArguments(bundle);
                     fragment.setListener(new CollectionListListener());
                     loadFragment(fragment);
+                    actionBar.setTitle(getString(R.string.collection_list_fragment_title));
                     break;
                 }
                 case 2: {
@@ -183,6 +219,7 @@ public class NavDrawerActivity extends AppCompatActivity {
             ProductListFragment fragment = new ProductListFragment();
             fragment.setArguments(bundle);
             fragment.setListener(new ProductListListener());
+            actionBar.setTitle(collection.getTitle());
             loadFragment(fragment);
         }
 
