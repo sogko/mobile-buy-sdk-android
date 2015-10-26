@@ -36,29 +36,20 @@ import java.util.List;
 public class Image extends ShopifyObject {
 
     @SerializedName("created_at")
-    private String createdAt;
+    protected String createdAt;
 
-    private int position;
+    protected int position;
 
     @SerializedName("updated_at")
-    private String updatedAt;
+    protected String updatedAt;
 
     @SerializedName("product_id")
-    private long productId;
+    protected long productId;
 
     @SerializedName("variant_ids")
-    private List<Long> variantIds;
+    protected List<Long> variantIds;
 
-    private String src;
-
-    public Image(String createdAt, int position, String updatedAt, long productId, List<Long> variantIds, String src) {
-        this.createdAt = createdAt;
-        this.position = position;
-        this.updatedAt = updatedAt;
-        this.productId = productId;
-        this.variantIds = variantIds;
-        this.src = src;
-    }
+    protected String src;
 
     /**
      * @return Creation date of the image.

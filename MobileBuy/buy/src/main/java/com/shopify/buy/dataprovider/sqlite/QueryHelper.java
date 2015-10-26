@@ -205,7 +205,7 @@ public class QueryHelper implements DatabaseConstants {
             }
         }
 
-        return new Image(createdAt, position, updatedAt, productId, variantIds, src);
+        return new ModelFactory.DBImage(createdAt, position, updatedAt, productId, variantIds, src);
     }
 
     static String createOptionsTable() {

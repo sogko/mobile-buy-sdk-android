@@ -120,4 +120,17 @@ class ModelFactory {
 
     }
 
+    static class DBImage extends Image {
+
+        public DBImage(String createdAt, int position, String updatedAt, long productId, List<Long> variantIds, String src) {
+            this.createdAt = createdAt;
+            this.position = position;
+            this.updatedAt = updatedAt;
+            this.productId = productId;
+            this.variantIds = variantIds;
+            this.src = src;
+        }
+
+    }
+
 }
