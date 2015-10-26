@@ -68,6 +68,24 @@ public class ProductVariant extends ShopifyObject {
 
     private boolean available;
 
+    public ProductVariant(long id, String title, String price, List<OptionValue> optionValues, long grams, String compareAtPrice, String sku, boolean requiresShipping, boolean taxable, int position, long productId, String productTitle, Date createdAtDate, Date updatedAtDate, boolean available) {
+        super.id = id;
+        this.title = title;
+        this.price = price;
+        this.optionValues = optionValues;
+        this.grams = grams;
+        this.compareAtPrice = compareAtPrice;
+        this.sku = sku;
+        this.requiresShipping = requiresShipping;
+        this.taxable = taxable;
+        this.position = position;
+        this.productId = productId;
+        this.productTitle = productTitle;
+        this.createdAtDate = createdAtDate;
+        this.updatedAtDate = updatedAtDate;
+        this.available = available;
+    }
+
     /**
      * @return The title of this variant.
      */

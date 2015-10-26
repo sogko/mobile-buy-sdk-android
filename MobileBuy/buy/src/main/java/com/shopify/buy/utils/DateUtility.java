@@ -69,7 +69,17 @@ public class DateUtility {
     }
 
     public static String toString(Date date) {
+        if (date == null) {
+            return null;
+        }
         return new SimpleDateFormat(DEFAULT_DATE_PATTERN, Locale.US).format(date);
+    }
+
+    public static Date toDate(String dateString) throws ParseException {
+        if (dateString == null) {
+            return null;
+        }
+        return new SimpleDateFormat(DEFAULT_DATE_PATTERN, Locale.US).parse(dateString);
     }
 
 }

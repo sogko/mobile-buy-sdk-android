@@ -7,8 +7,20 @@ import com.shopify.buy.model.ProductVariant;
  */
 public class ProductVariantPrivateAPIs extends ProductVariant {
 
-    public void setId(Long id) { this.id = id; }
-    public void setPrice(String price) { this.price = price; }
-    public void setTitle(String title) { this.title = title; }
+    public ProductVariantPrivateAPIs() {
+        super(0, null, null, null, 0, null, null, false, false, 0, 0, null, null, null, false);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
 }

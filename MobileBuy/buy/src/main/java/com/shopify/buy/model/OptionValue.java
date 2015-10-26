@@ -38,6 +38,12 @@ public class OptionValue {
 
     private String value;
 
+    public OptionValue(String optionId, String name, String value) {
+        this.optionId = optionId;
+        this.name = name;
+        this.value = value;
+    }
+
     /**
      * @return The unique identifier of the {@link Option} to which this value belongs.
      */

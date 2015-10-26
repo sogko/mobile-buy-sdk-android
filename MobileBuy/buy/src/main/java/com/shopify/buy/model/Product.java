@@ -89,6 +89,25 @@ public class Product extends ShopifyObject {
 
     private boolean published;
 
+    public Product(String productId, String channelId, String title, String handle, String bodyHtml, Date publishedAtDate, Date createdAtDate, Date updatedAtDate, String vendor, String productType, List<Image> images, List<ProductVariant> variants, List<Option> options, Set<String> tagSet, boolean available, boolean published) {
+        this.productId = productId;
+        this.channelId = channelId;
+        this.title = title;
+        this.handle = handle;
+        this.bodyHtml = bodyHtml;
+        this.publishedAtDate = publishedAtDate;
+        this.createdAtDate = createdAtDate;
+        this.updatedAtDate = updatedAtDate;
+        this.vendor = vendor;
+        this.productType = productType;
+        this.images = images;
+        this.variants = variants;
+        this.options = options;
+        this.tagSet = tagSet;
+        this.available = available;
+        this.published = published;
+    }
+
     /**
      * @return {@code true} if this product has been published on the store, {@code false} otherwise.
      */

@@ -28,58 +28,45 @@ import android.os.Handler;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
-import com.shopify.buy.model.Collection;
-import com.shopify.buy.utils.CollectionUtils;
+import com.shopify.buy.model.ShopifyObject;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class GetCollectionsTask extends BaseTask<Collection> {
+public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
 
-    public GetCollectionsTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Collection>> callback, Handler handler, ExecutorService executorService) {
-        super(buyDatabase, buyClient, callback, handler, executorService);
+    protected final BuyDatabase buyDatabase;
+    protected final BuyClient buyClient;
+    protected final Callback<List<T>> callback;
+    protected final Handler handler;
+    protected final ExecutorService executorService;
+
+    public BaseTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<T>> callback, Handler handler, ExecutorService executorService) {
+        this.buyDatabase = buyDatabase;
+        this.buyClient = buyClient;
+        this.callback = callback;
+        this.handler = handler;
+        this.executorService = executorService;
     }
 
-    @Override
-    public void run() {
-        final AtomicBoolean foundInDb = new AtomicBoolean(false);
-
-        // check the local database first
-        List<Collection> collections = buyDatabase.getCollections();
-        if (!CollectionUtils.isEmpty(collections)) {
-            foundInDb.set(true);
-            onSuccess(collections, null);
-        }
-
-        // need to fetch from the cloud
-        buyClient.getCollections(new Callback<List<Collection>>() {
+    protected void onSuccess(final List<T> results, final Response response) {
+        handler.post(new Runnable() {
             @Override
-            public void success(List<Collection> collections, Response response) {
-                saveCollections(collections);
-                if (!foundInDb.get()) {
-                    onSuccess(collections, response);
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                if (!foundInDb.get()) {
-                    onFailure(error);
-                }
+            public void run() {
+                callback.success(results, response);
             }
         });
     }
 
-    private void saveCollections(final List<Collection> collections) {
-        executorService.execute(new Runnable() {
+    protected void onFailure(final RetrofitError error) {
+        handler.post(new Runnable() {
             @Override
             public void run() {
-                buyDatabase.saveCollections(collections);
+                callback.failure(error);
             }
         });
     }

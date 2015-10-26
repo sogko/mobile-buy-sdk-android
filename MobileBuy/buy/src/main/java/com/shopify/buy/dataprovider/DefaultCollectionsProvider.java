@@ -47,7 +47,8 @@ public class DefaultCollectionsProvider extends BaseProviderImpl implements Coll
 
     @Override
     public void getCollection(final Long collectionId, final BuyClient buyClient, final Callback<Collection> callback) {
-
+        // TODO
+        callback.failure(null);
     }
 
 }

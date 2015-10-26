@@ -82,6 +82,21 @@ public class Collection extends ShopifyObject {
 
     private CollectionImage image;
 
+    public Collection(String title, String htmlDescription, String handle, boolean published, String collectionId, Date createdAtDate, Date updatedAtDate, Date publishedAtDate, String imageCreatedAt, String imageSrc) {
+        this.title = title;
+        this.htmlDescription = htmlDescription;
+        this.handle = handle;
+        this.published = published;
+        this.collectionId = collectionId;
+        this.createdAtDate = createdAtDate;
+        this.updatedAtDate = updatedAtDate;
+        this.publishedAtDate = publishedAtDate;
+
+        if (imageCreatedAt != null && imageSrc != null) {
+            this.image = new CollectionImage(imageCreatedAt, imageSrc);
+        }
+    }
+
     /**
      * @return The creation date for this collection.
      */

@@ -51,6 +51,15 @@ public class Image extends ShopifyObject {
 
     private String src;
 
+    public Image(String createdAt, int position, String updatedAt, long productId, List<Long> variantIds, String src) {
+        this.createdAt = createdAt;
+        this.position = position;
+        this.updatedAt = updatedAt;
+        this.productId = productId;
+        this.variantIds = variantIds;
+        this.src = src;
+    }
+
     /**
      * @return Creation date of the image.
      */

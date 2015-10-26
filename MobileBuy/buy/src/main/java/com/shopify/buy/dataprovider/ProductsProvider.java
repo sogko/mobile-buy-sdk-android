@@ -32,7 +32,11 @@ import retrofit.Callback;
 
 public interface ProductsProvider {
 
-    void getProducts(BuyClient buyClient, Callback<List<Product>> callback);
+    void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback);
+
+    void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback);
+
+    void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback);
 
     void getProduct(Long productId, BuyClient buyClient, Callback<Product> callback);
 
