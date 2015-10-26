@@ -24,18 +24,14 @@
 
 package com.shopify.buy.ui.collections;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.shopify.buy.R;
@@ -55,6 +51,7 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     private ClickListener clickListener;
 
     public CollectionListAdapter(Activity context) {
+        super();
         this.context = context;
     }
 
