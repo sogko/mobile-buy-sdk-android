@@ -116,7 +116,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
             itemView.setOnLongClickListener(this);
 
             productTitleView = (TextView)itemView.findViewById(R.id.item_title);
-            productPriceView = (TextView)itemView.findViewById(R.id.product_price);
+            productPriceView = (TextView)itemView.findViewById(R.id.item_price);
             productImageView = (ImageView)itemView.findViewById(R.id.item_image);
 
             ViewTreeObserver viewTreeObserver = itemView.getViewTreeObserver();
