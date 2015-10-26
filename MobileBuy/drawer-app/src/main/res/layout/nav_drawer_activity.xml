@@ -15,7 +15,19 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/drawer_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/action_bar_height"/>
+            android:layout_height="@dimen/action_bar_height">
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginLeft="@dimen/spacing_16dp"
+                android:background="@android:color/transparent"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="@dimen/text_large"/>
+
+        </android.support.v7.widget.Toolbar>
 
         <!-- The main content view -->
         <FrameLayout

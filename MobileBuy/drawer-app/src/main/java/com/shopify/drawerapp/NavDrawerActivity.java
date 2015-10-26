@@ -64,7 +64,6 @@ public class NavDrawerActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ListView navDrawer;
     private ActionBarDrawerToggle drawerToggle;
-    private ActionBar actionBar;
     private Toolbar toolbar;
 
     @Override
@@ -74,17 +73,20 @@ public class NavDrawerActivity extends AppCompatActivity {
         setContentView(R.layout.nav_drawer_activity);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // TODO pull the color from the theme
+        drawerLayout.setBackgroundColor(getResources().getColor(R.color.light_background));
 
         navDrawer = (ListView) findViewById(R.id.nav_drawer);
         navDrawer.setAdapter(new ArrayAdapter<>(this, R.layout.nav_drawer_list_item, getResources().getStringArray(R.array.nav_drawer_items)));
         navDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         toolbar = (Toolbar) findViewById(R.id.drawer_toolbar);
-        // TODO this should be using the appbar colors from the theme
-        toolbar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.light_low_contrast_grey)));
+        // TODO this should be using the appbar colors, text colors from the theme
+        toolbar.setBackgroundColor(getResources().getColor(R.color.light_low_contrast_grey));
+
         setSupportActionBar(toolbar);
 
-        actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
@@ -173,7 +175,7 @@ public class NavDrawerActivity extends AppCompatActivity {
                     fragment.setArguments(bundle);
                     fragment.setListener(new CollectionListListener());
                     loadFragment(fragment);
-                    actionBar.setTitle(getString(R.string.collection_list_fragment_title));
+                    toolbar.setTitle(getString(R.string.collection_list_fragment_title));
                     break;
                 }
                 case 2: {
@@ -219,7 +221,7 @@ public class NavDrawerActivity extends AppCompatActivity {
             ProductListFragment fragment = new ProductListFragment();
             fragment.setArguments(bundle);
             fragment.setListener(new ProductListListener());
-            actionBar.setTitle(collection.getTitle());
+            toolbar.setTitle(collection.getTitle());
             loadFragment(fragment);
         }
 
