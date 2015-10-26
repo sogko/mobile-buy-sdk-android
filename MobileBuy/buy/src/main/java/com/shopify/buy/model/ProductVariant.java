@@ -40,51 +40,33 @@ public class ProductVariant extends ShopifyObject {
     protected String price;
 
     @SerializedName("option_values")
-    private List<OptionValue> optionValues;
+    protected List<OptionValue> optionValues;
 
-    private long grams;
+    protected long grams;
 
     @SerializedName("compare_at_price")
-    private String compareAtPrice;
+    protected String compareAtPrice;
 
-    private String sku;
+    protected String sku;
 
     @SerializedName("requires_shipping")
-    private boolean requiresShipping;
+    protected boolean requiresShipping;
 
-    private boolean taxable;
+    protected boolean taxable;
 
-    private int position;
+    protected int position;
 
-    long productId;
+    protected long productId;
 
-    String productTitle;
+    protected String productTitle;
 
     @SerializedName("created_at")
-    private Date createdAtDate;
+    protected Date createdAtDate;
 
     @SerializedName("updated_at")
-    private Date updatedAtDate;
+    protected Date updatedAtDate;
 
-    private boolean available;
-
-    public ProductVariant(long id, String title, String price, List<OptionValue> optionValues, long grams, String compareAtPrice, String sku, boolean requiresShipping, boolean taxable, int position, long productId, String productTitle, Date createdAtDate, Date updatedAtDate, boolean available) {
-        super.id = id;
-        this.title = title;
-        this.price = price;
-        this.optionValues = optionValues;
-        this.grams = grams;
-        this.compareAtPrice = compareAtPrice;
-        this.sku = sku;
-        this.requiresShipping = requiresShipping;
-        this.taxable = taxable;
-        this.position = position;
-        this.productId = productId;
-        this.productTitle = productTitle;
-        this.createdAtDate = createdAtDate;
-        this.updatedAtDate = updatedAtDate;
-        this.available = available;
-    }
+    protected boolean available;
 
     /**
      * @return The title of this variant.

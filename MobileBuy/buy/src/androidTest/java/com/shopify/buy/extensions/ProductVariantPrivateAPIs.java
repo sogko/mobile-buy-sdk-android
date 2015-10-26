@@ -7,10 +7,6 @@ import com.shopify.buy.model.ProductVariant;
  */
 public class ProductVariantPrivateAPIs extends ProductVariant {
 
-    public ProductVariantPrivateAPIs() {
-        super(0, null, null, null, 0, null, null, false, false, 0, 0, null, null, null, false);
-    }
-
     public void setId(Long id) {
         this.id = id;
     }

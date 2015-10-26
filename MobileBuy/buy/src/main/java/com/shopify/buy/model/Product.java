@@ -49,64 +49,45 @@ import java.util.Set;
 public class Product extends ShopifyObject {
 
     @SerializedName("product_id")
-    private String productId;
+    protected String productId;
 
     @SerializedName("channel_id")
-    private String channelId;
+    protected String channelId;
 
-    private String title;
+    protected String title;
 
-    private String handle;
+    protected String handle;
 
     @SerializedName("body_html")
-    private String bodyHtml;
+    protected String bodyHtml;
 
     @SerializedName("published_at")
-    private Date publishedAtDate;
+    protected Date publishedAtDate;
 
     @SerializedName("created_at")
-    private Date createdAtDate;
+    protected Date createdAtDate;
 
     @SerializedName("updated_at")
-    private Date updatedAtDate;
+    protected Date updatedAtDate;
 
-    private String vendor;
+    protected String vendor;
 
     @SerializedName("product_type")
-    private String productType;
+    protected String productType;
 
-    private List<ProductVariant> variants;
+    protected List<ProductVariant> variants;
 
-    private List<Image> images;
+    protected List<Image> images;
 
-    private List<Option> options;
+    protected List<Option> options;
 
-    private String tags;
+    protected String tags;
 
-    private Set<String> tagSet;
+    protected Set<String> tagSet;
 
-    private boolean available;
+    protected boolean available;
 
-    private boolean published;
-
-    public Product(String productId, String channelId, String title, String handle, String bodyHtml, Date publishedAtDate, Date createdAtDate, Date updatedAtDate, String vendor, String productType, List<Image> images, List<ProductVariant> variants, List<Option> options, Set<String> tagSet, boolean available, boolean published) {
-        this.productId = productId;
-        this.channelId = channelId;
-        this.title = title;
-        this.handle = handle;
-        this.bodyHtml = bodyHtml;
-        this.publishedAtDate = publishedAtDate;
-        this.createdAtDate = createdAtDate;
-        this.updatedAtDate = updatedAtDate;
-        this.vendor = vendor;
-        this.productType = productType;
-        this.images = images;
-        this.variants = variants;
-        this.options = options;
-        this.tagSet = tagSet;
-        this.available = available;
-        this.published = published;
-    }
+    protected boolean published;
 
     /**
      * @return {@code true} if this product has been published on the store, {@code false} otherwise.

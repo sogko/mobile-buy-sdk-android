@@ -31,18 +31,12 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Option extends ShopifyObject {
 
-    private String name;
+    protected String name;
 
-    private int position;
+    protected int position;
 
     @SerializedName("product_id")
-    private String productId;
-
-    public Option(String name, int position, String productId) {
-        this.name = name;
-        this.position = position;
-        this.productId = productId;
-    }
+    protected String productId;
 
     /**
      * @return The unique identifier for the {@link Product} associated with this option.

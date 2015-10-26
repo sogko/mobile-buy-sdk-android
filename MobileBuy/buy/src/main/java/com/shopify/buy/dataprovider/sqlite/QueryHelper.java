@@ -98,7 +98,7 @@ public class QueryHelper implements DatabaseConstants {
         String imageCreatedAt = cursor.getString(cursor.getColumnIndex(CollectionsTable.IMAGE_CREATED_AT));
         String imageSrc = cursor.getString(cursor.getColumnIndex(CollectionsTable.IMAGE_SRC));
 
-        return new Collection(title, htmlDescription, handle, published, collectionId, createdAtDate, updatedAtDate, publishedAtDate, imageCreatedAt, imageSrc);
+        return new ModelFactory.DBCollection(title, htmlDescription, handle, published, collectionId, createdAtDate, updatedAtDate, publishedAtDate, imageCreatedAt, imageSrc);
     }
 
     static String createProductsTable() {
@@ -160,7 +160,7 @@ public class QueryHelper implements DatabaseConstants {
             tags.addAll(Arrays.asList(tagCSV.split(",")));
         }
 
-        return new Product(productId, channelId, title, handle, bodyHtml, publishedAtDate, createdAtDate, updatedAtDate, vendor, productType, images, variants, options, tags, available, published);
+        return new ModelFactory.DBProduct(productId, channelId, title, handle, bodyHtml, publishedAtDate, createdAtDate, updatedAtDate, vendor, productType, images, variants, options, tags, available, published);
     }
 
     static String createImagesTable() {
@@ -233,7 +233,7 @@ public class QueryHelper implements DatabaseConstants {
         int position = cursor.getInt(cursor.getColumnIndex(OptionsTable.POSITION));
         String productId = cursor.getString(cursor.getColumnIndex(OptionsTable.PRODUCT_ID));
 
-        return new Option(name, position, productId);
+        return new ModelFactory.DBOption(name, position, productId);
     }
 
     static String createProductVariantsTable() {
@@ -293,7 +293,7 @@ public class QueryHelper implements DatabaseConstants {
         Date updatedAtDate = DateUtility.toDate(cursor.getString(cursor.getColumnIndex(ProductVariantsTable.UPDATED_AT)));
         boolean available = cursor.getInt(cursor.getColumnIndex(ProductVariantsTable.AVAILABLE)) == 1;
 
-        return new ProductVariant(id, title, price, optionValues, grams, compareAtPrice, sku, requiresShipping, taxable, position, productId, productTitle, createdAtDate, updatedAtDate, available);
+        return new ModelFactory.DBProductVariant(id, title, price, optionValues, grams, compareAtPrice, sku, requiresShipping, taxable, position, productId, productTitle, createdAtDate, updatedAtDate, available);
     }
 
     static String createOptionValuesTable() {
@@ -318,12 +318,12 @@ public class QueryHelper implements DatabaseConstants {
         return values;
     }
 
-    static OptionValue optionValue(Cursor cursor) throws ParseException {
+    static OptionValue optionValue(Cursor cursor) {
         String optionId = cursor.getString(cursor.getColumnIndex(OptionValuesTable.OPTION_ID));
         String name = cursor.getString(cursor.getColumnIndex(OptionValuesTable.NAME));
         String value = cursor.getString(cursor.getColumnIndex(OptionValuesTable.VALUE));
 
-        return new OptionValue(optionId, name, value);
+        return new ModelFactory.DBOptionValue(optionId, name, value);
     }
 
 }

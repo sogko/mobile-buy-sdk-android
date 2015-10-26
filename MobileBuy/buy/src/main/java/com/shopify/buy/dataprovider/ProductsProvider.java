@@ -30,6 +30,10 @@ import java.util.List;
 
 import retrofit.Callback;
 
+/**
+ * The UI should use the ProductsProvider interface to load {@link Product} objects.
+ * The default implementation uses a SQLite database to allow offline product browsing.
+ */
 public interface ProductsProvider {
 
     void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback);

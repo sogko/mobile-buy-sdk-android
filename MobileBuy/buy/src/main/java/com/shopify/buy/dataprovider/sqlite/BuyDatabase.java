@@ -82,13 +82,13 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     public List<Collection> getCollections() {
-        ArrayList<Collection> results = new ArrayList<>();
-        Cursor cursor = getReadableDatabase().query(TABLE_COLLECTIONS, null, null, null, null, null, null, null);
+        List<Collection> results = new ArrayList<>();
+        Cursor cursor = querySimple(TABLE_COLLECTIONS, null, null);
         if (cursor.moveToFirst()) {
             do {
                 try {
                     results.add(QueryHelper.collection(cursor));
-                } catch (Exception e) {
+                } catch (ParseException e) {
                     Log.e(LOG_TAG, "Could not query Collection from database", e);
                 }
             } while (cursor.moveToNext());
@@ -98,11 +98,11 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     public Collection getCollection(long id) {
         Collection collection = null;
-        Cursor cursor = getReadableDatabase().query(TABLE_COLLECTIONS, null, CollectionsTable.COLLECTION_ID + " = " + id, null, null, null, null, null);
+        Cursor cursor = querySimple(TABLE_COLLECTIONS, CollectionsTable.COLLECTION_ID + " = " + id, null);
         if (cursor.moveToFirst()) {
             try {
                 collection = QueryHelper.collection(cursor);
-            } catch (Exception e) {
+            } catch (ParseException e) {
                 Log.e(LOG_TAG, "Could not get Collection from database", e);
             }
         }
@@ -122,13 +122,13 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     public List<Product> getProducts() {
-        ArrayList<Product> results = new ArrayList<>();
-        Cursor cursor = getReadableDatabase().query(TABLE_PRODUCTS, null, null, null, null, null, null, null);
+        List<Product> results = new ArrayList<>();
+        Cursor cursor = querySimple(TABLE_PRODUCTS, null, null);
         if (cursor.moveToFirst()) {
             do {
                 try {
                     results.add(buildProduct(cursor));
-                } catch (Exception e) {
+                } catch (ParseException e) {
                     Log.e(LOG_TAG, "Could not get Product from database", e);
                 }
             } while (cursor.moveToNext());
@@ -138,11 +138,11 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     public Product getProduct(long id) {
         Product product = null;
-        Cursor cursor = getReadableDatabase().query(TABLE_PRODUCTS, null, ProductsTable.PRODUCT_ID + " = " + id, null, null, null, null, null);
+        Cursor cursor = querySimple(TABLE_PRODUCTS, ProductsTable.PRODUCT_ID + " = " + id, null);
         if (cursor.moveToFirst()) {
             try {
                 product = buildProduct(cursor);
-            } catch (Exception e) {
+            } catch (ParseException e) {
                 Log.e(LOG_TAG, "Could not get Product from database", e);
             }
         }
@@ -193,30 +193,26 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     private List<Image> getProductImages(String productId) {
-        ArrayList<Image> results = new ArrayList<>();
-        Cursor cursor = getReadableDatabase().query(TABLE_IMAGES, null, ImagesTable.PRODUCT_ID + " = " + productId, null, null, null, ImagesTable.POSITION + " ASC", null);
+        List<Image> results = new ArrayList<>();
+        Cursor cursor = querySimple(TABLE_IMAGES, ImagesTable.PRODUCT_ID + " = " + productId, ImagesTable.POSITION + " ASC");
         if (cursor.moveToFirst()) {
             do {
-                try {
-                    results.add(QueryHelper.image(cursor));
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Could not query Image from database", e);
-                }
+                results.add(QueryHelper.image(cursor));
             } while (cursor.moveToNext());
         }
         return results;
     }
 
     private List<ProductVariant> getProductVariants(String productId) {
-        ArrayList<ProductVariant> results = new ArrayList<>();
-        Cursor cursor = getReadableDatabase().query(TABLE_PRODUCT_VARIANTS, null, ProductVariantsTable.PRODUCT_ID + " = " + productId, null, null, null, ProductVariantsTable.POSITION + " ASC", null);
+        List<ProductVariant> results = new ArrayList<>();
+        Cursor cursor = querySimple(TABLE_PRODUCT_VARIANTS, ProductVariantsTable.PRODUCT_ID + " = " + productId, ProductVariantsTable.POSITION + " ASC");
         if (cursor.moveToFirst()) {
             do {
                 try {
                     String variantId = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.ID));
                     List<OptionValue> optionValues = getVariantOptionValues(variantId);
                     results.add(QueryHelper.productVariant(cursor, optionValues));
-                } catch (Exception e) {
+                } catch (ParseException e) {
                     Log.e(LOG_TAG, "Could not query ProductVariant from database", e);
                 }
             } while (cursor.moveToNext());
@@ -225,33 +221,29 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     private List<OptionValue> getVariantOptionValues(String variantId) {
-        ArrayList<OptionValue> results = new ArrayList<>();
-        Cursor cursor = getReadableDatabase().query(TABLE_OPTION_VALUES, null, OptionValuesTable.VARIANT_ID + " = " + variantId, null, null, null, null, null);
+        List<OptionValue> results = new ArrayList<>();
+        Cursor cursor = querySimple(TABLE_OPTION_VALUES, OptionValuesTable.VARIANT_ID + " = " + variantId, null);
         if (cursor.moveToFirst()) {
             do {
-                try {
-                    results.add(QueryHelper.optionValue(cursor));
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Could not query OptionValue from database", e);
-                }
+                results.add(QueryHelper.optionValue(cursor));
             } while (cursor.moveToNext());
         }
         return results;
     }
 
     private List<Option> getProductOptions(String productId) {
-        ArrayList<Option> results = new ArrayList<>();
-        Cursor cursor = getReadableDatabase().query(TABLE_OPTIONS, null, OptionsTable.PRODUCT_ID + " = " + productId, null, null, null, OptionsTable.POSITION + " ASC", null);
+        List<Option> results = new ArrayList<>();
+        Cursor cursor = querySimple(TABLE_OPTIONS, OptionsTable.PRODUCT_ID + " = " + productId, OptionsTable.POSITION + " ASC");
         if (cursor.moveToFirst()) {
             do {
-                try {
-                    results.add(QueryHelper.option(cursor));
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Could not query Option from database", e);
-                }
+                results.add(QueryHelper.option(cursor));
             } while (cursor.moveToNext());
         }
         return results;
+    }
+
+    private Cursor querySimple(String table, String where, String orderBy) {
+        return getReadableDatabase().query(table, null, where, null, null, null, orderBy, null);
     }
 
 }
