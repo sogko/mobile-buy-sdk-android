@@ -26,11 +26,16 @@ package com.shopify.buy.dataprovider;
 
 import android.content.Context;
 
+import com.shopify.buy.dataprovider.tasks.GetCollectionsTask;
+import com.shopify.buy.dataprovider.tasks.GetProductsTask;
 import com.shopify.buy.model.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class DefaultProductsProvider extends BaseProviderImpl implements ProductsProvider {
 
@@ -39,13 +44,42 @@ public class DefaultProductsProvider extends BaseProviderImpl implements Product
     }
 
     @Override
-    public void getProducts(BuyClient buyClient, Callback<List<Product>> callback) {
-
+    public void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
     }
 
     @Override
-    public void getProduct(Long productId, BuyClient buyClient, Callback<Product> callback) {
+    public void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(collectionId, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
 
+    @Override
+    public void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(productIds, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
+
+    @Override
+    public void getProduct(final Long productId, BuyClient buyClient, final Callback<Product> callback) {
+        List<String> productIds = new ArrayList<>();
+        productIds.add(productId.toString());
+
+        Callback listCallback = new Callback<List<Product>>() {
+            @Override
+            public void success(List<Product> products, Response response) {
+                callback.success(products.get(0), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        };
+
+        GetProductsTask task = new GetProductsTask(productIds, buyDatabase, buyClient, listCallback, handler, executorService);
+        executorService.execute(task);
     }
 
 }

@@ -59,28 +59,28 @@ public class Collection extends ShopifyObject {
         }
     }
 
-    private String title;
+    protected String title;
 
     @SerializedName("body_html")
-    private String htmlDescription;
+    protected String htmlDescription;
 
-    private String handle;
+    protected String handle;
 
-    private boolean published;
+    protected boolean published;
 
     @SerializedName("collection_id")
-    private String collectionId;
+    protected String collectionId;
 
     @SerializedName("created_at")
-    private Date createdAtDate;
+    protected Date createdAtDate;
 
     @SerializedName("updated_at")
-    private Date updatedAtDate;
+    protected Date updatedAtDate;
 
     @SerializedName("published_at")
-    private Date publishedAtDate;
+    protected Date publishedAtDate;
 
-    private CollectionImage image;
+    protected CollectionImage image;
 
     /**
      * @return The creation date for this collection.
