@@ -38,9 +38,13 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
+import com.shopify.buy.dataprovider.DefaultProductsProvider;
+import com.shopify.buy.dataprovider.ProductsProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
+import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.List;
 
@@ -61,9 +65,19 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
 
     Listener listener;
 
+    private ProductsProvider provider = null;
+
+    public void setProvider(ProductsProvider provider) {
+        this.provider = provider;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (provider == null) {
+            provider = new DefaultProductsProvider(getActivity());
+        }
 
         Bundle bundle = getArguments();
 
@@ -87,7 +101,7 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = (ProductListFragmentView) inflater.inflate(R.layout.fragment_product_list, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        ProductListAdapter adapter = new ProductListAdapter();
+        ProductListAdapter adapter = new ProductListAdapter(getActivity());
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -109,6 +123,19 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
         if (products == null) {
             fetchProducts();
         }
+
+        fetchShopIfNecessary(new Callback<Shop>() {
+            @Override
+            public void success(Shop shop, Response response) {
+                showProductsIfReady();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO handle error fetching shop
+            }
+        });
+
         showProductsIfReady();
     }
 
@@ -117,7 +144,7 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
     }
 
     private void fetchProducts() {
-        Callback callback  = new Callback<List<Product>>() {
+        Callback callback = new Callback<List<Product>>() {
             @Override
             public void success(List<Product> products, Response response) {
                 ProductListFragment.this.products = products;
@@ -130,20 +157,17 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
             }
         };
 
-        if (productIds != null && productIds.size() > 0) {
-            buyClient.getProducts(productIds, callback);
-
+        if (!CollectionUtils.isEmpty(productIds)) {
+            provider.getProducts(productIds, buyClient, callback);
         } else if (collection != null) {
-            // TODO we will need to implement paging. For now fetch the first page.
-            buyClient.getProducts(1, collection.getCollectionId(), callback);
-
+            provider.getProducts(collection.getCollectionId(), buyClient, callback);
         } else {
-            //TODO - get all the products or throw error?
+            provider.getAllProducts(buyClient, callback);
         }
     }
 
     private void showProductsIfReady() {
-        if (!viewCreated || products == null) {
+        if (!viewCreated || products == null || shop == null) {
             if (!progressDialog.isShowing()) {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_collection_details), new Runnable() {
                     @Override
@@ -158,6 +182,7 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
                 dismissProgressDialog();
             }
             ProductListAdapter adapter = (ProductListAdapter) recyclerView.getAdapter();
+            adapter.setShop(shop);
             adapter.setProducts(products);
             adapter.notifyDataSetChanged();
         }

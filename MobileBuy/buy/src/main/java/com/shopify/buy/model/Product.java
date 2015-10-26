@@ -36,7 +36,6 @@ import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.utils.DateUtility;
 import com.shopify.buy.utils.DateUtility.DateDeserializer;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -49,45 +48,49 @@ import java.util.Set;
 public class Product extends ShopifyObject {
 
     @SerializedName("product_id")
-    private String productId;
+    protected String productId;
 
     @SerializedName("channel_id")
-    private String channelId;
+    protected String channelId;
 
-    private String title;
+    protected String title;
 
-    private String handle;
+    protected String handle;
 
     @SerializedName("body_html")
-    private String bodyHtml;
+    protected String bodyHtml;
 
     @SerializedName("published_at")
-    private Date publishedAtDate;
+    protected Date publishedAtDate;
 
     @SerializedName("created_at")
-    private Date createdAtDate;
+    protected Date createdAtDate;
 
     @SerializedName("updated_at")
-    private Date updatedAtDate;
+    protected Date updatedAtDate;
 
-    private String vendor;
+    protected String vendor;
 
     @SerializedName("product_type")
-    private String productType;
+    protected String productType;
 
-    private List<ProductVariant> variants;
+    protected List<ProductVariant> variants;
 
-    private List<Image> images;
+    protected List<Image> images;
 
-    private List<Option> options;
+    protected List<Option> options;
 
-    private String tags;
+    protected String tags;
 
-    private Set<String> tagSet;
+    protected Set<String> tagSet;
 
-    private boolean available;
+    protected boolean available;
 
-    private boolean published;
+    protected boolean published;
+
+    private Set<String> prices;
+
+    private String minimumPrice;
 
     /**
      * @return {@code true} if this product has been published on the store, {@code false} otherwise.
@@ -283,6 +286,45 @@ public class Product extends ShopifyObject {
         }
 
         return null;
+    }
+
+    /**
+     * @return A Set containing all the unique prices of the variants.
+     */
+    public Set<String> getPrices() {
+        if (prices != null) {
+            return prices;
+        }
+
+        prices = new HashSet<>(variants.size());
+        for (ProductVariant variant : variants) {
+            prices.add(variant.getPrice());
+        }
+
+        return prices;
+    }
+
+    /**
+     *
+     * @return The minimum price from the variants.
+     */
+    public String getMinimumPrice() {
+        if (minimumPrice != null) {
+            return minimumPrice;
+        }
+
+        prices = getPrices();
+
+        for (String price : prices) {
+            if (minimumPrice == null) {
+                minimumPrice = price;
+            }
+            if (Float.valueOf(price) < Float.valueOf(minimumPrice)) {
+                minimumPrice = price;
+            }
+        }
+
+        return minimumPrice;
     }
 
     public static class ProductDeserializer implements JsonDeserializer<Product> {

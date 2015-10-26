@@ -25,10 +25,13 @@
 package com.shopify.buy.dataprovider.tasks;
 
 import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.model.Collection;
+import com.shopify.buy.model.Product;
 import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.List;
@@ -39,30 +42,45 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class GetCollectionsTask extends BaseTask<Collection> {
+public class GetProductsTask extends BaseTask<Product> {
 
-    public GetCollectionsTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Collection>> callback, Handler handler, ExecutorService executorService) {
+    private String collectionId;
+    private List<String> productIds;
+
+    public GetProductsTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
+    }
+
+    public GetProductsTask(String collectionId, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
+        super(buyDatabase, buyClient, callback, handler, executorService);
+        this.collectionId = collectionId;
+    }
+
+    public GetProductsTask(List<String> productIds, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
+        super(buyDatabase, buyClient, callback, handler, executorService);
+        this.productIds = productIds;
     }
 
     @Override
     public void run() {
         final AtomicBoolean foundInDb = new AtomicBoolean(false);
 
-        // check the local database first
-        List<Collection> collections = buyDatabase.getCollections();
-        if (!CollectionUtils.isEmpty(collections)) {
+        /*  TODO - once the collection to product mapping exists, we can check the local database first
+            https://github.com/Shopify/shopify/issues/56585
+        List<Product> products = buyDatabase.getProducts();
+        if (!CollectionUtils.isEmpty(products)) {
             foundInDb.set(true);
-            onSuccess(collections, null);
+            onSuccess(products, null);
         }
+        */
 
         // need to fetch from the cloud
-        buyClient.getCollections(new Callback<List<Collection>>() {
+        Callback<List<Product>> callback = new Callback<List<Product>>() {
             @Override
-            public void success(List<Collection> collections, Response response) {
-                saveCollections(collections);
+            public void success(List<Product> products, Response response) {
+                saveProducts(products);
                 if (!foundInDb.get()) {
-                    onSuccess(collections, response);
+                    onSuccess(products, response);
                 }
             }
 
@@ -72,14 +90,23 @@ public class GetCollectionsTask extends BaseTask<Collection> {
                     onFailure(error);
                 }
             }
-        });
+        };
+
+        // TODO need to go beyond just page 1
+        if (!TextUtils.isEmpty(collectionId)) {
+            buyClient.getProducts(1, collectionId, callback);
+        } else if (!CollectionUtils.isEmpty(productIds)) {
+            buyClient.getProducts(productIds, callback);
+        } else {
+            buyClient.getProductPage(1, callback);
+        }
     }
 
-    private void saveCollections(final List<Collection> collections) {
+    private void saveProducts(final List<Product> products) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                buyDatabase.saveCollections(collections);
+                buyDatabase.saveProducts(products);
             }
         });
     }
