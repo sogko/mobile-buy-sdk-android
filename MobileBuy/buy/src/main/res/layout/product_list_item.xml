@@ -46,7 +46,6 @@
                 android:textSize="@dimen/text_medium"
                 android:background="@android:color/transparent"
                 android:gravity="start"
-                android:text="From $5.00"
                 android:paddingLeft="@dimen/spacing_12dp"
                 android:paddingRight="@dimen/spacing_12dp"
                 android:paddingBottom="@dimen/spacing_12dp"

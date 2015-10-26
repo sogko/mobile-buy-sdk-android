@@ -84,7 +84,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
         String productPrice = currencyFormatter.format(Double.parseDouble(product.getMinimumPrice()));
         if (prices.size() > 1) {
-           productPrice = context.getString(R.string.from) + " " + productPrice;
+            productPrice = context.getString(R.string.from) + " " + productPrice;
         }
         viewHolder.productPriceView.setText(productPrice);
     }
@@ -104,20 +104,64 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
-        public TextView productNameView;
+        public TextView productTitleView;
+        public TextView productPriceView;
+        public ImageView productImageView;
+        public Product product;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
-            productNameView = (TextView)itemView.findViewById(R.id.product_name);
+            productTitleView = (TextView)itemView.findViewById(R.id.item_title);
+            productPriceView = (TextView)itemView.findViewById(R.id.product_price);
+            productImageView = (ImageView)itemView.findViewById(R.id.item_image);
 
-        }
+            ViewTreeObserver viewTreeObserver = itemView.getViewTreeObserver();
+            if (viewTreeObserver.isAlive()) {
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                            itemView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+
+                        int width = itemView.getWidth();
+                        int height = width;
+
+                        ViewGroup.LayoutParams layoutParams = productImageView.getLayoutParams();
+                        layoutParams.height = height;
+                        layoutParams.width = width;
+                        productImageView.setLayoutParams(layoutParams);
+
+                        if (product.getImages() != null && product.getImages().size() > 0) {
+
+                            Image image = product.getImages().get(0);
+                            String imageUrl = ImageUtility.stripQueryFromUrl(image.getSrc());
+
+                            ImageUtility.loadImageResourceIntoSizedView(Picasso.with(context), imageUrl, productImageView, false, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    // TODO we should have image loading placeholders or spinners
+                                }
+
+                                @Override
+                                public void onError() {
+                                    // TODO we should have image loading placeholders or spinners
+                                }
+                            });
+                        }
+                    }
+                });
+            }}
+
 
         @Override
-        public void onClick(View v) {
+        public void onClick(View v){
             if (clickListener != null) {
                 int position = getAdapterPosition();
                 clickListener.onItemClick(position, v, products.get(position));
@@ -125,7 +169,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         }
 
         @Override
-        public boolean onLongClick(View v) {
+        public boolean onLongClick(View v){
             if (clickListener != null) {
                 int position = getAdapterPosition();
                 clickListener.onItemLongClick(position, v, products.get(position));
