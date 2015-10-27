@@ -28,6 +28,7 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
@@ -35,6 +36,7 @@ import android.view.View;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.ui.ShopifyTheme;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -46,10 +48,12 @@ public class BaseFragment extends Fragment {
     protected BuyClient buyClient;
     protected ProgressDialog progressDialog;
     protected Shop shop;
+    protected ShopifyTheme theme;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initializeTheme();
         viewCreated = true;
     }
 
@@ -89,6 +93,20 @@ public class BaseFragment extends Fragment {
 
         if (!TextUtils.isEmpty(webReturnToLabel)) {
             buyClient.setWebReturnToLabel(webReturnToLabel);
+        }
+    }
+
+    private void initializeTheme() {
+        // First try to get the theme from the bundle, then fallback to a default theme
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            Parcelable bundleTheme = arguments.getParcelable(BaseConfig.EXTRA_THEME);
+            if (bundleTheme != null && bundleTheme instanceof ShopifyTheme) {
+                theme = (ShopifyTheme) bundleTheme;
+            }
+        }
+        if (theme == null) {
+            theme = new ShopifyTheme(getResources());
         }
     }
 

@@ -32,13 +32,12 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.shopify.buy.model.Checkout;
+import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.ShopifyTheme;
 import com.shopify.sample.R;
 import com.shopify.sample.activity.base.SampleListActivity;
 import com.shopify.sample.dialog.HSVColorPickerDialog;
-import com.shopify.buy.model.Checkout;
-import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.ProductDetailsTheme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class ProductListActivity extends SampleListActivity {
     static final String EXTRA_COLLECTION_ID = "ProductListActivity.EXTRA_COLLECTION_ID";
 
     private String collectionId;
-    private ProductDetailsTheme theme;
+    private ShopifyTheme theme;
     private boolean useProductDetailsActivity;
     private View accentColorView;
     private View productViewOptionsContainer;
@@ -67,7 +66,7 @@ public class ProductListActivity extends SampleListActivity {
         setTitle(R.string.choose_product);
 
         useProductDetailsActivity = false;
-        theme = new ProductDetailsTheme(getResources());
+        theme = new ShopifyTheme(getResources());
 
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_COLLECTION_ID)) {

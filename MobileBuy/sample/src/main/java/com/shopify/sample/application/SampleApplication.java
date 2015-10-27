@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.shopify.sample.R;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Address;
@@ -42,7 +41,8 @@ import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.ProductDetailsBuilder;
-import com.shopify.buy.ui.ProductDetailsTheme;
+import com.shopify.buy.ui.ShopifyTheme;
+import com.shopify.sample.R;
 
 import java.util.List;
 
@@ -182,7 +182,7 @@ public class SampleApplication extends Application {
         buyClient.getCheckoutCompletionStatus(checkout, callback);
     }
 
-    public void launchProductDetailsActivity(Activity activity, Product product, ProductDetailsTheme theme) {
+    public void launchProductDetailsActivity(Activity activity, Product product, ShopifyTheme theme) {
         ProductDetailsBuilder builder = new ProductDetailsBuilder(this, buyClient);
         Intent intent = builder.setShopDomain(buyClient.getShopDomain())
                 .setProduct(product)

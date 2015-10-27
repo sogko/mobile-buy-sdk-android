@@ -13,28 +13,28 @@
         android:dividerHeight="1dp">
     </ListView>
 
-    <FrameLayout
-        android:id="@+id/checkout_button_container"
+    <LinearLayout
+        android:id="@+id/cart_footer"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/checkout_button_height"
-        android:layout_alignParentBottom="true">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="@dimen/spacing_12dp">
 
         <Button
             android:id="@+id/checkout_button"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="?android:attr/selectableItemBackground"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/checkout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:textStyle="bold"
+            android:text="@string/continue_to_checkout"
             android:textSize="@dimen/text_small"/>
-    </FrameLayout>
+    </LinearLayout>
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/snackbar_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/checkout_button_container">
+        android:layout_above="@id/cart_footer">
     </android.support.design.widget.CoordinatorLayout>
 
 </com.shopify.buy.ui.cart.CartFragmentView>

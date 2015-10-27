@@ -132,7 +132,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     // models used by the view
     private Product product;
     private ProductVariant variant;
-    private ProductDetailsTheme theme;
+    private ShopifyTheme theme;
 
     public ProductDetailsFragmentView(Context context) {
         super(context);
@@ -724,7 +724,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         }
     }
 
-    public void setTheme(ProductDetailsTheme theme) {
+    public void setTheme(ShopifyTheme theme) {
         this.theme = theme;
         setBackgroundColor(theme.getBackgroundColor(getResources()));
     }

@@ -45,7 +45,7 @@ class ProductDetailsVariantOptionView {
     private TextView name;
     private TextView value;
 
-    public ProductDetailsVariantOptionView(View rootView, int index, Resources resources, ProductDetailsTheme theme) {
+    public ProductDetailsVariantOptionView(View rootView, int index, Resources resources, ShopifyTheme theme) {
         this.resources = resources;
         this.index = index;
         this.parentTable = (TableLayout) rootView.findViewById(R.id.product_variant_selection_container);
@@ -68,7 +68,7 @@ class ProductDetailsVariantOptionView {
         }
     }
 
-    public void setTheme(ProductDetailsTheme theme) {
+    public void setTheme(ShopifyTheme theme) {
         if (name == null || value == null) return;
 
         name.setTextColor(theme.getVariantOptionNameColor(resources));
