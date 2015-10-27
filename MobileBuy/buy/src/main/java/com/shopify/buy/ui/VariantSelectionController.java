@@ -64,7 +64,7 @@ class VariantSelectionController {
 
     private final Activity activity;
     private final Product product;
-    private final ProductDetailsTheme theme;
+    private final ShopifyTheme theme;
     private final NumberFormat currencyFormat;
     private final SparseArray<String> checkmarkValues;
     private final ArrayList<ProductVariant> possibleVariants = new ArrayList<>();
@@ -72,7 +72,7 @@ class VariantSelectionController {
     private ProductVariant variant;
     private OnVariantSelectedListener listener;
 
-    public VariantSelectionController(Activity activity, ViewGroup rootView, final Product product, final ProductVariant variant, ProductDetailsTheme theme, NumberFormat currencyFormat) {
+    public VariantSelectionController(Activity activity, ViewGroup rootView, final Product product, final ProductVariant variant, ShopifyTheme theme, NumberFormat currencyFormat) {
         this.activity = activity;
         this.product = product;
         this.variant = variant;

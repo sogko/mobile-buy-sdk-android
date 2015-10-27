@@ -39,7 +39,7 @@ import android.widget.ListView;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.ProductDetailsBuilder;
-import com.shopify.buy.ui.ProductDetailsTheme;
+import com.shopify.buy.ui.ShopifyTheme;
 import com.shopify.buy.ui.cart.CartBuilder;
 import com.shopify.buy.ui.cart.CartFragment;
 import com.shopify.buy.ui.collections.CollectionListBuilder;
@@ -148,7 +148,7 @@ public class NavDrawerActivity extends Activity {
         // TODO get the shop somewhere central and pass in here
 
         // TODO make the theme in a central place
-        ProductDetailsTheme theme = new ProductDetailsTheme(getResources());
+        ShopifyTheme theme = new ShopifyTheme(getResources());
 
         @Override
         public void onItemClick(Product product) {

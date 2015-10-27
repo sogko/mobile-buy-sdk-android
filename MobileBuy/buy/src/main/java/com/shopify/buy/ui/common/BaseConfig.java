@@ -28,7 +28,7 @@ package com.shopify.buy.ui.common;
 import android.os.Bundle;
 
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.ProductDetailsTheme;
+import com.shopify.buy.ui.ShopifyTheme;
 
 public class BaseConfig {
 
@@ -45,7 +45,7 @@ public class BaseConfig {
     private String apiKey;
     private String channelId;
     private String applicationName;
-    private ProductDetailsTheme theme;
+    private ShopifyTheme theme;
     private Shop shop;
     private String webReturnToUrl;
     private String webReturnToLabel;
@@ -68,7 +68,7 @@ public class BaseConfig {
         return applicationName;
     }
 
-    public ProductDetailsTheme getTheme() {
+    public ShopifyTheme getTheme() {
         return theme;
     }
 
@@ -92,7 +92,7 @@ public class BaseConfig {
         this.shop = shop;
     }
 
-    public void setTheme(ProductDetailsTheme theme) {
+    public void setTheme(ShopifyTheme theme) {
         this.theme = theme;
     }
 

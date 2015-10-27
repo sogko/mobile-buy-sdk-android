@@ -65,7 +65,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
     private ProductVariant variant;
     private String productId;
 
-    private ProductDetailsTheme theme;
     private Button addToCartButton;
     private boolean showCartButton;
 
@@ -78,9 +77,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewCreated = true;
-
-        initTheme();
+        this.view.setTheme(theme);
         configureAddToCartButton();
     }
 
@@ -168,21 +165,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement CheckoutListener");
         }
-    }
-
-    private void initTheme() {
-        // First try to get the theme from the bundle, then fallback to a default theme
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            Parcelable bundleTheme = arguments.getParcelable(ProductDetailsConfig.EXTRA_THEME);
-            if (bundleTheme != null && bundleTheme instanceof ProductDetailsTheme) {
-                theme = (ProductDetailsTheme) bundleTheme;
-            }
-        }
-        if (theme == null) {
-            theme = new ProductDetailsTheme(getResources());
-        }
-        view.setTheme(theme);
     }
 
     private void configureAddToCartButton() {

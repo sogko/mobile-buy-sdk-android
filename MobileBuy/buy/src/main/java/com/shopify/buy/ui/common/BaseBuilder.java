@@ -31,10 +31,10 @@ import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.ProductDetailsTheme;
+import com.shopify.buy.ui.ShopifyTheme;
 
 @SuppressWarnings("unchecked")
-public abstract class BaseBuilder<T extends BaseBuilder>{
+public abstract class BaseBuilder<T extends BaseBuilder> {
 
     protected final Context context;
 
@@ -46,7 +46,7 @@ public abstract class BaseBuilder<T extends BaseBuilder>{
      * @param context context to use for starting the {@code Activity}
      */
     public BaseBuilder(Context context) {
-       this(context, null);
+        this(context, null);
     }
 
     public BaseBuilder(Context context, BuyClient client) {
@@ -101,7 +101,7 @@ public abstract class BaseBuilder<T extends BaseBuilder>{
         return (T) this;
     }
 
-    public T setTheme(ProductDetailsTheme theme) {
+    public T setTheme(ShopifyTheme theme) {
         config.setTheme(theme);
         return (T) this;
     }

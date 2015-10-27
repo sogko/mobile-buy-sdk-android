@@ -47,9 +47,6 @@ public class CartFragmentView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        ViewGroup checkoutButtonContainer = (ViewGroup) findViewById(R.id.checkout_button_container);
-        checkoutButtonContainer.setBackgroundColor(getResources().getColor(R.color.default_accent));
-
         int disabledTextAlpha = 64; // 0.25 * 255
         int textColor = getResources().getColor(R.color.light_dialog_title);
         ((Button) findViewById(R.id.checkout_button)).setTextColor(new ColorStateList(
