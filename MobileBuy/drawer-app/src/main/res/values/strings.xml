@@ -10,4 +10,8 @@
 
   <!-- Application and Activity Names -->
   <string name="app_name">Merchant App</string>
+
+  <!--Fragment Names-->
+  <string name="collection_list_fragment_title">Collections</string>
+
 </resources>
