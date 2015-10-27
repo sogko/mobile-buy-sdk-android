@@ -24,16 +24,19 @@
 
 package com.shopify.buy.ui.common;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Button;
 
 import com.shopify.buy.R;
+import com.shopify.buy.customTabs.CustomTabActivityHelper;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 
@@ -162,25 +165,15 @@ public abstract class CheckoutFragment extends BaseFragment {
 
         dismissProgressDialog();
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.setData(Uri.parse(checkout.getWebUrl()));
+        String uri = checkout.getWebUrl();
 
-        try {
-            intent.setPackage("com.android.chrome");
-            startActivity(intent);
+        CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                .setToolbarColor(theme.getAppBarBackgroundColor(getResources()))
+                .setShowTitle(true)
+                .build();
+        CustomTabActivityHelper.openCustomTab(
+                getActivity(), customTabsIntent, Uri.parse(uri), new BrowserFallback());
 
-        } catch (Exception launchChromeException) {
-            try {
-                // Chrome could not be opened, attempt to us other launcher
-                intent.setPackage(null);
-                startActivity(intent);
-
-            } catch (Exception launchOtherException) {
-                onCheckoutFailure();
-                return;
-            }
-        }
 
         // The checkout was successfully started, let the listener know.
         if (checkoutListener != null) {
@@ -190,4 +183,34 @@ public abstract class CheckoutFragment extends BaseFragment {
         }
     }
 
+
+    /**
+     * A Fallback that opens any available Browser when Custom Tabs is not available
+     */
+    private class BrowserFallback implements CustomTabActivityHelper.CustomTabFallback {
+
+        @Override
+        public void openUri(Activity activity, Uri uri) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setData(uri);
+
+            try {
+                intent.setPackage("com.android.chrome");
+                startActivity(intent);
+
+            } catch (Exception launchChromeException) {
+                try {
+                    // Chrome could not be opened, attempt to us other launcher
+                    intent.setPackage(null);
+                    startActivity(intent);
+
+                } catch (Exception launchOtherException) {
+                    onCheckoutFailure();
+                    return;
+                }
+            }
+
+        }
+    }
 }

@@ -84,7 +84,7 @@ public class ShopifyTheme implements Parcelable {
         out.writeInt(showProductImageBackground ? 1 : 0);
     }
 
-    int getBackgroundColor(Resources res) {
+    public int getBackgroundColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.dark_background);
@@ -93,7 +93,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getAppBarBackgroundColor(Resources res) {
+    public int getAppBarBackgroundColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.dark_low_contrast_background);
@@ -102,7 +102,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getProductTitleColor(Resources res) {
+    public int getProductTitleColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.dark_product_title);
@@ -111,7 +111,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getVariantOptionNameColor(Resources res) {
+    public int getVariantOptionNameColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.dark_low_contrast_grey);
@@ -120,7 +120,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getCompareAtPriceColor(Resources res) {
+    public int getCompareAtPriceColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.body_grey);
@@ -129,7 +129,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getProductDescriptionColor(Resources res) {
+    public int getProductDescriptionColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.body_grey);
@@ -138,7 +138,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getDividerColor(Resources res) {
+    public int getDividerColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.dark_low_contrast_grey);
@@ -147,7 +147,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getDialogTitleColor(Resources res) {
+    public int getDialogTitleColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.dark_dialog_title);
@@ -156,7 +156,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getVariantBreadcrumbBackgroundColor(Resources res) {
+    public int getVariantBreadcrumbBackgroundColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.dark_low_contrast_grey);
@@ -165,7 +165,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getDialogListItemColor(Resources res) {
+    public int getDialogListItemColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.body_grey);
@@ -174,7 +174,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    int getCheckoutLabelColor(Resources res) {
+    public int getCheckoutLabelColor(Resources res) {
         switch (style) {
             case DARK:
                 return res.getColor(R.color.dark_dialog_title);
@@ -183,7 +183,7 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
-    Drawable getCheckmarkDrawable(Context context) {
+    public Drawable getCheckmarkDrawable(Context context) {
         Drawable checkmark;
         switch (style) {
             case DARK:
@@ -197,7 +197,7 @@ public class ShopifyTheme implements Parcelable {
         return checkmark;
     }
 
-    Drawable getBackgroundSelectorDrawable(Resources res) {
+    public Drawable getBackgroundSelectorDrawable(Resources res) {
         switch (style) {
             case DARK:
                 return res.getDrawable(R.drawable.dark_background_selector);
