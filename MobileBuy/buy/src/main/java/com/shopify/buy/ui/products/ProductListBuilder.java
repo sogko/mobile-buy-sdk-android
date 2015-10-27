@@ -25,10 +25,10 @@
 package com.shopify.buy.ui.products;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.ProductsProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
@@ -88,6 +88,21 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
         Bundle bundle = super.buildBundle();
         bundle.putAll(collectionListConfig.toBundle());
         return bundle;
+    }
+
+    /**
+     * Returns a new {@link ProductListFragment} based on the params that have already been passed to the builder.
+     *
+     * @param provider  An optional implementation of {@link ProductsProvider}. If you pass null, {@link com.shopify.buy.dataprovider.DefaultProductsProvider} will be used.
+     * @param listener  An implementation of {@link com.shopify.buy.ui.products.ProductListFragment.Listener} which will be notified of user actions.
+     * @return          A new {@link ProductListFragment}.
+     */
+    public ProductListFragment buildFragment(ProductsProvider provider, ProductListFragment.Listener listener) {
+        ProductListFragment fragment = new ProductListFragment();
+        fragment.setProvider(provider);
+        fragment.setListener(listener);
+        fragment.setArguments(buildBundle());
+        return fragment;
     }
 
 }

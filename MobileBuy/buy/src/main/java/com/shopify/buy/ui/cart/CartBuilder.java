@@ -29,6 +29,7 @@ import android.content.Context;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.ui.common.CheckoutListener;
 
 public class CartBuilder extends BaseBuilder<CartBuilder> {
 
@@ -46,6 +47,19 @@ public class CartBuilder extends BaseBuilder<CartBuilder> {
             config = new BaseConfig();
         }
         return config;
+    }
+
+    /**
+     * Returns a new {@link CartFragment} based on the params that have already been passed to the builder.
+     *
+     * @param listener An implementation of {@link CheckoutListener} which will be sent checkout status updates.
+     * @return A new {@link CartFragment}.
+     */
+    public CartFragment buildFragment(CheckoutListener listener) {
+        CartFragment fragment = new CartFragment();
+        fragment.setCheckoutListener(listener);
+        fragment.setArguments(buildBundle());
+        return fragment;
     }
 
 }

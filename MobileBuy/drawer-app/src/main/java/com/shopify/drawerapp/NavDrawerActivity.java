@@ -24,19 +24,16 @@
 
 package com.shopify.drawerapp;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.internal.app.ToolbarActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +41,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.ProductDetailsBuilder;
@@ -115,16 +111,12 @@ public class NavDrawerActivity extends AppCompatActivity {
 
         // TODO loadFragment(fragment) with the first fragment
         // TODO this is temporarily loading the collection list
-        Bundle bundle = new CollectionListBuilder(this)
+        CollectionListFragment fragment = new CollectionListBuilder(this)
                 .setApiKey(getString(R.string.shopify_api_key))
                 .setChannelid(getString(R.string.channel_id))
                 .setShopDomain(getString(R.string.shop_url))
                 .setApplicationName(getString(R.string.app_name))
-                .buildBundle();
-
-        CollectionListFragment fragment = new CollectionListFragment();
-        fragment.setArguments(bundle);
-        fragment.setListener(new CollectionListListener());
+                .buildFragment(null, new CollectionListListener());
         loadFragment(fragment);
     }
 
@@ -164,30 +156,24 @@ public class NavDrawerActivity extends AppCompatActivity {
 
             switch (position) {
                 case 0: {
-                    Bundle bundle = new CollectionListBuilder(NavDrawerActivity.this)
+                    CollectionListFragment fragment = new CollectionListBuilder(NavDrawerActivity.this)
                             .setApiKey(getString(R.string.shopify_api_key))
                             .setChannelid(getString(R.string.channel_id))
                             .setShopDomain(getString(R.string.shop_url))
                             .setApplicationName(getString(R.string.app_name))
-                            .buildBundle();
-
-                    CollectionListFragment fragment = new CollectionListFragment();
-                    fragment.setArguments(bundle);
-                    fragment.setListener(new CollectionListListener());
+                            .buildFragment(null, new CollectionListListener());
                     loadFragment(fragment);
                     toolbar.setTitle(getString(R.string.collection_list_fragment_title));
                     break;
                 }
                 case 2: {
-                    Bundle bundle = new CartBuilder(NavDrawerActivity.this)
+                    CartFragment fragment = new CartBuilder(NavDrawerActivity.this)
                             .setApiKey(getString(R.string.shopify_api_key))
                             .setChannelid(getString(R.string.channel_id))
                             .setShopDomain(getString(R.string.shop_url))
                             .setApplicationName(getString(R.string.app_name))
-                            .buildBundle();
-
-                    CartFragment fragment = new CartFragment();
-                    fragment.setArguments(bundle);
+                                    // TODO checkout listener
+                            .buildFragment(null);
                     loadFragment(fragment);
                     break;
                 }
@@ -210,19 +196,17 @@ public class NavDrawerActivity extends AppCompatActivity {
 
         @Override
         public void onItemClick(Collection collection) {
-            Bundle bundle = new ProductListBuilder(NavDrawerActivity.this)
+            ProductListFragment fragment = new ProductListBuilder(NavDrawerActivity.this)
                     .setApiKey(getString(R.string.shopify_api_key))
                     .setChannelid(getString(R.string.channel_id))
                     .setShopDomain(getString(R.string.shop_url))
                     .setApplicationName(getString(R.string.app_name))
                     .setCollection(collection)
-                    .buildBundle();
-
-            ProductListFragment fragment = new ProductListFragment();
-            fragment.setArguments(bundle);
-            fragment.setListener(new ProductListListener());
-            toolbar.setTitle(collection.getTitle());
+                    .buildFragment(null, new ProductListListener());
             loadFragment(fragment);
+
+            toolbar.setTitle(collection.getTitle());
+
         }
 
         @Override
@@ -247,6 +231,7 @@ public class NavDrawerActivity extends AppCompatActivity {
                     .setApplicationName(getString(R.string.app_name))
                     .setProduct(product)
                     .setTheme(theme)
+                            // TODO determine which url/scheme we want to return to
 //                    .setWebReturnToUrl(getString(R.string.web_return_to_url))
 //                    .setWebReturnToLabel(getString(R.string.web_return_to_label))
                     .build();

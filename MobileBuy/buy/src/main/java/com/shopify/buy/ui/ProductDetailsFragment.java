@@ -157,6 +157,10 @@ public class ProductDetailsFragment extends CheckoutFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
+        if (checkoutListener != null) {
+            return;
+        }
+
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
