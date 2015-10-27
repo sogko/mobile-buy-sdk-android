@@ -33,6 +33,7 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.ui.common.CheckoutListener;
 
 /**
  * Builds an {@link Intent} that can be used to start a {@link ProductDetailsActivity}
@@ -103,4 +104,18 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
         bundle.putAll(productDetailsConfig.toBundle());
         return bundle;
     }
+
+    /**
+     * Returns a new {@link ProductDetailsFragment} based on the params that have already been passed to the builder.
+     *
+     * @param listener An implementation of {@link CheckoutListener} which will be sent checkout status updates.
+     * @return A new {@link ProductDetailsFragment}.
+     */
+    public ProductDetailsFragment buildFragment(CheckoutListener listener) {
+        ProductDetailsFragment fragment = new ProductDetailsFragment();
+        fragment.setCheckoutListener(listener);
+        fragment.setArguments(buildBundle());
+        return fragment;
+    }
+
 }

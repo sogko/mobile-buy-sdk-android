@@ -36,7 +36,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.ProductDetailsBuilder;
@@ -70,16 +69,12 @@ public class NavDrawerActivity extends Activity {
 
         // TODO loadFragment(fragment) with the first fragment
         // TODO this is temporarily loading the collection list
-        Bundle bundle = new CollectionListBuilder(this)
+        CollectionListFragment fragment = new CollectionListBuilder(this)
                 .setApiKey(getString(R.string.shopify_api_key))
                 .setChannelid(getString(R.string.channel_id))
                 .setShopDomain(getString(R.string.shop_url))
                 .setApplicationName(getString(R.string.app_name))
-                .buildBundle();
-
-        CollectionListFragment fragment = new CollectionListFragment();
-        fragment.setArguments(bundle);
-        fragment.setListener(new CollectionListListener());
+                .buildFragment(null, new CollectionListListener());
         loadFragment(fragment);
     }
 
@@ -93,29 +88,23 @@ public class NavDrawerActivity extends Activity {
 
             switch (position) {
                 case 0: {
-                    Bundle bundle = new CollectionListBuilder(NavDrawerActivity.this)
+                    CollectionListFragment fragment = new CollectionListBuilder(NavDrawerActivity.this)
                             .setApiKey(getString(R.string.shopify_api_key))
                             .setChannelid(getString(R.string.channel_id))
                             .setShopDomain(getString(R.string.shop_url))
                             .setApplicationName(getString(R.string.app_name))
-                            .buildBundle();
-
-                    CollectionListFragment fragment = new CollectionListFragment();
-                    fragment.setArguments(bundle);
-                    fragment.setListener(new CollectionListListener());
+                            .buildFragment(null, new CollectionListListener());
                     loadFragment(fragment);
                     break;
                 }
                 case 2: {
-                    Bundle bundle = new CartBuilder(NavDrawerActivity.this)
+                    CartFragment fragment = new CartBuilder(NavDrawerActivity.this)
                             .setApiKey(getString(R.string.shopify_api_key))
                             .setChannelid(getString(R.string.channel_id))
                             .setShopDomain(getString(R.string.shop_url))
                             .setApplicationName(getString(R.string.app_name))
-                            .buildBundle();
-
-                    CartFragment fragment = new CartFragment();
-                    fragment.setArguments(bundle);
+                                    // TODO checkout listener
+                            .buildFragment(null);
                     loadFragment(fragment);
                     break;
                 }
@@ -138,17 +127,13 @@ public class NavDrawerActivity extends Activity {
 
         @Override
         public void onItemClick(Collection collection) {
-            Bundle bundle = new ProductListBuilder(NavDrawerActivity.this)
+            ProductListFragment fragment = new ProductListBuilder(NavDrawerActivity.this)
                     .setApiKey(getString(R.string.shopify_api_key))
                     .setChannelid(getString(R.string.channel_id))
                     .setShopDomain(getString(R.string.shop_url))
                     .setApplicationName(getString(R.string.app_name))
                     .setCollection(collection)
-                    .buildBundle();
-
-            ProductListFragment fragment = new ProductListFragment();
-            fragment.setArguments(bundle);
-            fragment.setListener(new ProductListListener());
+                    .buildFragment(null, new ProductListListener());
             loadFragment(fragment);
         }
 
