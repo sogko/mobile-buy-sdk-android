@@ -28,5 +28,5 @@
 
     <!-- Other -->
     <integer name="disabled_text_alpha">64</integer>
-    
+
 </resources>

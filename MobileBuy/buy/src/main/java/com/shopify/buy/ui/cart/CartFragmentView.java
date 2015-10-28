@@ -53,6 +53,8 @@ public class CartFragmentView extends RelativeLayout {
     }
 
     public void setTheme(ShopifyTheme theme) {
+        // TODO make sure the color state list stuff works on old and new devices
+        
         findViewById(R.id.footer_divider).setBackgroundColor(theme.getDividerColor(getResources()));
 
         setBackgroundColor(theme.getBackgroundColor(getResources()));

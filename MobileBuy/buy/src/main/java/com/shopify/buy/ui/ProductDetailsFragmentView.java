@@ -561,6 +561,8 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     }
 
     private void initializeBottomButtons() {
+        // TODO make sure the color state list stuff works on old and new devices
+
         bottomButtonsContainer = findViewById(R.id.buttons_container);
 
         int disabledTextAlpha = getResources().getInteger(R.integer.disabled_text_alpha);
