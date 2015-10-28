@@ -24,13 +24,18 @@
 
 package com.shopify.drawerapp;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -50,11 +55,13 @@ import com.shopify.buy.ui.products.ProductListFragment;
 /**
  * Base class for all activities in the app. Manages the ProgressDialog that is displayed while network activity is occurring.
  */
-public class NavDrawerActivity extends Activity {
+public class NavDrawerActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ListView navDrawer;
     private ShopifyTheme theme;
+    private ActionBarDrawerToggle drawerToggle;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +72,45 @@ public class NavDrawerActivity extends Activity {
         theme = new ShopifyTheme(ShopifyTheme.Style.LIGHT, getResources().getColor(R.color.accent), false);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // TODO pull the color from the theme
+        drawerLayout.setBackgroundColor(getResources().getColor(R.color.light_background));
 
         navDrawer = (ListView) findViewById(R.id.nav_drawer);
         navDrawer.setAdapter(new ArrayAdapter<>(this, R.layout.nav_drawer_list_item, getResources().getStringArray(R.array.nav_drawer_items)));
         navDrawer.setOnItemClickListener(new DrawerItemClickListener());
+
+        toolbar = (Toolbar) findViewById(R.id.drawer_toolbar);
+        // TODO this should be using the appbar colors, text colors from the theme
+        toolbar.setBackgroundColor(getResources().getColor(R.color.light_low_contrast_grey));
+
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.drawer_open, R.string.drawer_closed) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                //  getActionBar().setTitle("drawer is closed");
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                //  getActionBar().setTitle("drawer is open");
+            }
+        };
+
+        // Enable the default drawer icon
+        drawerToggle.setDrawerIndicatorEnabled(true);
+
+        // Set the drawer toggle as the DrawerListener
+        drawerLayout.setDrawerListener(drawerToggle);
+
 
         // TODO loadFragment(fragment) with the first fragment
         // TODO this is temporarily loading the collection list
@@ -79,6 +121,32 @@ public class NavDrawerActivity extends Activity {
                 .setApplicationName(getString(R.string.app_name))
                 .buildFragment(null, new CollectionListListener());
         loadFragment(fragment);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState)
+    {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        // TODO handle any other actionbar items here
+        return super.onOptionsItemSelected(item);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -98,6 +166,7 @@ public class NavDrawerActivity extends Activity {
                             .setApplicationName(getString(R.string.app_name))
                             .buildFragment(null, new CollectionListListener());
                     loadFragment(fragment);
+                    toolbar.setTitle(getString(R.string.collection_list_fragment_title));
                     break;
                 }
                 case 2: {
@@ -139,6 +208,9 @@ public class NavDrawerActivity extends Activity {
                     .setCollection(collection)
                     .buildFragment(null, new ProductListListener());
             loadFragment(fragment);
+
+            toolbar.setTitle(collection.getTitle());
+
         }
 
         @Override
@@ -160,6 +232,7 @@ public class NavDrawerActivity extends Activity {
                     .setApplicationName(getString(R.string.app_name))
                     .setProduct(product)
                     .setTheme(theme)
+                            // TODO determine which url/scheme we want to return to
 //                    .setWebReturnToUrl(getString(R.string.web_return_to_url))
 //                    .setWebReturnToLabel(getString(R.string.web_return_to_label))
                     .build();
