@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="nav_drawer_items">
-        <item>Products</item>
-        <item>Search</item>
-        <item>Cart</item>
-        <item>Account</item>
-    </string-array>
-</resources>
