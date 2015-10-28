@@ -100,7 +100,7 @@ class ModelFactory {
 
     static class DBProductVariant extends ProductVariant {
 
-        public DBProductVariant(long id, String title, String price, List<OptionValue> optionValues, long grams, String compareAtPrice, String sku, boolean requiresShipping, boolean taxable, int position, long productId, String productTitle, Date createdAtDate, Date updatedAtDate, boolean available) {
+        public DBProductVariant(long id, String title, String price, List<OptionValue> optionValues, long grams, String compareAtPrice, String sku, boolean requiresShipping, boolean taxable, int position, long productId, String productTitle, Date createdAtDate, Date updatedAtDate, boolean available, String imageUrl) {
             super.id = id;
             this.title = title;
             this.price = price;
@@ -116,6 +116,7 @@ class ModelFactory {
             this.createdAtDate = createdAtDate;
             this.updatedAtDate = updatedAtDate;
             this.available = available;
+            this.imageUrl = imageUrl;
         }
 
     }

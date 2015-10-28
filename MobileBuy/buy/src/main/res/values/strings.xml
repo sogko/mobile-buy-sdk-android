@@ -1,9 +1,9 @@
 <resources>
+
     <string name="app_name">MobileBuy</string>
     <string name="buy_now">BUY NOW</string>
     <string name="add_to_cart">ADD TO CART</string>
     <string name="checkout">CHECKOUT</string>
-    <string name="continue_to_checkout">CONTINUE TO CHECKOUT</string>
     <string name="added_to_cart">%s has been added to your cart!</string>
     <string name="default_checkout_error">Could not checkout at this time</string>
     <string name="loading">Loading</string>
@@ -14,4 +14,10 @@
     <string name="sold_out">Sold Out</string>
     <string name="selected">Selected</string>
     <string name="from">from</string>
+
+    <!-- Cart -->
+    <string name="continue_to_checkout">CONTINUE TO CHECKOUT</string>
+    <string name="subtotal">SUBTOTAL</string>
+    <string name="shipping_and_taxes">Shipping and taxes are calculated at checkout.</string>
+
 </resources>

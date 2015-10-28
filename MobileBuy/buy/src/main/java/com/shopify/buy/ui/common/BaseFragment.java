@@ -53,7 +53,6 @@ public class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initializeTheme();
         viewCreated = true;
     }
 
@@ -61,6 +60,7 @@ public class BaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        initializeTheme();
         initializeBuyClient();
         initializeProgressDialog();
     }

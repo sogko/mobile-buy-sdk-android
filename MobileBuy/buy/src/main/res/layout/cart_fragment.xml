@@ -8,9 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/checkout_button_height"
-        android:background="@android:color/white"
-        android:divider="@android:color/black"
-        android:dividerHeight="1dp">
+        android:divider="@null"
+        android:dividerHeight="0dp">
     </ListView>
 
     <LinearLayout
@@ -18,17 +17,55 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:gravity="right"
+        android:orientation="vertical"
         android:padding="@dimen/spacing_12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/subtotal_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/subtotal"
+                android:textSize="@dimen/text_medium"/>
+
+            <TextView
+                android:id="@+id/subtotal_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_medium"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/shipping_and_taxes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight="1"
+            android:paddingBottom="@dimen/spacing_6dp"
+            android:paddingTop="@dimen/spacing_6dp"
+            android:text="@string/shipping_and_taxes"
+            android:textSize="@dimen/text_small"/>
 
         <Button
             android:id="@+id/checkout_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:textStyle="bold"
+            android:paddingLeft="@dimen/spacing_12dp"
+            android:paddingRight="@dimen/spacing_12dp"
             android:text="@string/continue_to_checkout"
-            android:textSize="@dimen/text_small"/>
+            android:textSize="@dimen/text_medium"/>
     </LinearLayout>
+
+    <View
+        android:id="@+id/footer_divider"
+        style="@style/Divider"
+        android:layout_above="@id/cart_footer"/>
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/snackbar_location"

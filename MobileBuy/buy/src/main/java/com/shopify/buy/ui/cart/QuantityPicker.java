@@ -32,18 +32,25 @@ import android.widget.TextView;
 
 import com.shopify.buy.R;
 import com.shopify.buy.model.CartLineItem;
+import com.shopify.buy.model.LineItem;
 
 public class QuantityPicker extends LinearLayout {
 
+    interface OnQuantityChangedListener {
+        void onQuantityChanged(LineItem lineItem);
+    }
+
     protected CartLineItem lineItem;
     protected TextView quantityTextView;
+    protected OnQuantityChangedListener listener;
 
     public QuantityPicker(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public void setLineItem(CartLineItem lineItem) {
+    public void setLineItem(CartLineItem lineItem, OnQuantityChangedListener listener) {
         this.lineItem = lineItem;
+        this.listener = listener;
         quantityTextView.setText(Long.toString(lineItem.getQuantity()));
     }
 
@@ -75,6 +82,10 @@ public class QuantityPicker extends LinearLayout {
 
         lineItem.setQuantity(Math.max(0, lineItem.getQuantity() + delta));
         quantityTextView.setText(Long.toString(lineItem.getQuantity()));
+
+        if (listener != null) {
+            listener.onQuantityChanged(lineItem);
+        }
     }
 
 }

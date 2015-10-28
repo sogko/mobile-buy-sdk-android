@@ -164,4 +164,16 @@ public class Cart {
         return BuyClientFactory.createDefaultGson().fromJson(json, Cart.class);
     }
 
+    /**
+     * Convenience function to return the subtotal price for this cart, before taxes and shipping.
+     *
+     * @return  The subtotal price for this cart.
+     */
+    public double getSubtotal() {
+        double subtotal = 0;
+        for (CartLineItem lineItem : lineItems) {
+            subtotal += (Double.parseDouble(lineItem.getPrice()) * lineItem.getQuantity());
+        }
+        return subtotal;
+    }
 }

@@ -54,12 +54,15 @@ public class NavDrawerActivity extends Activity {
 
     private DrawerLayout drawerLayout;
     private ListView navDrawer;
+    private ShopifyTheme theme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.nav_drawer_activity);
+
+        theme = new ShopifyTheme(ShopifyTheme.Style.LIGHT, getResources().getColor(R.color.accent), false);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -103,6 +106,7 @@ public class NavDrawerActivity extends Activity {
                             .setChannelid(getString(R.string.channel_id))
                             .setShopDomain(getString(R.string.shop_url))
                             .setApplicationName(getString(R.string.app_name))
+                            .setTheme(theme)
                                     // TODO checkout listener
                             .buildFragment(null);
                     loadFragment(fragment);
@@ -146,9 +150,6 @@ public class NavDrawerActivity extends Activity {
 
     private class ProductListListener implements ProductListFragment.Listener {
         // TODO get the shop somewhere central and pass in here
-
-        // TODO make the theme in a central place
-        ShopifyTheme theme = new ShopifyTheme(getResources());
 
         @Override
         public void onItemClick(Product product) {

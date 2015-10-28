@@ -40,8 +40,8 @@ import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.utils.CurrencyFormatter;
 import com.shopify.buy.utils.ImageUtility;
-import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -102,7 +102,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         this.clickListener = clickListener;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         public TextView productTitleView;
         public TextView productPriceView;
@@ -115,9 +115,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
-            productTitleView = (TextView)itemView.findViewById(R.id.item_title);
-            productPriceView = (TextView)itemView.findViewById(R.id.item_price);
-            productImageView = (ImageView)itemView.findViewById(R.id.item_image);
+            productTitleView = (TextView) itemView.findViewById(R.id.item_title);
+            productPriceView = (TextView) itemView.findViewById(R.id.item_price);
+            productImageView = (ImageView) itemView.findViewById(R.id.item_image);
 
             ViewTreeObserver viewTreeObserver = itemView.getViewTreeObserver();
             if (viewTreeObserver.isAlive()) {
@@ -157,11 +157,12 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
                         }
                     }
                 });
-            }}
+            }
+        }
 
 
         @Override
-        public void onClick(View v){
+        public void onClick(View v) {
             if (clickListener != null) {
                 int position = getAdapterPosition();
                 clickListener.onItemClick(position, v, products.get(position));
@@ -169,7 +170,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         }
 
         @Override
-        public boolean onLongClick(View v){
+        public boolean onLongClick(View v) {
             if (clickListener != null) {
                 int position = getAdapterPosition();
                 clickListener.onItemLongClick(position, v, products.get(position));
