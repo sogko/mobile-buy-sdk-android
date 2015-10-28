@@ -253,7 +253,8 @@ public class QueryHelper implements DatabaseConstants {
                 .append(ProductVariantsTable.PRODUCT_TITLE).append(" TEXT, ")
                 .append(ProductVariantsTable.CREATED_AT).append(" TEXT, ")
                 .append(ProductVariantsTable.UPDATED_AT).append(" TEXT, ")
-                .append(ProductVariantsTable.AVAILABLE).append(" INTEGER")
+                .append(ProductVariantsTable.AVAILABLE).append(" INTEGER, ")
+                .append(ProductVariantsTable.IMAGE_URL).append(" TEXT")
                 .append(")");
         return sql.toString();
     }
@@ -274,6 +275,7 @@ public class QueryHelper implements DatabaseConstants {
         values.put(ProductVariantsTable.CREATED_AT, DateUtility.toString(variant.getCreatedAtDate()));
         values.put(ProductVariantsTable.UPDATED_AT, DateUtility.toString(variant.getUpdatedAtDate()));
         values.put(ProductVariantsTable.AVAILABLE, variant.isAvailable() ? 1 : 0);
+        values.put(ProductVariantsTable.IMAGE_URL, variant.getImageUrl());
         return values;
     }
 
@@ -292,8 +294,9 @@ public class QueryHelper implements DatabaseConstants {
         Date createdAtDate = DateUtility.toDate(cursor.getString(cursor.getColumnIndex(ProductVariantsTable.CREATED_AT)));
         Date updatedAtDate = DateUtility.toDate(cursor.getString(cursor.getColumnIndex(ProductVariantsTable.UPDATED_AT)));
         boolean available = cursor.getInt(cursor.getColumnIndex(ProductVariantsTable.AVAILABLE)) == 1;
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.IMAGE_URL));
 
-        return new ModelFactory.DBProductVariant(id, title, price, optionValues, grams, compareAtPrice, sku, requiresShipping, taxable, position, productId, productTitle, createdAtDate, updatedAtDate, available);
+        return new ModelFactory.DBProductVariant(id, title, price, optionValues, grams, compareAtPrice, sku, requiresShipping, taxable, position, productId, productTitle, createdAtDate, updatedAtDate, available, imageUrl);
     }
 
     static String createOptionValuesTable() {

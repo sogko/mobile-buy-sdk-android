@@ -96,6 +96,7 @@ interface DatabaseConstants {
         String CREATED_AT = "created_at";
         String UPDATED_AT = "updated_at";
         String AVAILABLE = "available";
+        String IMAGE_URL = "image_url";
     }
 
     interface OptionValuesTable {

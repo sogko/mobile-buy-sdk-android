@@ -58,8 +58,6 @@ public class ProductVariant extends ShopifyObject {
 
     protected long productId;
 
-    protected String productTitle;
-
     @SerializedName("created_at")
     protected Date createdAtDate;
 
@@ -67,6 +65,14 @@ public class ProductVariant extends ShopifyObject {
     protected Date updatedAtDate;
 
     protected boolean available;
+
+    // NOTE: productTitle and imageUrl are not in the JSON from the server, they are set manually during the Product parsing
+
+    @SerializedName("product_title")
+    protected String productTitle;
+
+    @SerializedName("image_url")
+    protected String imageUrl;
 
     /**
      * @return The title of this variant.
@@ -136,6 +142,13 @@ public class ProductVariant extends ShopifyObject {
      */
     public long getProductId() {
         return productId;
+    }
+
+    /**
+     * @return The URL of the image for this variant.
+     */
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     /**

@@ -24,8 +24,11 @@
 
 package com.shopify.buy.ui.cart;
 
+import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.ColorUtils;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +41,7 @@ import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.CartManager;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
+import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.CheckoutFragment;
@@ -50,9 +54,11 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class CartFragment extends CheckoutFragment {
+
+public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQuantityChangedListener {
 
     protected NumberFormat currencyFormat;
+    protected CartFragmentView view;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,12 +81,15 @@ public class CartFragment extends CheckoutFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.cart_fragment, container, false);
+        view = (CartFragmentView) inflater.inflate(R.layout.cart_fragment, container, false);
+        view.setTheme(theme);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         showCartIfReady();
     }
 
@@ -89,7 +98,11 @@ public class CartFragment extends CheckoutFragment {
             return;
         }
 
-        final ArrayAdapter<CartLineItem> adapter = new ArrayAdapter<CartLineItem>(getActivity(), R.layout.cart_line_item_view, CartManager.getInstance().getCart().getLineItems()) {
+        final Cart cart = CartManager.getInstance().getCart();
+
+        view.updateSubtotal(cart, currencyFormat);
+
+        final ArrayAdapter<CartLineItem> adapter = new ArrayAdapter<CartLineItem>(getActivity(), R.layout.cart_line_item_view, cart.getLineItems()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;
@@ -98,7 +111,7 @@ public class CartFragment extends CheckoutFragment {
                     view = View.inflate(getContext(), R.layout.cart_line_item_view, null);
                 }
 
-                ((CartLineItemView) view).setLineItem(getItem(position), currencyFormat);
+                ((CartLineItemView) view).init(getItem(position), currencyFormat, theme, CartFragment.this);
 
                 return view;
             }
@@ -115,6 +128,11 @@ public class CartFragment extends CheckoutFragment {
     @Override
     protected Cart getCartForCheckout() {
         return CartManager.getInstance().getCart();
+    }
+
+    @Override
+    public void onQuantityChanged(LineItem lineItem) {
+        view.updateSubtotal(CartManager.getInstance().getCart(), currencyFormat);
     }
 
 }

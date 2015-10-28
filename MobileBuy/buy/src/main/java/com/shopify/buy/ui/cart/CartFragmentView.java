@@ -31,10 +31,18 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.shopify.buy.R;
+import com.shopify.buy.dataprovider.CartManager;
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.ui.ShopifyTheme;
+
+import java.text.NumberFormat;
 
 public class CartFragmentView extends RelativeLayout {
+
+    private TextView subtotalValue;
 
     public CartFragmentView(Context context) {
         super(context);
@@ -44,16 +52,33 @@ public class CartFragmentView extends RelativeLayout {
         super(context, attrs);
     }
 
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    public void setTheme(ShopifyTheme theme) {
+        // TODO make sure the color state list stuff works on old and new devices
+        
+        findViewById(R.id.footer_divider).setBackgroundColor(theme.getDividerColor(getResources()));
 
-        int disabledTextAlpha = 64; // 0.25 * 255
+        setBackgroundColor(theme.getBackgroundColor(getResources()));
+
+        ((TextView) findViewById(R.id.subtotal_label)).setTextColor(theme.getProductTitleColor(getResources()));
+        ((TextView) findViewById(R.id.shipping_and_taxes)).setTextColor(theme.getProductDescriptionColor(getResources()));
+
+        subtotalValue = (TextView) findViewById(R.id.subtotal_value);
+        subtotalValue.setTextColor(theme.getAccentColor());
+
+        Button checkoutButton = (Button) findViewById(R.id.checkout_button);
+        checkoutButton.setBackgroundColor(theme.getAccentColor());
+        checkoutButton.setTextColor(theme.getBackgroundColor(getResources()));
+
+        int disabledTextAlpha = getResources().getInteger(R.integer.disabled_text_alpha);
         int textColor = getResources().getColor(R.color.light_dialog_title);
-        ((Button) findViewById(R.id.checkout_button)).setTextColor(new ColorStateList(
-            new int[][] { new int[] {-android.R.attr.state_enabled}, new int[] {android.R.attr.state_enabled} },
-            new int[] {ColorUtils.setAlphaComponent(textColor, disabledTextAlpha), textColor,}
+        checkoutButton.setTextColor(new ColorStateList(
+                new int[][]{new int[]{-android.R.attr.state_enabled}, new int[]{android.R.attr.state_enabled}},
+                new int[]{ColorUtils.setAlphaComponent(textColor, disabledTextAlpha), textColor,}
         ));
+    }
 
+    public void updateSubtotal(Cart cart, NumberFormat currencyFormat) {
+        subtotalValue.setText(currencyFormat.format(cart.getSubtotal()));
     }
 
 }
