@@ -67,7 +67,7 @@ public class CartFragmentView extends RelativeLayout {
         checkoutButton.setBackgroundColor(theme.getAccentColor());
         checkoutButton.setTextColor(theme.getBackgroundColor(getResources()));
 
-        int disabledTextAlpha = 64; // 0.25 * 255
+        int disabledTextAlpha = getResources().getInteger(R.integer.disabled_text_alpha);
         int textColor = getResources().getColor(R.color.light_dialog_title);
         checkoutButton.setTextColor(new ColorStateList(
                 new int[][]{new int[]{-android.R.attr.state_enabled}, new int[]{android.R.attr.state_enabled}},

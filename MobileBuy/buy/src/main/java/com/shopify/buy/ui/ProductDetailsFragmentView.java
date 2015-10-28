@@ -563,7 +563,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     private void initializeBottomButtons() {
         bottomButtonsContainer = findViewById(R.id.buttons_container);
 
-        int disabledTextAlpha = 64; // 0.25 * 255
+        int disabledTextAlpha = getResources().getInteger(R.integer.disabled_text_alpha);
 
         addToCartButtonContainer = (ViewGroup) findViewById(R.id.cart_button_container);
         addToCartButtonContainer.setBackgroundColor(theme.getCheckoutLabelColor(getResources()));
