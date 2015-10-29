@@ -25,22 +25,13 @@
 package com.shopify.buy.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.shopify.buy.R;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseActivity;
 import com.shopify.buy.ui.common.CheckoutListener;
-import com.shopify.buy.utils.DeviceUtils;
 
 /**
  * Activity that shows the details of a {@link Product}.
@@ -62,11 +53,11 @@ public class ProductDetailsActivity extends BaseActivity implements CheckoutList
                 productDetailsFragment.setArguments(intent.getExtras());
             }
 
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.product_details_activity, productDetailsFragment)
                     .commit();
         } else {
-            productDetailsFragment = (ProductDetailsFragment) getFragmentManager().findFragmentById(R.id.product_details_activity);
+            productDetailsFragment = (ProductDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.product_details_activity);
         }
 
         initContentView();
