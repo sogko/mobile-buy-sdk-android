@@ -28,7 +28,6 @@ package com.shopify.buy.ui.common;
 import android.os.Bundle;
 
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.ShopifyTheme;
 
 public class BaseConfig {
 

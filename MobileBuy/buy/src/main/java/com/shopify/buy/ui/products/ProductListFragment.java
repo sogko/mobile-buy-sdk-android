@@ -101,7 +101,7 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = (ProductListFragmentView) inflater.inflate(R.layout.fragment_product_list, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        ProductListAdapter adapter = new ProductListAdapter(getActivity());
+        ProductListAdapter adapter = new ProductListAdapter(getActivity(), theme);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());

@@ -66,7 +66,8 @@ import com.shopify.buy.model.Image;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
-import com.shopify.buy.ui.ShopifyTheme.Style;
+import com.shopify.buy.ui.common.ShopifyTheme;
+import com.shopify.buy.ui.common.ShopifyTheme.Style;
 import com.shopify.buy.utils.ColorBlender;
 import com.shopify.buy.utils.DeviceUtils;
 

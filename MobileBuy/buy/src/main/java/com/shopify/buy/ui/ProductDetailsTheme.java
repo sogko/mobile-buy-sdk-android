@@ -28,6 +28,8 @@ import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.shopify.buy.ui.common.ShopifyTheme;
+
 /**
  * Describes the colors and backgrounds to use for the {@link ProductDetailsFragmentView}.
  */

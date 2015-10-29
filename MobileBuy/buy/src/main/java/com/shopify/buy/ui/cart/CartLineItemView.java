@@ -36,7 +36,7 @@ import android.widget.TextView;
 import com.shopify.buy.R;
 import com.shopify.buy.model.CartLineItem;
 import com.shopify.buy.model.OptionValue;
-import com.shopify.buy.ui.ShopifyTheme;
+import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.buy.utils.CollectionUtils;
 import com.shopify.buy.utils.ImageUtility;
 import com.squareup.picasso.Picasso;
@@ -99,6 +99,10 @@ public class CartLineItemView extends LinearLayout {
         priceWithMultiplier.append(lineItem.getQuantity());
         price.setText(priceWithMultiplier.toString());
         price.setTextColor(theme.getProductDescriptionColor(getResources()));
+
+        theme.applyCustomFont(title);
+        theme.applyCustomFont(variant);
+        theme.applyCustomFont(price);
 
         findViewById(R.id.line_item_divider).setBackgroundColor(theme.getDividerColor(getResources()));
 

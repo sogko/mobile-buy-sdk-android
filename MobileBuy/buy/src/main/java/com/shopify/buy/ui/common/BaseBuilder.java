@@ -31,7 +31,6 @@ import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.ShopifyTheme;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseBuilder<T extends BaseBuilder> {
