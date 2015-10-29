@@ -110,7 +110,7 @@ public class ImageUtility {
         } else {
             c = c.centerInside();
         }
-        c.into(imageView);
+        c.into(imageView, callback);
     }
 
     /**

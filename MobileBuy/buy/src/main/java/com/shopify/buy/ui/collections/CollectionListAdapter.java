@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.shopify.buy.R;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.utils.ImageUtility;
@@ -41,6 +42,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAdapter.ViewHolder> {
 
@@ -56,19 +58,22 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.collection_list_item, viewGroup, false);
-        ViewHolder viewHolder = new ViewHolder(v);
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.collection_list_item, viewGroup, false);
+        ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, int i) {
-        Collection collection = collections.get(i);
-        viewHolder.collection = collection;
+    public void onBindViewHolder(final ViewHolder viewHolder, final int index) {
+        viewHolder.collection = collections.get(index);
+        viewHolder.collectionNameView.setText(viewHolder.collection.getTitle());
 
-        viewHolder.collectionNameView.setText(collection.getTitle());
+        if (viewHolder.isLayedOut.get()) {
+            viewHolder.loadImage();
+        } else {
+            viewHolder.waitForLayout();
+        }
     }
 
     @Override
@@ -84,11 +89,13 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
         this.clickListener = clickListener;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
+        public Collection collection;
         public TextView collectionNameView;
         public ImageView collectionImageView;
-        public Collection collection;
+
+        public final AtomicBoolean isLayedOut = new AtomicBoolean(false);
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -96,9 +103,11 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
-            collectionNameView = (TextView)itemView.findViewById(R.id.collection_name);
-            collectionImageView = (ImageView)itemView.findViewById(R.id.collection_image);
+            collectionNameView = (TextView) itemView.findViewById(R.id.collection_name);
+            collectionImageView = (ImageView) itemView.findViewById(R.id.collection_image);
+        }
 
+        public void waitForLayout() {
             ViewTreeObserver viewTreeObserver = itemView.getViewTreeObserver();
             if (viewTreeObserver.isAlive()) {
                 viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -111,29 +120,34 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
                         }
 
                         int width = itemView.getWidth();
-                        int height = width * 9/16;
+                        int height = width * 9 / 16;
 
                         ViewGroup.LayoutParams layoutParams = collectionImageView.getLayoutParams();
                         layoutParams.height = height;
                         layoutParams.width = width;
                         collectionImageView.setLayoutParams(layoutParams);
 
-                        if (collection.getImageUrl() != null) {
+                        loadImage();
 
-                            String imageUrl = ImageUtility.stripQueryFromUrl(collection.getImageUrl());
+                        isLayedOut.set(true);
+                    }
+                });
+            }
+        }
 
-                            ImageUtility.loadImageResourceIntoSizedView(Picasso.with(context), imageUrl, collectionImageView, true, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    // TODO we should have image loading placeholders or spinners
-                                }
+        public void loadImage() {
+            if (collection.getImageUrl() != null) {
+                final String imageUrl = ImageUtility.stripQueryFromUrl(collection.getImageUrl());
 
-                                @Override
-                                public void onError() {
-                                    // TODO we should have image loading placeholders or spinners
-                                }
-                            });
-                        }
+                ImageUtility.loadImageResourceIntoSizedView(Picasso.with(context), imageUrl, collectionImageView, true, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        // TODO we should have image loading placeholders or spinners
+                    }
+
+                    @Override
+                    public void onError() {
+                        // TODO we should have image loading placeholders or spinners
                     }
                 });
             }
