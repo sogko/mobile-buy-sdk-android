@@ -24,17 +24,12 @@
 
 package com.shopify.buy.ui.cart;
 
-import android.content.res.ColorStateList;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.ColorUtils;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.shopify.buy.R;
@@ -43,7 +38,6 @@ import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
 import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.utils.CurrencyFormatter;
 
@@ -53,7 +47,6 @@ import java.util.Locale;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-
 
 public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQuantityChangedListener {
 

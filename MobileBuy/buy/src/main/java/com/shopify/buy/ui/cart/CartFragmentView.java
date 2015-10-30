@@ -28,15 +28,13 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.support.v4.graphics.ColorUtils;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shopify.buy.R;
-import com.shopify.buy.dataprovider.CartManager;
 import com.shopify.buy.model.Cart;
-import com.shopify.buy.ui.ShopifyTheme;
+import com.shopify.buy.ui.common.ShopifyTheme;
 
 import java.text.NumberFormat;
 
@@ -59,8 +57,11 @@ public class CartFragmentView extends RelativeLayout {
 
         setBackgroundColor(theme.getBackgroundColor(getResources()));
 
-        ((TextView) findViewById(R.id.subtotal_label)).setTextColor(theme.getProductTitleColor(getResources()));
-        ((TextView) findViewById(R.id.shipping_and_taxes)).setTextColor(theme.getProductDescriptionColor(getResources()));
+        TextView subtotalLabel = (TextView) findViewById(R.id.subtotal_label);
+        subtotalLabel.setTextColor(theme.getProductTitleColor(getResources()));
+
+        TextView shippingAndTaxes = (TextView) findViewById(R.id.shipping_and_taxes);
+        shippingAndTaxes.setTextColor(theme.getProductDescriptionColor(getResources()));
 
         subtotalValue = (TextView) findViewById(R.id.subtotal_value);
         subtotalValue.setTextColor(theme.getAccentColor());
@@ -75,6 +76,11 @@ public class CartFragmentView extends RelativeLayout {
                 new int[][]{new int[]{-android.R.attr.state_enabled}, new int[]{android.R.attr.state_enabled}},
                 new int[]{ColorUtils.setAlphaComponent(textColor, disabledTextAlpha), textColor,}
         ));
+
+        theme.applyCustomFont(subtotalLabel);
+        theme.applyCustomFont(shippingAndTaxes);
+        theme.applyCustomFont(checkoutButton);
+        theme.applyCustomFont(subtotalValue);
     }
 
     public void updateSubtotal(Cart cart, NumberFormat currencyFormat) {

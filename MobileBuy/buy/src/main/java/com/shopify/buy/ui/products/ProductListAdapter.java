@@ -38,6 +38,7 @@ import com.shopify.buy.R;
 import com.shopify.buy.model.Image;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.buy.utils.CurrencyFormatter;
 import com.shopify.buy.utils.ImageUtility;
 import com.squareup.picasso.Callback;
@@ -51,17 +52,20 @@ import java.util.Set;
 // TODO we should create a base class for our recycler view adapters and view holders.
 public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.ViewHolder> {
 
+    final Context context;
+    final ShopifyTheme theme;
+
     List<Product> products;
-    Context context;
     Shop shop;
     NumberFormat currencyFormatter;
 
     // Listener used to pass click events back to the fragment or adapter
     private ClickListener clickListener;
 
-    public ProductListAdapter(Context context) {
+    public ProductListAdapter(Context context, ShopifyTheme theme) {
         super();
         this.context = context;
+        this.theme = theme;
     }
 
     @Override
@@ -118,6 +122,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
             productTitleView = (TextView) itemView.findViewById(R.id.item_title);
             productPriceView = (TextView) itemView.findViewById(R.id.item_price);
             productImageView = (ImageView) itemView.findViewById(R.id.item_image);
+
+            theme.applyCustomFont(productTitleView);
+            theme.applyCustomFont(productPriceView);
 
             ViewTreeObserver viewTreeObserver = itemView.getViewTreeObserver();
             if (viewTreeObserver.isAlive()) {

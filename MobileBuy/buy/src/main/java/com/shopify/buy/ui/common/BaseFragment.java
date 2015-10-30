@@ -27,16 +27,18 @@ package com.shopify.buy.ui.common;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.ShopifyTheme;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -53,7 +55,24 @@ public class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        applyCustomFont(view);
         viewCreated = true;
+    }
+
+    private void applyCustomFont(final View view) {
+        if (theme == null || view == null) {
+            return;
+        }
+
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                applyCustomFont(child);
+            }
+        } else if (view instanceof TextView) {
+            theme.applyCustomFont((TextView) view);
+        }
     }
 
     @Override

@@ -24,8 +24,8 @@
 
 package com.shopify.buy.ui.collections;
 
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.shopify.buy.R;
 import com.shopify.buy.model.Collection;
+import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.buy.utils.ImageUtility;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -47,14 +48,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAdapter.ViewHolder> {
 
     List<Collection> collections;
-    Context context;
+
+    final Context context;
+    final ShopifyTheme theme;
 
     // Listener used to pass click events back to the fragment or adapter
     private ClickListener clickListener;
 
-    public CollectionListAdapter(Activity context) {
+    public CollectionListAdapter(Context context, ShopifyTheme theme) {
         super();
         this.context = context;
+        this.theme = theme;
     }
 
     @Override
@@ -105,6 +109,10 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
 
             collectionNameView = (TextView) itemView.findViewById(R.id.collection_name);
             collectionImageView = (ImageView) itemView.findViewById(R.id.collection_image);
+
+            if (theme != null) {
+                theme.applyCustomFont(collectionNameView);
+            }
         }
 
         public void waitForLayout() {

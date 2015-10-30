@@ -90,7 +90,7 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = (CollectionListFragmentView) inflater.inflate(R.layout.fragment_collection_list, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        CollectionListAdapter adapter = new CollectionListAdapter(getActivity());
+        CollectionListAdapter adapter = new CollectionListAdapter(getActivity(), theme);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());

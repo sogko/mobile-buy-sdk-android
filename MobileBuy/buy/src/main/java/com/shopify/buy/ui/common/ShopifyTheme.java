@@ -1,12 +1,17 @@
-package com.shopify.buy.ui;
+package com.shopify.buy.ui.common;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.widget.TextView;
 
 import com.shopify.buy.R;
 
@@ -18,6 +23,10 @@ public class ShopifyTheme implements Parcelable {
     protected Style style;
     protected int accentColor = -1;
     protected boolean showProductImageBackground;
+    protected String pathToCustomFont;
+
+    private Typeface typeface = null;
+    private float deltaTextSizePx = 0;
 
     public enum Style {
         DARK,
@@ -48,6 +57,8 @@ public class ShopifyTheme implements Parcelable {
         style = Style.values()[in.readInt()];
         accentColor = in.readInt();
         showProductImageBackground = in.readInt() != 0;
+        pathToCustomFont = in.readString();
+        deltaTextSizePx = in.readFloat();
     }
 
     public Style getStyle() {
@@ -66,6 +77,19 @@ public class ShopifyTheme implements Parcelable {
         this.accentColor = accentColor;
     }
 
+    /**
+     * Adds a custom font to this theme.
+     *
+     * @param pathToCustomFont  The relative path from the assets folder to the font file (e.g. "fonts/my_custom_font.ttf").
+     * @param baselineTextSize  The text size of this font (in scaled pixels) equivalent to the default system font at <b>20sp</b>.
+     */
+    public void setCustomFont(String pathToCustomFont, int baselineTextSize, Context context) {
+        float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+
+        this.pathToCustomFont = pathToCustomFont;
+        this.deltaTextSizePx = (20 - baselineTextSize) * scaledDensity;
+    }
+
     public void setShowProductImageBackground(boolean showProductImageBackground) {
         this.showProductImageBackground = showProductImageBackground;
     }
@@ -82,6 +106,8 @@ public class ShopifyTheme implements Parcelable {
         out.writeInt(style.ordinal());
         out.writeInt(accentColor);
         out.writeInt(showProductImageBackground ? 1 : 0);
+        out.writeString(pathToCustomFont);
+        out.writeFloat(deltaTextSizePx);
     }
 
     public int getBackgroundColor(Resources res) {
@@ -205,4 +231,18 @@ public class ShopifyTheme implements Parcelable {
                 return res.getDrawable(R.drawable.light_background_selector);
         }
     }
+
+    public void applyCustomFont(TextView textView) {
+        if (typeface == null && !TextUtils.isEmpty(pathToCustomFont)) {
+            typeface = Typeface.createFromAsset(textView.getContext().getAssets(), pathToCustomFont);
+        }
+
+        if (textView == null || typeface == null) {
+            return;
+        }
+
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textView.getTextSize() + deltaTextSizePx);
+        textView.setTypeface(typeface);
+    }
+
 }
