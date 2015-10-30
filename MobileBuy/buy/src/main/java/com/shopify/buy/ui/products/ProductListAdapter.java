@@ -81,6 +81,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         Product product = products.get(i);
         viewHolder.product = product;
 
+        viewHolder.productTitleView.setTextColor(theme.getAccentColor());
         viewHolder.productTitleView.setText(product.getTitle());
 
         // Set the product price.  If there are multiple prices show the minimum
