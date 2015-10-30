@@ -352,7 +352,11 @@ public class Product extends ShopifyObject {
             for (ProductVariant variant : variants) {
                 variant.productId = Long.parseLong(product.productId);
                 variant.productTitle = product.getTitle();
-                variant.imageUrl = product.getImage(variant).getSrc();
+
+                Image image = product.getImage(variant);
+                if (image != null) {
+                    variant.imageUrl = image.getSrc();
+                }
             }
         }
 
