@@ -184,6 +184,11 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         }
     }
 
+    public void searchProducts(String query) {
+        SQLiteDatabase db = getReadableDatabase();
+        
+    }
+
     private Product buildProduct(Cursor cursor) throws ParseException {
         String productId = cursor.getString(cursor.getColumnIndex(ProductsTable.PRODUCT_ID));
         List<Image> images = getProductImages(productId);
