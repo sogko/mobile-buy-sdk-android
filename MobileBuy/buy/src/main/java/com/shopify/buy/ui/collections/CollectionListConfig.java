@@ -36,7 +36,7 @@ import java.util.List;
 /***
  * Used to serialize data for the {@link CollectionListActivity}.
  */
-class CollectionListConfig extends BaseConfig {
+public class CollectionListConfig extends BaseConfig {
 
     public static final String EXTRA_SHOP_COLLECTIONS = "com.shopify.buy.ui.COLLECTIONS";
 
