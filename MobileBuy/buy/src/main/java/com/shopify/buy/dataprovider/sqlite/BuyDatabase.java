@@ -184,9 +184,13 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         }
     }
 
-    public void searchProducts(String query) {
+    public List<Product> searchProducts(String query) {
+        List<Product> results = new ArrayList<>();
+
         SQLiteDatabase db = getReadableDatabase();
-        
+        // TODO
+
+        return results;
     }
 
     private Product buildProduct(Cursor cursor) throws ParseException {
