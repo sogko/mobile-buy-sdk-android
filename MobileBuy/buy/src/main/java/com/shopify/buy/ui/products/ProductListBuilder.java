@@ -52,7 +52,7 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
      * Constructor that will use an existing {@link BuyClient} to configure the {@link ProductListFragment}.
      *
      * @param context context to use for launching the {@code Activity}
-     * @param client  the {@link BuyClient} to use to configure the ProductListActivity
+     * @param client  the {@link BuyClient} to use to configure the ProductListFragment
      */
     public ProductListBuilder(Context context, BuyClient client) {
         super(context, client);

@@ -22,42 +22,20 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.ui.search;
 
-import android.os.Bundle;
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.LinearLayout;
 
-import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.model.Collection;
-import com.shopify.buy.ui.common.BaseConfig;
+public class SearchFragmentView extends LinearLayout {
 
-import java.util.List;
-
-/***
- * Used to serialize data for the {@link CollectionListActivity}.
- */
-class CollectionListConfig extends BaseConfig {
-
-    public static final String EXTRA_SHOP_COLLECTIONS = "com.shopify.buy.ui.COLLECTIONS";
-
-    private List<Collection> collections;
-
-    public List<Collection> getCollections() {
-        return collections;
+    public SearchFragmentView(Context context) {
+        super(context);
     }
 
-    public void setCollections(List<Collection> collections) {
-        this.collections = collections;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (collections != null) {
-            String productsJson = BuyClientFactory.createDefaultGson().toJson(collections);
-            bundle.putString(EXTRA_SHOP_COLLECTIONS, productsJson);
-        }
-
-        return bundle;
+    public SearchFragmentView(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
 }
