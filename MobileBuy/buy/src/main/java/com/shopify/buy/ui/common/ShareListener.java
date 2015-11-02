@@ -28,6 +28,6 @@ import com.shopify.buy.model.Product;
 
 public interface ShareListener {
 
-    void onProrductShared(Product product);
+    void onProductShared(Product product);
 
 }

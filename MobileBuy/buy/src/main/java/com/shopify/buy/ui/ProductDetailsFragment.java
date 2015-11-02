@@ -76,7 +76,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
 
     void onSharePressed() {
         if (shareListener != null) {
-            shareListener.onProrductShared(product);
+            shareListener.onProductShared(product);
         }
     }
 

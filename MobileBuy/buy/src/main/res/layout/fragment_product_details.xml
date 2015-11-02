@@ -51,10 +51,13 @@
                         android:singleLine="true"
                         android:textSize="@dimen/text_large"/>
 
-                    <ImageButton
+                    <ImageView
                         android:id="@+id/share_button"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:paddingRight="@dimen/spacing_16dp"
+                        android:src="@drawable/ic_share_white_24dp"/>
 
                 </android.support.v7.widget.Toolbar>
 

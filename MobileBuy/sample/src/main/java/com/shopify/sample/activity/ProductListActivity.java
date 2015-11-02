@@ -34,7 +34,7 @@ import android.widget.Switch;
 
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.ShopifyTheme;
+import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.sample.R;
 import com.shopify.sample.activity.base.SampleListActivity;
 import com.shopify.sample.dialog.HSVColorPickerDialog;

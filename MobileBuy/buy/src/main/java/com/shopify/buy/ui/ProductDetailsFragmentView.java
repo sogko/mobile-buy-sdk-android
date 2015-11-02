@@ -58,7 +58,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -128,7 +128,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     private boolean dropShadowIsShowing;
     private TextView toolbarTitle;
     private int homeDrawable;
-    private ImageButton shareButton;
+    private ImageView shareButton;
 
     private AppBarLayout appBarLayout;
 
@@ -451,7 +451,13 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         toolbarTitle.setTextColor(theme.getProductTitleColor(res));
 
-        shareButton = (ImageButton) findViewById(R.id.share_button);
+        shareButton = (ImageView) findViewById(R.id.share_button);
+        shareButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragment.onSharePressed();
+            }
+        });
 
         // Add a custom behavior to the appBarLayout.  We want it to pass touches to its children instead of scrolling.
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
