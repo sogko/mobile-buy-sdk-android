@@ -58,6 +58,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -127,6 +128,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     private boolean dropShadowIsShowing;
     private TextView toolbarTitle;
     private int homeDrawable;
+    private ImageButton shareButton;
 
     private AppBarLayout appBarLayout;
 
@@ -449,6 +451,8 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         toolbarTitle.setTextColor(theme.getProductTitleColor(res));
 
+        shareButton = (ImageButton) findViewById(R.id.share_button);
+
         // Add a custom behavior to the appBarLayout.  We want it to pass touches to its children instead of scrolling.
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
@@ -492,11 +496,13 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
                 if (homeDrawable != R.drawable.ic_close_white_24dp) {
                     homeDrawable = R.drawable.ic_close_white_24dp;
                     actionBar.setHomeAsUpIndicator(homeDrawable);
+                    shareButton.setImageResource(R.drawable.ic_share_white_24dp);
                 }
             } else {
                 if (homeDrawable != R.drawable.ic_close_black_24dp) {
                     homeDrawable = R.drawable.ic_close_black_24dp;
                     actionBar.setHomeAsUpIndicator(homeDrawable);
+                    shareButton.setImageResource(R.drawable.ic_share_black_24dp);
                 }
             }
         }

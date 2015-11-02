@@ -44,6 +44,7 @@ import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.ui.common.CheckoutListener;
+import com.shopify.buy.ui.common.ShareListener;
 import com.shopify.buy.utils.CurrencyFormatter;
 
 import java.text.NumberFormat;
@@ -60,12 +61,24 @@ public class ProductDetailsFragment extends CheckoutFragment {
 
     private ProductDetailsFragmentView view;
 
+    private ShareListener shareListener;
+
     private Product product;
     private ProductVariant variant;
     private String productId;
 
     private Button addToCartButton;
     private boolean showCartButton;
+
+    public void setShareListener(ShareListener shareListener) {
+        this.shareListener = shareListener;
+    }
+
+    void onSharePressed() {
+        if (shareListener != null) {
+            shareListener.onProrductShared(product);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -246,5 +259,5 @@ public class ProductDetailsFragment extends CheckoutFragment {
             checkoutButton.setEnabled(variant.isAvailable());
         }
     };
-    
+
 }
