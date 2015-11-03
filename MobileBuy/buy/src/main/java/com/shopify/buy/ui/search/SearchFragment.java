@@ -213,22 +213,21 @@ public class SearchFragment extends BaseFragment implements SearchAdapter.ClickL
     @Override
     public boolean onQueryTextSubmit(String query) {
         this.query = query;
-        this.searchView.clearFocus();
-        this.recyclerView.requestFocus();
+        searchView.clearFocus();
+        recyclerView.requestFocus();
         fetchProducts();
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        this.query = newText;
+        query = newText;
         fetchProducts();
         return true;
     }
 
     public interface Listener {
         void onItemClick(Product product);
-
         void onItemLongClick(Product product);
     }
 
