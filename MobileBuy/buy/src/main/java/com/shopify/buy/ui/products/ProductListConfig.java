@@ -37,7 +37,7 @@ import java.util.List;
 /***
  * Used to serialize data for the {@link ProductListFragment}.
  */
-class ProductListConfig extends BaseConfig {
+public class ProductListConfig extends BaseConfig {
 
     public static final String EXTRA_SHOP_PRODUCTS = "com.shopify.buy.ui.PRODUCTS";
     public static final String EXTRA_SHOP_PRODUCT_IDS = "com.shopify.buy.ui.PRODUCT_IDS";

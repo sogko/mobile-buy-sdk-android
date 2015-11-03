@@ -56,6 +56,7 @@ public class BaseFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         applyCustomFont(view);
+        view.setBackgroundColor(theme.getBackgroundColor(getResources()));
         viewCreated = true;
     }
 
