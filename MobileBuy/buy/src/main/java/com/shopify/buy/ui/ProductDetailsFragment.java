@@ -44,6 +44,7 @@ import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.ui.common.CheckoutListener;
+import com.shopify.buy.ui.common.ShareListener;
 import com.shopify.buy.utils.CurrencyFormatter;
 
 import java.text.NumberFormat;
@@ -60,12 +61,24 @@ public class ProductDetailsFragment extends CheckoutFragment {
 
     private ProductDetailsFragmentView view;
 
+    private ShareListener shareListener;
+
     private Product product;
     private ProductVariant variant;
     private String productId;
 
     private Button addToCartButton;
     private boolean showCartButton;
+
+    public void setShareListener(ShareListener shareListener) {
+        this.shareListener = shareListener;
+    }
+
+    void onSharePressed() {
+        if (shareListener != null) {
+            shareListener.onProductShared(product);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -229,8 +242,9 @@ public class ProductDetailsFragment extends CheckoutFragment {
         variantSelectionController.setListener(onVariantSelectedListener);
 
         // Tell the view that it can populate the product details components now
+        // Only show the share button if the ShareListener has been set
         view.setCurrencyFormat(currencyFormat);
-        view.onProductAvailable(ProductDetailsFragment.this, product, variant);
+        view.onProductAvailable(ProductDetailsFragment.this, product, variant, shareListener != null);
 
         // Disable the checkout button if the selected product variant is sold out
         checkoutButton.setEnabled(variant.isAvailable());
@@ -246,5 +260,5 @@ public class ProductDetailsFragment extends CheckoutFragment {
             checkoutButton.setEnabled(variant.isAvailable());
         }
     };
-    
+
 }

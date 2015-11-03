@@ -41,7 +41,8 @@ import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.ProductDetailsBuilder;
-import com.shopify.buy.ui.ShopifyTheme;
+import com.shopify.buy.ui.common.ShopifyTheme;
+import com.shopify.sample.BuildConfig;
 import com.shopify.sample.R;
 
 import java.util.List;
@@ -67,17 +68,17 @@ public class SampleApplication extends Application {
     }
 
     private void initializeBuyClient() {
-        String shopUrl = getString(R.string.shop_url);
+        String shopUrl = BuildConfig.SHOP_DOMAIN;
         if (TextUtils.isEmpty(shopUrl)) {
             throw new IllegalArgumentException("You must populate the 'shop_url' entry in strings.xml, in the form '<myshop>.myshopify.com'");
         }
 
-        String shopifyApiKey = getString(R.string.shopify_api_key);
+        String shopifyApiKey = BuildConfig.API_KEY;
         if (TextUtils.isEmpty(shopifyApiKey)) {
             throw new IllegalArgumentException("You must populate the 'shopify_api_key' entry in strings.xml");
         }
 
-        String channelId = getString(R.string.channel_id);
+        String channelId = BuildConfig.CHANNEL_ID;
         if (TextUtils.isEmpty(channelId)) {
             throw new IllegalArgumentException("You must populate the 'channel_id' entry in the strings.xml");
         }
