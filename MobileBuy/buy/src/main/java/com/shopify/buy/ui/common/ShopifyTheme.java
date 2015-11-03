@@ -274,6 +274,16 @@ public class ShopifyTheme implements Parcelable {
         }
     }
 
+    public Drawable getCartIcon(Resources res) {
+        Drawable cart = res.getDrawable(R.drawable.ic_shopping_cart_white);
+
+        if (Style.DARK == style) {
+            cart.mutate().setColorFilter(res.getColor(android.R.color.black), PorterDuff.Mode.MULTIPLY);
+        }
+
+        return cart;
+    }
+
     public void applyCustomFont(TextView textView) {
         if (typeface == null && !TextUtils.isEmpty(pathToCustomFont)) {
             typeface = Typeface.createFromAsset(textView.getContext().getAssets(), pathToCustomFont);
