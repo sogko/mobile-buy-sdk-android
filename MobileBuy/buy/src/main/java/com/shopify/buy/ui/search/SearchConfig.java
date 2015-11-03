@@ -22,39 +22,35 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.ui.search;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
-import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseConfig;
 
-import java.util.List;
-
 /***
- * Used to serialize data for the {@link CollectionListActivity}.
+ * Used to serialize data for the {@link SearchFragment}.
  */
-public class CollectionListConfig extends BaseConfig {
+class SearchConfig extends BaseConfig {
 
-    public static final String EXTRA_SHOP_COLLECTIONS = "com.shopify.buy.ui.COLLECTIONS";
+    public static final String EXTRA_SEARCH_QUERY = "com.shopify.buy.ui.SEARCH_QUERY";
 
-    private List<Collection> collections;
+    private String query;
 
-    public List<Collection> getCollections() {
-        return collections;
+    public String getSearchQuery() {
+        return query;
     }
 
-    public void setCollections(List<Collection> collections) {
-        this.collections = collections;
+    public void setSearchQuery(String query) {
+        this.query = query;
     }
 
     public Bundle toBundle() {
         Bundle bundle = super.toBundle();
 
-        if (collections != null) {
-            String productsJson = BuyClientFactory.createDefaultGson().toJson(collections);
-            bundle.putString(EXTRA_SHOP_COLLECTIONS, productsJson);
+        if (!TextUtils.isEmpty(query)) {
+            bundle.putString(EXTRA_SEARCH_QUERY, query);
         }
 
         return bundle;

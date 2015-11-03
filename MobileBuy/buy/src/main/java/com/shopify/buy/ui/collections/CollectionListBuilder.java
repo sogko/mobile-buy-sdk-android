@@ -52,7 +52,7 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
      * Constructor that will use an existing {@link BuyClient} to configure the {@link CollectionListFragment}.
      *
      * @param context context to use for launching the {@code Activity}
-     * @param client  the {@link BuyClient} to use to configure the CollectionListActivity
+     * @param client  the {@link BuyClient} to use to configure the CollectionListFragment
      */
     public CollectionListBuilder(Context context, BuyClient client) {
         super(context, client);

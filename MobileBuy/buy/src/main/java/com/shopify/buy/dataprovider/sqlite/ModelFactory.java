@@ -59,7 +59,8 @@ class ModelFactory {
 
     static class DBOption extends Option {
 
-        public DBOption(String name, int position, String productId) {
+        public DBOption(long id, String name, int position, String productId) {
+            this.id = id;
             this.name = name;
             this.position = position;
             this.productId = productId;

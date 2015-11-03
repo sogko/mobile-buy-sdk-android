@@ -36,8 +36,8 @@ import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.utils.DateUtility;
 import com.shopify.buy.utils.DateUtility.DateDeserializer;
 
-import java.util.Date;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -256,7 +256,7 @@ public class Product extends ShopifyObject {
         }
 
         for (Image image : images) {
-            if (image.getVariantIds().contains(variant.getId())) {
+            if (image.getVariantIds() != null && image.getVariantIds().contains(variant.getId())) {
                 return image;
             }
         }

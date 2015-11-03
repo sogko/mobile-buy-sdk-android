@@ -22,42 +22,16 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.dataprovider;
 
-import android.os.Bundle;
-
-import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.model.Collection;
-import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.model.Product;
 
 import java.util.List;
 
-/***
- * Used to serialize data for the {@link CollectionListActivity}.
- */
-public class CollectionListConfig extends BaseConfig {
+import retrofit.Callback;
 
-    public static final String EXTRA_SHOP_COLLECTIONS = "com.shopify.buy.ui.COLLECTIONS";
+public interface SearchProvider {
 
-    private List<Collection> collections;
-
-    public List<Collection> getCollections() {
-        return collections;
-    }
-
-    public void setCollections(List<Collection> collections) {
-        this.collections = collections;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (collections != null) {
-            String productsJson = BuyClientFactory.createDefaultGson().toJson(collections);
-            bundle.putString(EXTRA_SHOP_COLLECTIONS, productsJson);
-        }
-
-        return bundle;
-    }
+    void searchProducts(String query, BuyClient buyClient, Callback<List<Product>> callback);
 
 }

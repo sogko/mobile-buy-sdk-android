@@ -191,6 +191,7 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
     }
 
     private void assertExactMatch(Option o1, Option o2) {
+        assertEquals(o1.getId(), o2.getId());
         assertEquals(o1.getName(), o2.getName());
         assertEquals(o1.getPosition(), o2.getPosition());
         assertEquals(o1.getProductId(), o2.getProductId());

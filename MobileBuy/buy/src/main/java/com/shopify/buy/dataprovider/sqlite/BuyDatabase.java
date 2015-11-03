@@ -28,6 +28,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.shopify.buy.model.Collection;
@@ -182,6 +183,23 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 }
             }
         }
+    }
+
+    public List<Product> searchProducts(String query) {
+        List<Product> results = new ArrayList<>();
+        if (!TextUtils.isEmpty(query)) {
+            Cursor cursor = querySimple(TABLE_PRODUCTS, QueryHelper.searchProductsWhereClause(query), null);
+            if (cursor.moveToFirst()) {
+                do {
+                    try {
+                        results.add(buildProduct(cursor));
+                    } catch (ParseException e) {
+                        Log.e(LOG_TAG, "Could not get Product from database", e);
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+        return results;
     }
 
     private Product buildProduct(Cursor cursor) throws ParseException {

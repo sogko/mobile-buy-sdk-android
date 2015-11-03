@@ -76,6 +76,7 @@ interface DatabaseConstants {
     }
 
     interface OptionsTable {
+        String ID = "id";
         String NAME = "name";
         String POSITION = "position";
         String PRODUCT_ID = "product_id";
