@@ -163,6 +163,12 @@ public class QueryHelper implements DatabaseConstants {
         return new ModelFactory.DBProduct(productId, channelId, title, handle, bodyHtml, publishedAtDate, createdAtDate, updatedAtDate, vendor, productType, images, variants, options, tags, available, published);
     }
 
+    static String searchProductsWhereClause(String query) {
+        StringBuilder whereClause = new StringBuilder();
+        whereClause.append("LOWER(").append(ProductsTable.TITLE).append(") LIKE \'%").append(query.toLowerCase()).append("%\'");
+        return whereClause.toString();
+    }
+
     static String createImagesTable() {
         StringBuilder sql = new StringBuilder("CREATE TABLE ")
                 .append(TABLE_IMAGES)
@@ -212,6 +218,7 @@ public class QueryHelper implements DatabaseConstants {
         StringBuilder sql = new StringBuilder("CREATE TABLE ")
                 .append(TABLE_OPTIONS)
                 .append(" (")
+                .append(OptionsTable.ID).append(" INTEGER, ")
                 .append(OptionsTable.PRODUCT_ID).append(" TEXT, ")
                 .append(OptionsTable.POSITION).append(" INTEGER, ")
                 .append(OptionsTable.NAME).append(" TEXT, ")
@@ -222,6 +229,7 @@ public class QueryHelper implements DatabaseConstants {
 
     static ContentValues contentValues(Option option) {
         ContentValues values = new ContentValues();
+        values.put(OptionsTable.ID, option.getId());
         values.put(OptionsTable.PRODUCT_ID, option.getProductId());
         values.put(OptionsTable.NAME, option.getName());
         values.put(OptionsTable.POSITION, option.getPosition());
@@ -229,11 +237,12 @@ public class QueryHelper implements DatabaseConstants {
     }
 
     static Option option(Cursor cursor) {
+        long id = cursor.getLong(cursor.getColumnIndex(OptionsTable.ID));
         String name = cursor.getString(cursor.getColumnIndex(OptionsTable.NAME));
         int position = cursor.getInt(cursor.getColumnIndex(OptionsTable.POSITION));
         String productId = cursor.getString(cursor.getColumnIndex(OptionsTable.PRODUCT_ID));
 
-        return new ModelFactory.DBOption(name, position, productId);
+        return new ModelFactory.DBOption(id, name, position, productId);
     }
 
     static String createProductVariantsTable() {

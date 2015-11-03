@@ -22,42 +22,32 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.dataprovider.tasks;
 
-import android.os.Bundle;
+import android.os.Handler;
 
-import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.model.Collection;
-import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
+import com.shopify.buy.model.Product;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
-/***
- * Used to serialize data for the {@link CollectionListActivity}.
- */
-public class CollectionListConfig extends BaseConfig {
+import retrofit.Callback;
 
-    public static final String EXTRA_SHOP_COLLECTIONS = "com.shopify.buy.ui.COLLECTIONS";
+public class SearchProductsTask extends BaseTask<Product> {
 
-    private List<Collection> collections;
+    private final String query;
 
-    public List<Collection> getCollections() {
-        return collections;
+    public SearchProductsTask(String query, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
+        super(buyDatabase, buyClient, callback, handler, executorService);
+        this.query = query;
     }
 
-    public void setCollections(List<Collection> collections) {
-        this.collections = collections;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (collections != null) {
-            String productsJson = BuyClientFactory.createDefaultGson().toJson(collections);
-            bundle.putString(EXTRA_SHOP_COLLECTIONS, productsJson);
-        }
-
-        return bundle;
+    @Override
+    public void run() {
+        List<Product> products = buyDatabase.searchProducts(query);
+        onSuccess(products, null);
     }
 
 }

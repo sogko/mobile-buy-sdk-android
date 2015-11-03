@@ -22,83 +22,70 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.products;
+package com.shopify.buy.ui.search;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.ProductsProvider;
-import com.shopify.buy.model.Collection;
-import com.shopify.buy.model.Product;
+import com.shopify.buy.dataprovider.SearchProvider;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
 
-import java.util.List;
-
-public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
+public class SearchBuilder extends BaseBuilder<SearchBuilder> {
 
     /**
-     * Create a default ProductListBuilder.
+     * Create a default SearchBuilder.
      * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
      *
      * @param context context to use for starting the {@code Activity}
      */
-    public ProductListBuilder(Context context) {
+    public SearchBuilder(Context context) {
         super(context);
     }
 
     /**
-     * Constructor that will use an existing {@link BuyClient} to configure the {@link ProductListFragment}.
+     * Constructor that will use an existing {@link BuyClient} to configure the {@link SearchFragment}.
      *
      * @param context context to use for launching the {@code Activity}
-     * @param client  the {@link BuyClient} to use to configure the ProductListFragment
+     * @param client  the {@link BuyClient} to use to configure the SearchFragment
      */
-    public ProductListBuilder(Context context, BuyClient client) {
+    public SearchBuilder(Context context, BuyClient client) {
         super(context, client);
     }
 
     @Override
     protected BaseConfig getConfig() {
         if (config == null) {
-            config = new ProductListConfig();
+            config = new SearchConfig();
         }
         return config;
     }
 
-    public ProductListBuilder setProducts(List<Product> products) {
-        ((ProductListConfig) config).setProducts(products);
-        return this;
-    }
-
-    public ProductListBuilder setProductIds(List<String> productIds) {
-        ((ProductListConfig) config).setProductIds(productIds);
-        return this;
-    }
-
-    public ProductListBuilder setCollection(Collection collection) {
-        ((ProductListConfig) config).setCollection(collection);
+    public SearchBuilder setSearchQuery(String query) {
+        ((SearchConfig) config).setSearchQuery(query);
         return this;
     }
 
     public Bundle buildBundle() {
         // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
-        ProductListConfig collectionListConfig = (ProductListConfig) config;
+        SearchConfig searchConfig = (SearchConfig) config;
 
         Bundle bundle = super.buildBundle();
-        bundle.putAll(collectionListConfig.toBundle());
+        bundle.putAll(searchConfig.toBundle());
         return bundle;
     }
 
     /**
-     * Returns a new {@link ProductListFragment} based on the params that have already been passed to the builder.
+     * Returns a new {@link SearchFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider  An optional implementation of {@link ProductsProvider}. If you pass null, {@link com.shopify.buy.dataprovider.DefaultProductsProvider} will be used.
-     * @param listener  An implementation of {@link com.shopify.buy.ui.products.ProductListFragment.Listener} which will be notified of user actions.
-     * @return          A new {@link ProductListFragment}.
+     * @param provider An optional implementation of {@link SearchProvider}. If you pass null, {@link com.shopify.buy.dataprovider.DefaultSearchProvider} will be used.
+     * @param listener An implementation of {@link com.shopify.buy.ui.search.SearchFragment.Listener} which will be notified of user actions.
+     * @return A new {@link SearchFragment}.
      */
-    public ProductListFragment buildFragment(ProductsProvider provider, ProductListFragment.Listener listener) {
-        ProductListFragment fragment = new ProductListFragment();
+    public SearchFragment buildFragment(@Nullable SearchProvider provider, SearchFragment.Listener listener) {
+        SearchFragment fragment = new SearchFragment();
         fragment.setProvider(provider);
         fragment.setListener(listener);
         fragment.setArguments(buildBundle());
