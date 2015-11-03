@@ -37,6 +37,7 @@ import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
+import com.shopify.buy.utils.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -45,9 +46,11 @@ import java.util.List;
 public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     /*
+    Terminal commands for pulling the database off of the device and inspecting it in sqlite3:
+
     adb shell
-    run-as com.shopify.drawerapp
-    cp /data/data/com.shopify.drawerapp/databases/mobile_buy_sdk_sqlite_database /sdcard/
+    run-as com.shopify.merchantapp
+    cp /data/data/com.shopify.merchantapp/databases/mobile_buy_sdk_sqlite_database /sdcard/
     exit
     exit
     adb pull /sdcard/mobile_buy_sdk_sqlite_database
@@ -122,9 +125,32 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         }
     }
 
-    public List<Product> getProducts() {
+    public List<Product> getAllProducts() {
         List<Product> results = new ArrayList<>();
         Cursor cursor = querySimple(TABLE_PRODUCTS, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    results.add(buildProduct(cursor));
+                } catch (ParseException e) {
+                    Log.e(LOG_TAG, "Could not get Product from database", e);
+                }
+            } while (cursor.moveToNext());
+        }
+        return results;
+    }
+
+    public List<Product> getProducts(List<String> productIds) {
+        List<Product> results = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(productIds)) {
+            return results;
+        }
+
+        StringBuilder whereClause = new StringBuilder();
+        whereClause.append(ProductsTable.PRODUCT_ID).append(" IN (").append(TextUtils.join(",", productIds.toArray())).append(")");
+
+        Cursor cursor = querySimple(TABLE_PRODUCTS, whereClause.toString(), null);
         if (cursor.moveToFirst()) {
             do {
                 try {
@@ -151,24 +177,14 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     public void saveProducts(List<Product> products) {
-        /*
-         TODO
-         This logic assumes that the entire product list is passed in every time.
-         To do this properly, we need to selectively insert or update these products,
-         and we need some way to delete products should no longer be visible to the user.
-          */
+        // TODO We need some way to delete products should no longer be visible to the user.
 
         SQLiteDatabase db = getWritableDatabase();
 
-        // Delete old products
-        db.delete(TABLE_PRODUCTS, null, null);
-        db.delete(TABLE_IMAGES, null, null);
-        db.delete(TABLE_OPTIONS, null, null);
-        db.delete(TABLE_PRODUCT_VARIANTS, null, null);
-        db.delete(TABLE_OPTION_VALUES, null, null);
-
-        // Save new products
+        // Save new products (deleting old content first)
         for (Product product : products) {
+            deleteProduct(db, product);
+
             db.insert(TABLE_PRODUCTS, null, QueryHelper.contentValues(product));
             for (Image image : product.getImages()) {
                 db.insert(TABLE_IMAGES, null, QueryHelper.contentValues(image));
@@ -200,6 +216,21 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
             }
         }
         return results;
+    }
+
+    private void deleteProduct(SQLiteDatabase db, Product product) {
+        final String productId = product.getProductId();
+
+        db.delete(TABLE_PRODUCTS, String.format("%s = \'%s\'", ProductsTable.PRODUCT_ID, productId), null);
+        db.delete(TABLE_IMAGES, String.format("%s = \'%s\'", ImagesTable.PRODUCT_ID, productId), null);
+        db.delete(TABLE_OPTIONS, String.format("%s = \'%s\'", OptionsTable.PRODUCT_ID, productId), null);
+
+        List<ProductVariant> variants = getProductVariants(productId);
+        for (ProductVariant variant : variants) {
+            db.delete(TABLE_OPTION_VALUES, String.format("%s = \'%s\'", OptionValuesTable.VARIANT_ID, variant.getId().toString()), null);
+        }
+
+        db.delete(TABLE_PRODUCT_VARIANTS, String.format("%s = \'%s\'", ProductVariantsTable.PRODUCT_ID, productId), null);
     }
 
     private Product buildProduct(Cursor cursor) throws ParseException {

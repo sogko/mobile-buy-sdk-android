@@ -57,7 +57,9 @@ public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                callback.success(results, response);
+                if (callback != null) {
+                    callback.success(results, response);
+                }
             }
         });
     }
@@ -66,7 +68,9 @@ public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                callback.failure(error);
+                if (callback != null) {
+                    callback.failure(error);
+                }
             }
         });
     }
