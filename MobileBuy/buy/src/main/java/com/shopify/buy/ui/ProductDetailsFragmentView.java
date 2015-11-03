@@ -169,9 +169,10 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     /**
      * Sets the models and fills in the subviews with data
      *
-     * @param fragment the fragment that owns this view
-     * @param product  the product to display
-     * @param variant  the variant to display
+     * @param fragment        the fragment that owns this view
+     * @param product         the product to display
+     * @param variant         the variant to display
+     * @param showShareButton pass true if you want to display the share button in the action bar
      */
     public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant, boolean showShareButton) {
         this.fragment = fragment;
