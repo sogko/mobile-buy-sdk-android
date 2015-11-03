@@ -129,6 +129,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     private TextView toolbarTitle;
     private int homeDrawable;
     private ImageView shareButton;
+    private boolean showShareButton;
 
     private AppBarLayout appBarLayout;
 
@@ -172,10 +173,11 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
      * @param product  the product to display
      * @param variant  the variant to display
      */
-    public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant) {
+    public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant, boolean showShareButton) {
         this.fragment = fragment;
         this.product = product;
         this.variant = variant;
+        this.showShareButton = showShareButton;
         doViewConfiguration();
     }
 
@@ -452,12 +454,17 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         toolbarTitle.setTextColor(theme.getProductTitleColor(res));
 
         shareButton = (ImageView) findViewById(R.id.share_button);
-        shareButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fragment.onSharePressed();
-            }
-        });
+        if (showShareButton) {
+            shareButton.setVisibility(View.VISIBLE);
+            shareButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fragment.onSharePressed();
+                }
+            });
+        } else {
+            shareButton.setVisibility(View.GONE);
+        }
 
         // Add a custom behavior to the appBarLayout.  We want it to pass touches to its children instead of scrolling.
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
@@ -502,13 +509,19 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
                 if (homeDrawable != R.drawable.ic_close_white_24dp) {
                     homeDrawable = R.drawable.ic_close_white_24dp;
                     actionBar.setHomeAsUpIndicator(homeDrawable);
-                    shareButton.setImageResource(R.drawable.ic_share_white_24dp);
+
+                    if (showShareButton) {
+                        shareButton.setImageResource(R.drawable.ic_share_white_24dp);
+                    }
                 }
             } else {
                 if (homeDrawable != R.drawable.ic_close_black_24dp) {
                     homeDrawable = R.drawable.ic_close_black_24dp;
                     actionBar.setHomeAsUpIndicator(homeDrawable);
-                    shareButton.setImageResource(R.drawable.ic_share_black_24dp);
+
+                    if (showShareButton) {
+                        shareButton.setImageResource(R.drawable.ic_share_black_24dp);
+                    }
                 }
             }
         }

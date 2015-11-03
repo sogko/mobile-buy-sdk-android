@@ -242,8 +242,9 @@ public class ProductDetailsFragment extends CheckoutFragment {
         variantSelectionController.setListener(onVariantSelectedListener);
 
         // Tell the view that it can populate the product details components now
+        // Only show the share button if the ShareListener has been set
         view.setCurrencyFormat(currencyFormat);
-        view.onProductAvailable(ProductDetailsFragment.this, product, variant);
+        view.onProductAvailable(ProductDetailsFragment.this, product, variant, shareListener != null);
 
         // Disable the checkout button if the selected product variant is sold out
         checkoutButton.setEnabled(variant.isAvailable());

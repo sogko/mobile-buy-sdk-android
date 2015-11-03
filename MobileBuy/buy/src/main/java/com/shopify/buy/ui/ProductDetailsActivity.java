@@ -60,7 +60,7 @@ public class ProductDetailsActivity extends BaseActivity implements CheckoutList
             productDetailsFragment = (ProductDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.product_details_activity);
         }
 
-        initContentView();
+        setContentView(R.layout.activity_product_details);
     }
 
     private ProductDetailsFragment getFragment() {
@@ -69,11 +69,6 @@ public class ProductDetailsActivity extends BaseActivity implements CheckoutList
         }
         return productDetailsFragment;
     }
-
-    private void initContentView() {
-        setContentView(R.layout.activity_product_details);
-    }
-
 
     // ProductDetailsListener Callbacks
 
