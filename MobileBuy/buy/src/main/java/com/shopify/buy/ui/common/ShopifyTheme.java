@@ -228,10 +228,20 @@ public class ShopifyTheme implements Parcelable {
             case DARK:
                 return res.getDrawable(R.drawable.ic_arrow_back_white_24dp);
             default:
-                return res.getDrawable(R.drawable.ic_arrow_back_white_24dp);
+                return res.getDrawable(R.drawable.ic_arrow_back_black_24dp);
 
         }
     }
+
+    public Drawable getCloseIndicator(Resources res) {
+        switch (style) {
+            case DARK:
+                return res.getDrawable(R.drawable.ic_close_black_24dp);
+            default:
+                return res.getDrawable(R.drawable.ic_close_white_24dp);
+        }
+    }
+
     public Drawable getBackgroundSelectorDrawable(Resources res) {
         switch (style) {
             case DARK:
