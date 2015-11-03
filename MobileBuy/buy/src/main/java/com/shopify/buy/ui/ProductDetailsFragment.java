@@ -67,7 +67,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
     private ProductVariant variant;
     private String productId;
 
-    private Button addToCartButton;
     private boolean showCartButton;
 
     public void setShareListener(ShareListener shareListener) {
@@ -90,7 +89,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.view.setTheme(theme);
-        configureAddToCartButton();
     }
 
     @Override
@@ -150,12 +148,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        addToCartButton.setEnabled(true);
-    }
-
-    @Override
     protected Cart getCartForCheckout() {
         Cart cart = new Cart();
         cart.addVariant(variant);
@@ -179,12 +171,14 @@ public class ProductDetailsFragment extends CheckoutFragment {
         }
     }
 
-    private void configureAddToCartButton() {
+    @Override
+    protected void configureCheckoutButton() {
         if (showCartButton) {
-            view.findViewById(R.id.cart_button_container).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.checkout_button_container).setVisibility(View.VISIBLE);
 
-            addToCartButton = (Button) view.findViewById(R.id.cart_button);
-            addToCartButton.setOnClickListener(new View.OnClickListener() {
+            checkoutButton = (Button) view.findViewById(R.id.checkout_button);
+            checkoutButton.setText(R.string.add_to_cart);
+            checkoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CartManager.getInstance().getCart().addVariant(variant);
@@ -193,8 +187,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
                     Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
                 }
             });
-        } else {
-            view.findViewById(R.id.cart_button_container).setVisibility(View.GONE);
         }
     }
 

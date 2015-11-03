@@ -595,18 +595,6 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
 
         int disabledTextAlpha = getResources().getInteger(R.integer.disabled_text_alpha);
 
-        addToCartButtonContainer = (ViewGroup) findViewById(R.id.cart_button_container);
-        addToCartButtonContainer.setBackgroundColor(theme.getCheckoutLabelColor(getResources()));
-
-        ((Button) findViewById(R.id.cart_button)).setTextColor(new ColorStateList(
-                new int[][]{
-                        new int[]{-android.R.attr.state_enabled},
-                        new int[]{android.R.attr.state_enabled}
-                },
-                new int[]{
-                        ColorUtils.setAlphaComponent(theme.getAccentColor(), disabledTextAlpha), theme.getAccentColor(),}
-        ));
-
         checkoutButtonContainer = (ViewGroup) findViewById(R.id.checkout_button_container);
         checkoutButtonContainer.setBackgroundColor(theme.getAccentColor());
 

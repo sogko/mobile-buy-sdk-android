@@ -71,7 +71,7 @@ public abstract class CheckoutFragment extends BaseFragment {
         this.checkoutListener = checkoutListener;
     }
 
-    private void configureCheckoutButton() {
+    protected void configureCheckoutButton() {
         checkoutButton = (Button) getView().findViewById(R.id.checkout_button);
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override

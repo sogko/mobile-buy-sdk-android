@@ -99,24 +99,6 @@
         android:layout_alignParentBottom="true">
 
         <FrameLayout
-            android:id="@+id/cart_button_container"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <Button
-                android:id="@+id/cart_button"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackground"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/add_to_cart"
-                android:textSize="@dimen/text_small"/>
-
-        </FrameLayout>
-
-        <FrameLayout
             android:id="@+id/checkout_button_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
