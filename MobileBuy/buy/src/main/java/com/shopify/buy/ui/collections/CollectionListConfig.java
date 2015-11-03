@@ -33,7 +33,7 @@ import com.shopify.buy.ui.common.BaseConfig;
 import java.util.List;
 
 /***
- * Used to serialize data for the {@link CollectionListActivity}.
+ * Used to serialize data for the {@link CollectionListFragment}.
  */
 public class CollectionListConfig extends BaseConfig {
 
