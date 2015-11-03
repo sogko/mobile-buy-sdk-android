@@ -480,6 +480,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         activity.setSupportActionBar(toolbar);
         actionBar = activity.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setElevation(8);
 
         // If we are restoring the view we may need to manually adjust the icon
