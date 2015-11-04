@@ -433,12 +433,16 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
 
     public void hideBottomButtons(long duration) {
         bottomButtonsContainer.animate().setDuration(duration).y(getHeight()).start();
-        fab.hide();
+        if (fab != null) {
+            fab.hide();
+        }
     }
 
     public void showBottomButtons(long duration) {
         bottomButtonsContainer.animate().setDuration(duration).y(getHeight() - checkoutButtonContainer.getHeight()).start();
-        fab.show();
+        if (fab != null) {
+            fab.show();
+        }
     }
 
     /**
