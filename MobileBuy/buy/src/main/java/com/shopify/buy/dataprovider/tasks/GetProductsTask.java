@@ -87,7 +87,7 @@ public class GetProductsTask extends BaseTask<Product> {
         }
 
         // need to fetch from the cloud
-        Callback<List<Product>> callback = new Callback<List<Product>>() {
+        final Callback<List<Product>> callback = new Callback<List<Product>>() {
             @Override
             public void success(List<Product> products, Response response) {
                 saveProducts(products);
@@ -104,11 +104,17 @@ public class GetProductsTask extends BaseTask<Product> {
             }
         };
 
-        // TODO need to go beyond just page 1
         if (!TextUtils.isEmpty(collectionId)) {
-            buyClient.getProducts(1, collectionId, callback);
+            fetchNextPage(0, callback, new ArrayList<Product>(), new PageFetcher() {
+                @Override
+                public void fetchPage(int page, Callback<List<Product>> callback) {
+                    buyClient.getProducts(page, collectionId, callback);
+                }
+            });
+
         } else if (!CollectionUtils.isEmpty(productIds)) {
             buyClient.getProducts(productIds, callback);
+
         } else {
             // we're fetching all products, bump up the page size
             buyClient.setPageSize(50);
