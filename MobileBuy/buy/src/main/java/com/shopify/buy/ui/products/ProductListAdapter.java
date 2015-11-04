@@ -25,24 +25,19 @@
 package com.shopify.buy.ui.products;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shopify.buy.R;
-import com.shopify.buy.model.Image;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.buy.utils.CurrencyFormatter;
-import com.shopify.buy.utils.ImageUtility;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -50,7 +45,7 @@ import java.util.Locale;
 import java.util.Set;
 
 // TODO we should create a base class for our recycler view adapters and view holders.
-public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.ViewHolder> {
+public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.ProductViewHolder> {
 
     final Context context;
     final ShopifyTheme theme;
@@ -60,7 +55,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     NumberFormat currencyFormatter;
 
     // Listener used to pass click events back to the fragment or adapter
-    private ClickListener clickListener;
+    private RecyclerViewHolder.ClickListener<Product> clickListener;
 
     public ProductListAdapter(Context context, ShopifyTheme theme) {
         super();
@@ -69,29 +64,15 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.product_list_item, viewGroup, false);
-        ViewHolder viewHolder = new ViewHolder(v);
+    public ProductViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.product_list_item, viewGroup, false);
+        ProductViewHolder viewHolder = new ProductViewHolder(view, theme, clickListener);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        Product product = products.get(i);
-        viewHolder.product = product;
-
-        viewHolder.productTitleView.setTextColor(theme.getAccentColor());
-        viewHolder.productTitleView.setText(product.getTitle());
-
-        // Set the product price.  If there are multiple prices show the minimum
-        Set<String> prices = product.getPrices();
-
-        String productPrice = currencyFormatter.format(Double.parseDouble(product.getMinimumPrice()));
-        if (prices.size() > 1) {
-            productPrice = context.getString(R.string.from) + " " + productPrice;
-        }
-        viewHolder.productPriceView.setText(productPrice);
+    public void onBindViewHolder(ProductViewHolder viewHolder, int index) {
+        viewHolder.setItem(products.get(index));
     }
 
     @Override
@@ -103,88 +84,52 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         return size;
     }
 
-    public void setClickListener(ClickListener clickListener) {
+    public void setClickListener(RecyclerViewHolder.ClickListener<Product> clickListener) {
         this.clickListener = clickListener;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    class ProductViewHolder extends RecyclerViewHolder<Product> {
 
-        public TextView productTitleView;
-        public TextView productPriceView;
-        public ImageView productImageView;
-        public Product product;
+        public TextView titleView;
+        public TextView priceView;
 
-        public ViewHolder(final View itemView) {
-            super(itemView);
+        public ProductViewHolder(View itemView, ShopifyTheme theme, ClickListener<Product> clickListener) {
+            super(itemView, ImageAspectRatio.SQUARE, false, clickListener);
 
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
+            titleView = (TextView) itemView.findViewById(R.id.item_title);
+            priceView = (TextView) itemView.findViewById(R.id.item_price);
+            imageView = (ImageView) itemView.findViewById(R.id.item_image);
 
-            productTitleView = (TextView) itemView.findViewById(R.id.item_title);
-            productPriceView = (TextView) itemView.findViewById(R.id.item_price);
-            productImageView = (ImageView) itemView.findViewById(R.id.item_image);
+            if (theme != null) {
+                titleView.setTextColor(theme.getAccentColor());
 
-            theme.applyCustomFont(productTitleView);
-            theme.applyCustomFont(productPriceView);
-
-            ViewTreeObserver viewTreeObserver = itemView.getViewTreeObserver();
-            if (viewTreeObserver.isAlive()) {
-                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                            itemView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        } else {
-                            itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-
-                        int width = itemView.getWidth();
-                        int height = width;
-
-                        ViewGroup.LayoutParams layoutParams = productImageView.getLayoutParams();
-                        layoutParams.height = height;
-                        layoutParams.width = width;
-                        productImageView.setLayoutParams(layoutParams);
-
-                        if (product.getImages() != null && product.getImages().size() > 0) {
-
-                            Image image = product.getImages().get(0);
-                            String imageUrl = ImageUtility.stripQueryFromUrl(image.getSrc());
-
-                            ImageUtility.loadImageResourceIntoSizedView(Picasso.with(context), imageUrl, productImageView, false, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    // TODO we should have image loading placeholders or spinners
-                                }
-
-                                @Override
-                                public void onError() {
-                                    // TODO we should have image loading placeholders or spinners
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        }
-
-
-        @Override
-        public void onClick(View v) {
-            if (clickListener != null) {
-                int position = getAdapterPosition();
-                clickListener.onItemClick(position, v, products.get(position));
+                theme.applyCustomFont(titleView);
+                theme.applyCustomFont(priceView);
             }
         }
 
         @Override
-        public boolean onLongClick(View v) {
-            if (clickListener != null) {
-                int position = getAdapterPosition();
-                clickListener.onItemLongClick(position, v, products.get(position));
-                return false;
+        public void setItem(Product product) {
+            super.setItem(product);
+
+            titleView.setText(product.getTitle());
+
+            // Set the product price.  If there are multiple prices show the minimum
+            Set<String> prices = product.getPrices();
+
+            String productPrice = currencyFormatter.format(Double.parseDouble(product.getMinimumPrice()));
+            if (prices.size() > 1) {
+                productPrice = context.getString(R.string.from) + " " + productPrice;
             }
-            return true;
+            priceView.setText(productPrice);
+        }
+
+        @Override
+        public String getImageUrl() {
+            if (item.getImages() != null && item.getImages().size() > 0) {
+                return item.getImages().get(0).getSrc();
+            }
+            return null;
         }
     }
 
@@ -197,9 +142,5 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         currencyFormatter = CurrencyFormatter.getFormatter(Locale.getDefault(), shop.getCurrency());
     }
 
-    public interface ClickListener {
-        void onItemClick(int position, View v, Product product);
-        void onItemLongClick(int position, View v, Product product);
-    }
 }
 

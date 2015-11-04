@@ -25,27 +25,21 @@
 package com.shopify.buy.ui.collections;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shopify.buy.R;
 import com.shopify.buy.model.Collection;
+import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.ui.common.ShopifyTheme;
-import com.shopify.buy.utils.ImageUtility;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAdapter.ViewHolder> {
+public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAdapter.CollectionViewHolder> {
 
     List<Collection> collections;
 
@@ -53,7 +47,7 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     final ShopifyTheme theme;
 
     // Listener used to pass click events back to the fragment or adapter
-    private ClickListener clickListener;
+    private RecyclerViewHolder.ClickListener<Collection> clickListener;
 
     public CollectionListAdapter(Context context, ShopifyTheme theme) {
         super();
@@ -62,22 +56,15 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public CollectionViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.collection_list_item, viewGroup, false);
-        ViewHolder viewHolder = new ViewHolder(view);
+        CollectionViewHolder viewHolder = new CollectionViewHolder(view, theme, clickListener);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int index) {
-        viewHolder.collection = collections.get(index);
-        viewHolder.collectionNameView.setText(viewHolder.collection.getTitle());
-
-        if (viewHolder.isLayedOut.get()) {
-            viewHolder.loadImage();
-        } else {
-            viewHolder.waitForLayout();
-        }
+    public void onBindViewHolder(CollectionViewHolder viewHolder, int index) {
+        viewHolder.setItem(collections.get(index));
     }
 
     @Override
@@ -89,94 +76,35 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
         return size;
     }
 
-    public void setClickListener(ClickListener clickListener) {
+    public void setClickListener(RecyclerViewHolder.ClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    class CollectionViewHolder extends RecyclerViewHolder<Collection> {
 
-        public Collection collection;
-        public TextView collectionNameView;
-        public ImageView collectionImageView;
+        private TextView nameText;
 
-        public final AtomicBoolean isLayedOut = new AtomicBoolean(false);
+        public CollectionViewHolder(View itemView, ShopifyTheme theme, ClickListener<Collection> clickListener) {
+            super(itemView, ImageAspectRatio.SIXTEEN_BY_NINE, true, clickListener);
 
-        public ViewHolder(final View itemView) {
-            super(itemView);
-
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-
-            collectionNameView = (TextView) itemView.findViewById(R.id.collection_name);
-            collectionImageView = (ImageView) itemView.findViewById(R.id.collection_image);
+            nameText = (TextView) itemView.findViewById(R.id.collection_name);
+            imageView = (ImageView) itemView.findViewById(R.id.collection_image);
 
             if (theme != null) {
-                theme.applyCustomFont(collectionNameView);
-            }
-        }
-
-        public void waitForLayout() {
-            ViewTreeObserver viewTreeObserver = itemView.getViewTreeObserver();
-            if (viewTreeObserver.isAlive()) {
-                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                            itemView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        } else {
-                            itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-
-                        int width = itemView.getWidth();
-                        int height = width * 9 / 16;
-
-                        ViewGroup.LayoutParams layoutParams = collectionImageView.getLayoutParams();
-                        layoutParams.height = height;
-                        layoutParams.width = width;
-                        collectionImageView.setLayoutParams(layoutParams);
-
-                        loadImage();
-
-                        isLayedOut.set(true);
-                    }
-                });
-            }
-        }
-
-        public void loadImage() {
-            if (collection.getImageUrl() != null) {
-                final String imageUrl = ImageUtility.stripQueryFromUrl(collection.getImageUrl());
-
-                ImageUtility.loadImageResourceIntoSizedView(Picasso.with(context), imageUrl, collectionImageView, true, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        // TODO we should have image loading placeholders or spinners
-                    }
-
-                    @Override
-                    public void onError() {
-                        // TODO we should have image loading placeholders or spinners
-                    }
-                });
+                theme.applyCustomFont(nameText);
             }
         }
 
         @Override
-        public void onClick(View v) {
-            if (clickListener != null) {
-                int position = getAdapterPosition();
-                clickListener.onItemClick(position, v, collections.get(position));
-            }
+        public void setItem(Collection collection) {
+            super.setItem(collection);
+
+            nameText.setText(collection.getTitle());
         }
 
         @Override
-        public boolean onLongClick(View v) {
-            if (clickListener != null) {
-                int position = getAdapterPosition();
-                clickListener.onItemLongClick(position, v, collections.get(position));
-                return false;
-            }
-            return true;
+        public String getImageUrl() {
+            return item.getImageUrl();
         }
     }
 
@@ -184,9 +112,5 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
         this.collections = collections;
     }
 
-    public interface ClickListener {
-        void onItemClick(int position, View v, Collection collection);
-        void onItemLongClick(int position, View v, Collection collection);
-    }
 }
 

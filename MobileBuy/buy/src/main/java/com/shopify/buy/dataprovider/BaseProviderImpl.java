@@ -34,13 +34,16 @@ import java.util.concurrent.Executors;
 
 public abstract class BaseProviderImpl {
 
-    protected static final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    protected static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-    protected final BuyDatabase buyDatabase;
+    protected static BuyDatabase buyDatabase;
+
     protected final Handler handler;
 
     public BaseProviderImpl(Context context) {
-        this.buyDatabase = new BuyDatabase(context);
+        if (buyDatabase == null) {
+            buyDatabase = new BuyDatabase(context);
+        }
         this.handler = new Handler(context.getMainLooper());
     }
 

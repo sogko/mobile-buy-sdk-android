@@ -37,10 +37,12 @@ import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
+import com.shopify.buy.utils.CollectionUtils;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
@@ -84,6 +86,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     public List<Collection> getCollections() {
         List<Collection> results = new ArrayList<>();
+
         Cursor cursor = querySimple(TABLE_COLLECTIONS, null, null);
         if (cursor.moveToFirst()) {
             do {
@@ -94,11 +97,14 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 }
             } while (cursor.moveToNext());
         }
+        cursor.close();
+
         return results;
     }
 
     public Collection getCollection(long id) {
         Collection collection = null;
+
         Cursor cursor = querySimple(TABLE_COLLECTIONS, CollectionsTable.COLLECTION_ID + " = " + id, null);
         if (cursor.moveToFirst()) {
             try {
@@ -107,6 +113,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 Log.e(LOG_TAG, "Could not get Collection from database", e);
             }
         }
+        cursor.close();
+
         return collection;
     }
 
@@ -122,8 +130,9 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         }
     }
 
-    public List<Product> getProducts() {
+    public List<Product> getAllProducts() {
         List<Product> results = new ArrayList<>();
+
         Cursor cursor = querySimple(TABLE_PRODUCTS, null, null);
         if (cursor.moveToFirst()) {
             do {
@@ -134,11 +143,39 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 }
             } while (cursor.moveToNext());
         }
+        cursor.close();
+
+        return results;
+    }
+
+    public List<Product> getProducts(List<String> productIds) {
+        List<Product> results = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(productIds)) {
+            return results;
+        }
+
+        StringBuilder whereClause = new StringBuilder();
+        whereClause.append(ProductsTable.PRODUCT_ID).append(" IN (").append(TextUtils.join(",", productIds.toArray())).append(")");
+
+        Cursor cursor = querySimple(TABLE_PRODUCTS, whereClause.toString(), null);
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    results.add(buildProduct(cursor));
+                } catch (ParseException e) {
+                    Log.e(LOG_TAG, "Could not get Product from database", e);
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
         return results;
     }
 
     public Product getProduct(long id) {
         Product product = null;
+
         Cursor cursor = querySimple(TABLE_PRODUCTS, ProductsTable.PRODUCT_ID + " = " + id, null);
         if (cursor.moveToFirst()) {
             try {
@@ -147,6 +184,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 Log.e(LOG_TAG, "Could not get Product from database", e);
             }
         }
+        cursor.close();
+
         return product;
     }
 
@@ -185,19 +224,20 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         }
     }
 
-    public List<Product> searchProducts(String query) {
+    public List<Product> searchProducts(final String query, final AtomicBoolean isCancelled) {
         List<Product> results = new ArrayList<>();
         if (!TextUtils.isEmpty(query)) {
             Cursor cursor = querySimple(TABLE_PRODUCTS, QueryHelper.searchProductsWhereClause(query), null);
-            if (cursor.moveToFirst()) {
+            if (!isCancelled.get() && cursor.moveToFirst()) {
                 do {
                     try {
                         results.add(buildProduct(cursor));
                     } catch (ParseException e) {
                         Log.e(LOG_TAG, "Could not get Product from database", e);
                     }
-                } while (cursor.moveToNext());
+                } while (!isCancelled.get() && cursor.moveToNext());
             }
+            cursor.close();
         }
         return results;
     }
@@ -218,6 +258,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 results.add(QueryHelper.image(cursor));
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return results;
     }
 
@@ -235,6 +276,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 }
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return results;
     }
 
@@ -246,6 +288,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 results.add(QueryHelper.optionValue(cursor));
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return results;
     }
 
@@ -257,6 +300,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 results.add(QueryHelper.option(cursor));
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return results;
     }
 
