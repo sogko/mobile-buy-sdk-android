@@ -116,8 +116,6 @@ public class GetProductsTask extends BaseTask<Product> {
             buyClient.getProducts(productIds, callback);
 
         } else {
-            // we're fetching all products, bump up the page size
-            buyClient.setPageSize(50);
             fetchNextPage(0, callback, new ArrayList<Product>(), new PageFetcher() {
                 @Override
                 public void fetchPage(int page, Callback<List<Product>> callback) {

@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-// TODO we should create a base class for our recycler view adapters and view holders.
 public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.ProductViewHolder> {
 
     final Context context;

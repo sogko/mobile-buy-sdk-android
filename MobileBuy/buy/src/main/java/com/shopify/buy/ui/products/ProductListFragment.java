@@ -87,8 +87,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
             String productsJson = bundle.getString(ProductListConfig.EXTRA_SHOP_PRODUCTS);
 
             if (!TextUtils.isEmpty(productsJson)) {
-                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {
-                }.getType());
+                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
             }
 
         } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS)) {

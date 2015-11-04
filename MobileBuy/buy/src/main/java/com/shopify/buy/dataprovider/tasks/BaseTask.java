@@ -51,6 +51,9 @@ public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
         this.callback = callback;
         this.handler = handler;
         this.executorService = executorService;
+
+        // bump up the page size for fetches
+        this.buyClient.setPageSize(50);
     }
 
     protected void onSuccess(final List<T> results, final Response response) {
