@@ -44,6 +44,7 @@ import com.shopify.buy.dataprovider.SearchProvider;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class SearchFragment extends BaseFragment implements SearchAdapter.ClickListener, SearchView.OnQueryTextListener {
+public class SearchFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Product>, SearchView.OnQueryTextListener {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
@@ -221,13 +222,17 @@ public class SearchFragment extends BaseFragment implements SearchAdapter.ClickL
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        boolean shouldFetch = query == null || (newText != null && newText.length() > query.length());
         query = newText;
-        fetchProducts();
+        if (shouldFetch) {
+            fetchProducts();
+        }
         return true;
     }
 
     public interface Listener {
         void onItemClick(Product product);
+
         void onItemLongClick(Product product);
     }
 

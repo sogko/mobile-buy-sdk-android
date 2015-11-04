@@ -44,6 +44,7 @@ import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.List;
@@ -52,7 +53,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ProductListFragment extends BaseFragment implements ProductListAdapter.ClickListener {
+public class ProductListFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Product> {
     private static final String TAG = ProductListFragment.class.getSimpleName();
 
     ProductListFragmentView view;
@@ -206,6 +207,7 @@ public class ProductListFragment extends BaseFragment implements ProductListAdap
 
     public interface Listener {
         void onItemClick(Product product);
+
         void onItemLongClick(Product product);
     }
 }

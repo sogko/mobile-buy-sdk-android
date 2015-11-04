@@ -39,9 +39,14 @@ public class DefaultSearchProvider extends BaseProviderImpl implements SearchPro
         super(context);
     }
 
+    private SearchProductsTask task;
+
     @Override
     public void searchProducts(String query, BuyClient buyClient, Callback<List<Product>> callback) {
-        SearchProductsTask task = new SearchProductsTask(query, buyDatabase, buyClient, callback, handler, executorService);
+        if (task != null) {
+            task.cancel();
+        }
+        task = new SearchProductsTask(query, buyDatabase, buyClient, callback, handler, executorService);
         executorService.execute(task);
     }
 

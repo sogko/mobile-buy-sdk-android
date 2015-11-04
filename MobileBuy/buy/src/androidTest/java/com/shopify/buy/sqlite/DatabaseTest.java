@@ -24,6 +24,9 @@
 
 package com.shopify.buy.sqlite;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.extensions.ShopifyAndroidTestCase;
 import com.shopify.buy.model.Collection;
@@ -43,9 +46,28 @@ import retrofit.client.Response;
 
 public class DatabaseTest extends ShopifyAndroidTestCase {
 
+    class WipeableDatabase extends BuyDatabase {
+
+        public WipeableDatabase(Context context) {
+            super(context);
+        }
+
+        public void wipe() {
+            SQLiteDatabase db = getWritableDatabase();
+            db.delete(TABLE_COLLECTIONS, null, null);
+            db.delete(TABLE_PRODUCTS, null, null);
+            db.delete(TABLE_IMAGES, null, null);
+            db.delete(TABLE_OPTION_VALUES, null, null);
+            db.delete(TABLE_OPTIONS, null, null);
+            db.delete(TABLE_PRODUCT_VARIANTS, null, null);
+        }
+
+    }
+
     public void testCollectionsTable() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final BuyDatabase db = new BuyDatabase(getContext());
+        final WipeableDatabase db = new WipeableDatabase(getContext());
+        db.wipe();
         buyClient.getCollections(new Callback<List<Collection>>() {
             @Override
             public void success(List<Collection> apiCollections, Response response) {
@@ -63,16 +85,18 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
             }
         });
         latch.await();
+        db.close();
     }
 
     public void testProductsTable() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final BuyDatabase db = new BuyDatabase(getContext());
+        final WipeableDatabase db = new WipeableDatabase(getContext());
+        db.wipe();
         buyClient.getProductPage(1, new Callback<List<Product>>() {
             @Override
             public void success(List<Product> apiProducts, Response response) {
                 db.saveProducts(apiProducts);
-                List<Product> dbProducts = db.getProducts();
+                List<Product> dbProducts = db.getAllProducts();
                 for (int i = 0; i < apiProducts.size(); i++) {
                     assertExactMatch(apiProducts.get(i), dbProducts.get(i));
                 }
@@ -85,6 +109,7 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
             }
         });
         latch.await();
+        db.close();
     }
 
     private void assertExactMatch(Collection c1, Collection c2) {

@@ -25,15 +25,14 @@
 package com.shopify.buy.dataprovider.tasks;
 
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
-import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.utils.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,38 +43,51 @@ import retrofit.client.Response;
 
 public class GetProductsTask extends BaseTask<Product> {
 
+    private final boolean cloudOnly;
+
     private String collectionId;
     private List<String> productIds;
 
     public GetProductsTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
+        cloudOnly = true;
     }
 
     public GetProductsTask(String collectionId, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
         this.collectionId = collectionId;
+        cloudOnly = false;
     }
 
     public GetProductsTask(List<String> productIds, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
         this.productIds = productIds;
+        cloudOnly = false;
     }
 
     @Override
     public void run() {
         final AtomicBoolean foundInDb = new AtomicBoolean(false);
 
-        /*  TODO - once the collection to product mapping exists, we can check the local database first
-            https://github.com/Shopify/shopify/issues/56585
-        List<Product> products = buyDatabase.getProducts();
-        if (!CollectionUtils.isEmpty(products)) {
-            foundInDb.set(true);
-            onSuccess(products, null);
+        if (!cloudOnly) {
+            // check the local database first
+            List<Product> products = null;
+            if (!TextUtils.isEmpty(collectionId)) {
+                // TODO this case relies on: https://github.com/Shopify/shopify/issues/56585
+            } else if (!CollectionUtils.isEmpty(productIds)) {
+                products = buyDatabase.getProducts(productIds);
+            } else {
+                products = buyDatabase.getAllProducts();
+            }
+
+            if (!CollectionUtils.isEmpty(products)) {
+                foundInDb.set(true);
+                onSuccess(products, null);
+            }
         }
-        */
 
         // need to fetch from the cloud
-        Callback<List<Product>> callback = new Callback<List<Product>>() {
+        final Callback<List<Product>> callback = new Callback<List<Product>>() {
             @Override
             public void success(List<Product> products, Response response) {
                 saveProducts(products);
@@ -92,13 +104,24 @@ public class GetProductsTask extends BaseTask<Product> {
             }
         };
 
-        // TODO need to go beyond just page 1
         if (!TextUtils.isEmpty(collectionId)) {
-            buyClient.getProducts(1, collectionId, callback);
+            fetchNextPage(0, callback, new ArrayList<Product>(), new PageFetcher() {
+                @Override
+                public void fetchPage(int page, Callback<List<Product>> callback) {
+                    buyClient.getProducts(page, collectionId, callback);
+                }
+            });
+
         } else if (!CollectionUtils.isEmpty(productIds)) {
             buyClient.getProducts(productIds, callback);
+
         } else {
-            buyClient.getProductPage(1, callback);
+            fetchNextPage(0, callback, new ArrayList<Product>(), new PageFetcher() {
+                @Override
+                public void fetchPage(int page, Callback<List<Product>> callback) {
+                    buyClient.getProductPage(page, callback);
+                }
+            });
         }
     }
 
@@ -109,6 +132,32 @@ public class GetProductsTask extends BaseTask<Product> {
                 buyDatabase.saveProducts(products);
             }
         });
+    }
+
+    private void fetchNextPage(final int previousPage, final Callback<List<Product>> callback, final List<Product> results, final PageFetcher pageFetcher) {
+        final int page = previousPage + 1;
+        pageFetcher.fetchPage(page, new Callback<List<Product>>() {
+            @Override
+            public void success(List<Product> products, Response response) {
+                if (!CollectionUtils.isEmpty(products)) {
+                    // found more products on this page, add to the results list and try next page
+                    results.addAll(products);
+                    fetchNextPage(page, callback, results, pageFetcher);
+                } else {
+                    // empty page, process completed results
+                    callback.success(results, response);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    private interface PageFetcher {
+        void fetchPage(final int page, final Callback<List<Product>> callback);
     }
 
 }

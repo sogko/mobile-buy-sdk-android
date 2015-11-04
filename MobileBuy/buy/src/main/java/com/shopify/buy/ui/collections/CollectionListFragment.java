@@ -43,6 +43,7 @@ import com.shopify.buy.dataprovider.DefaultCollectionsProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.ui.common.RecyclerViewHolder;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class CollectionListFragment extends BaseFragment implements CollectionListAdapter.ClickListener {
+public class CollectionListFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Collection> {
 
     private static final String TAG = CollectionListFragment.class.getSimpleName();
 
@@ -81,7 +82,8 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
             String collectionsJson = bundle.getString(CollectionListConfig.EXTRA_SHOP_COLLECTIONS);
 
             if (!TextUtils.isEmpty(collectionsJson)) {
-                collections = BuyClientFactory.createDefaultGson().fromJson(collectionsJson, new TypeToken<List<Product>>() {}.getType());
+                collections = BuyClientFactory.createDefaultGson().fromJson(collectionsJson, new TypeToken<List<Product>>() {
+                }.getType());
             }
         }
     }
@@ -176,6 +178,7 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     // TODO - should these pass the view and position as well?
     public interface Listener {
         void onItemClick(Collection collection);
+
         void onItemLongClick(Collection collection);
     }
 }

@@ -32,11 +32,13 @@ import com.shopify.buy.model.Product;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit.Callback;
 
 public class SearchProductsTask extends BaseTask<Product> {
 
+    private final AtomicBoolean isCancelled = new AtomicBoolean(false);
     private final String query;
 
     public SearchProductsTask(String query, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
@@ -46,8 +48,12 @@ public class SearchProductsTask extends BaseTask<Product> {
 
     @Override
     public void run() {
-        List<Product> products = buyDatabase.searchProducts(query);
+        List<Product> products = buyDatabase.searchProducts(query, isCancelled);
         onSuccess(products, null);
+    }
+
+    public void cancel() {
+        isCancelled.set(true);
     }
 
 }

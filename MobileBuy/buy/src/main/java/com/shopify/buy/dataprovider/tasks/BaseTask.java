@@ -51,13 +51,18 @@ public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
         this.callback = callback;
         this.handler = handler;
         this.executorService = executorService;
+
+        // bump up the page size for fetches
+        this.buyClient.setPageSize(50);
     }
 
     protected void onSuccess(final List<T> results, final Response response) {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                callback.success(results, response);
+                if (callback != null) {
+                    callback.success(results, response);
+                }
             }
         });
     }
@@ -66,7 +71,9 @@ public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                callback.failure(error);
+                if (callback != null) {
+                    callback.failure(error);
+                }
             }
         });
     }
