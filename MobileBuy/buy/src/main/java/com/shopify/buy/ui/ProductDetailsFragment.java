@@ -44,6 +44,7 @@ import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.ui.common.CheckoutListener;
+import com.shopify.buy.ui.common.FabListener;
 import com.shopify.buy.ui.common.ShareListener;
 import com.shopify.buy.utils.CurrencyFormatter;
 
@@ -62,21 +63,31 @@ public class ProductDetailsFragment extends CheckoutFragment {
     private ProductDetailsFragmentView view;
 
     private ShareListener shareListener;
+    private FabListener fabListener;
 
     private Product product;
     private ProductVariant variant;
     private String productId;
 
-    private Button addToCartButton;
     private boolean showCartButton;
 
     public void setShareListener(ShareListener shareListener) {
         this.shareListener = shareListener;
     }
 
+    public void setFabListener(FabListener fabListener) {
+        this.fabListener = fabListener;
+    }
+
     void onSharePressed() {
         if (shareListener != null) {
             shareListener.onProductShared(product);
+        }
+    }
+
+    void onFabPressed() {
+        if (fabListener != null) {
+            fabListener.onFabSelected();
         }
     }
 
@@ -90,7 +101,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.view.setTheme(theme);
-        configureAddToCartButton();
     }
 
     @Override
@@ -150,12 +160,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        addToCartButton.setEnabled(true);
-    }
-
-    @Override
     protected Cart getCartForCheckout() {
         Cart cart = new Cart();
         cart.addVariant(variant);
@@ -179,12 +183,14 @@ public class ProductDetailsFragment extends CheckoutFragment {
         }
     }
 
-    private void configureAddToCartButton() {
+    @Override
+    protected void configureCheckoutButton() {
         if (showCartButton) {
-            view.findViewById(R.id.cart_button_container).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.checkout_button_container).setVisibility(View.VISIBLE);
 
-            addToCartButton = (Button) view.findViewById(R.id.cart_button);
-            addToCartButton.setOnClickListener(new View.OnClickListener() {
+            checkoutButton = (Button) view.findViewById(R.id.checkout_button);
+            checkoutButton.setText(R.string.add_to_cart);
+            checkoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CartManager.getInstance().getCart().addVariant(variant);
@@ -193,8 +199,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
                     Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
                 }
             });
-        } else {
-            view.findViewById(R.id.cart_button_container).setVisibility(View.GONE);
         }
     }
 
@@ -244,7 +248,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
         // Tell the view that it can populate the product details components now
         // Only show the share button if the ShareListener has been set
         view.setCurrencyFormat(currencyFormat);
-        view.onProductAvailable(ProductDetailsFragment.this, product, variant, shareListener != null);
+        view.onProductAvailable(ProductDetailsFragment.this, product, variant, shareListener != null, fabListener != null);
 
         // Disable the checkout button if the selected product variant is sold out
         checkoutButton.setEnabled(variant.isAvailable());

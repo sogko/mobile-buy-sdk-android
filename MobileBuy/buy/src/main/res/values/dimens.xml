@@ -29,4 +29,5 @@
     <!-- Other -->
     <integer name="disabled_text_alpha">64</integer>
 
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

@@ -39,6 +39,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.util.LongSparseArray;
@@ -131,6 +132,9 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     private ImageView shareButton;
     private boolean showShareButton;
 
+    private FloatingActionButton fab;
+    private boolean showFab;
+
     private AppBarLayout appBarLayout;
 
     // models used by the view
@@ -172,13 +176,29 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
      * @param fragment        the fragment that owns this view
      * @param product         the product to display
      * @param variant         the variant to display
-     * @param showShareButton pass true if you want to display the share button in the action bar
+     *
      */
-    public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant, boolean showShareButton) {
+    @Deprecated
+    public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant) {
+        onProductAvailable(fragment, product, variant, false, false);
+    }
+
+    /**
+     * Sets the models and fills in the subviews with data
+     *
+     * @param fragment        the fragment that owns this view
+     * @param product         the product to display
+     * @param variant         the variant to display
+     * @param showShareButton pass true if you want to display the share button in the action bar
+     * @param showFab         pass true if you want to display the fab button
+     *
+     */
+    public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant, boolean showShareButton, boolean showFab) {
         this.fragment = fragment;
         this.product = product;
         this.variant = variant;
         this.showShareButton = showShareButton;
+        this.showFab = showFab;
         doViewConfiguration();
     }
 
@@ -413,10 +433,16 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
 
     public void hideBottomButtons(long duration) {
         bottomButtonsContainer.animate().setDuration(duration).y(getHeight()).start();
+        if (fab != null) {
+            fab.hide();
+        }
     }
 
     public void showBottomButtons(long duration) {
         bottomButtonsContainer.animate().setDuration(duration).y(getHeight() - checkoutButtonContainer.getHeight()).start();
+        if (fab != null) {
+            fab.show();
+        }
     }
 
     /**
@@ -463,8 +489,20 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
                     fragment.onSharePressed();
                 }
             });
-        } else {
-            shareButton.setVisibility(View.GONE);
+        }
+
+        if (showFab) {
+            fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setImageDrawable(theme.getCartIcon(getResources()));
+            fab.setBackgroundTintList(ColorStateList.valueOf(theme.getAccentColor()));
+            fab.setVisibility(View.VISIBLE);
+
+            fab.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fragment.onFabPressed();
+                }
+            });
         }
 
         // Add a custom behavior to the appBarLayout.  We want it to pass touches to its children instead of scrolling.
@@ -480,6 +518,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         activity.setSupportActionBar(toolbar);
         actionBar = activity.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setElevation(8);
 
         // If we are restoring the view we may need to manually adjust the icon
@@ -593,18 +632,6 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         bottomButtonsContainer = findViewById(R.id.buttons_container);
 
         int disabledTextAlpha = getResources().getInteger(R.integer.disabled_text_alpha);
-
-        addToCartButtonContainer = (ViewGroup) findViewById(R.id.cart_button_container);
-        addToCartButtonContainer.setBackgroundColor(theme.getCheckoutLabelColor(getResources()));
-
-        ((Button) findViewById(R.id.cart_button)).setTextColor(new ColorStateList(
-                new int[][]{
-                        new int[]{-android.R.attr.state_enabled},
-                        new int[]{android.R.attr.state_enabled}
-                },
-                new int[]{
-                        ColorUtils.setAlphaComponent(theme.getAccentColor(), disabledTextAlpha), theme.getAccentColor(),}
-        ));
 
         checkoutButtonContainer = (ViewGroup) findViewById(R.id.checkout_button_container);
         checkoutButtonContainer.setBackgroundColor(theme.getAccentColor());
