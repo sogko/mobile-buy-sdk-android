@@ -37,6 +37,9 @@ import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.utils.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -96,7 +99,9 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
             @Override
             public void success(List<Product> apiProducts, Response response) {
                 db.saveProducts(apiProducts);
-                List<Product> dbProducts = db.getAllProducts();
+                List<Product> dbProducts = db.getProducts(getProductIds(apiProducts));
+                Collections.sort(apiProducts, new ProductIdComarator());
+                Collections.sort(dbProducts, new ProductIdComarator());
                 for (int i = 0; i < apiProducts.size(); i++) {
                     assertExactMatch(apiProducts.get(i), dbProducts.get(i));
                 }
@@ -110,6 +115,23 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
         });
         latch.await();
         db.close();
+    }
+
+    private List<String> getProductIds(List<Product> products) {
+        List<String> productIds = new ArrayList<>();
+        for (Product product : products) {
+            productIds.add(product.getProductId());
+        }
+        return productIds;
+    }
+
+    private class ProductIdComarator implements Comparator<Product> {
+
+        @Override
+        public int compare(Product p1, Product p2) {
+            return p1.getProductId().compareTo(p2.getProductId());
+        }
+
     }
 
     private void assertExactMatch(Collection c1, Collection c2) {
@@ -212,7 +234,6 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
         assertEquals(ov1.getName(), ov2.getName());
         assertEquals(ov1.getOptionId(), ov2.getOptionId());
         assertEquals(ov1.getValue(), ov2.getValue());
-
     }
 
     private void assertExactMatch(Option o1, Option o2) {

@@ -24,6 +24,8 @@
 
 package com.shopify.buy.utils;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -41,6 +43,8 @@ import java.util.Locale;
  */
 
 public class DateUtility {
+
+    private static final String LOG_TAG = DateUtility.class.getSimpleName();
 
     public static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ssZZZZZ";
     public static final String SHIPPING_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
@@ -75,11 +79,16 @@ public class DateUtility {
         return new SimpleDateFormat(DEFAULT_DATE_PATTERN, Locale.US).format(date);
     }
 
-    public static Date toDate(String dateString) throws ParseException {
+    public static Date toDate(String dateString) {
         if (dateString == null) {
             return null;
         }
-        return new SimpleDateFormat(DEFAULT_DATE_PATTERN, Locale.US).parse(dateString);
+        try {
+            return new SimpleDateFormat(DEFAULT_DATE_PATTERN, Locale.US).parse(dateString);
+        } catch (ParseException e) {
+            Log.e(LOG_TAG, "Could not parse date from string " + dateString);
+            return null;
+        }
     }
 
 }

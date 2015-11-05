@@ -43,41 +43,34 @@ import retrofit.client.Response;
 
 public class GetProductsTask extends BaseTask<Product> {
 
-    private final boolean cloudOnly;
-
     private String collectionId;
     private List<String> productIds;
 
     public GetProductsTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
-        cloudOnly = true;
     }
 
     public GetProductsTask(String collectionId, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
         this.collectionId = collectionId;
-        cloudOnly = false;
     }
 
     public GetProductsTask(List<String> productIds, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
         this.productIds = productIds;
-        cloudOnly = false;
     }
 
     @Override
     public void run() {
         final AtomicBoolean foundInDb = new AtomicBoolean(false);
 
-        if (!cloudOnly) {
+        if (!TextUtils.isEmpty(collectionId) || !CollectionUtils.isEmpty(productIds)) {
             // check the local database first
             List<Product> products = null;
             if (!TextUtils.isEmpty(collectionId)) {
                 // TODO this case relies on: https://github.com/Shopify/shopify/issues/56585
             } else if (!CollectionUtils.isEmpty(productIds)) {
                 products = buyDatabase.getProducts(productIds);
-            } else {
-                products = buyDatabase.getAllProducts();
             }
 
             if (!CollectionUtils.isEmpty(products)) {

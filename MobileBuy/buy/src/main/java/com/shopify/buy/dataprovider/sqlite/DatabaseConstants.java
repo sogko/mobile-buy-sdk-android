@@ -103,6 +103,7 @@ interface DatabaseConstants {
     interface OptionValuesTable {
         String OPTION_ID = "option_id";
         String VARIANT_ID = "variant_id";
+        String PRODUCT_ID = "product_id";
         String NAME = "name";
         String VALUE = "value";
     }
