@@ -32,14 +32,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class serves a very narrow purpose, to help query data from the Product sub-tables (Image, Option, ProductVariant, and OptionValue tables).
+ * It's used exclusively in {@link BuyDatabase#buildProducts(Cursor, AtomicBoolean)}.
+ */
 class CursorAdapter<T> {
 
+    /**
+     * Since this class doesn't know what kind of object it represents, we need an implementation of this interface to convert the cursor to a model object.
+     */
     interface ObjectBuilder<T> {
         T build(Cursor cursor);
     }
 
-    // TODO need serious documentation here, shouldn't merge without it
+    /**
+     * @param table        The name of the table that holds the data for the type of model object we are building.
+     * @param lookupColumn The name of the Product ID column in the table.
+     * @param lookupValues The list of Product IDs we are looking for.
+     * @param sortColumn   The name of the column to sort by (will use 'ASC'). Passing null results in no sorting.
+     * @param db           A readable database reference.
+     * @param builder      An implementation of ObjectBuilder for converting a cursor to a model object.
+     * @return A map of Product IDs to objects of type Image, Option, ProductVariant, or OptionValue.
+     */
     public Map<String, List<T>> buildMap(String table, String lookupColumn, List<String> lookupValues, String sortColumn, SQLiteDatabase db, ObjectBuilder<T> builder) {
         Map<String, List<T>> results = new HashMap<>();
 

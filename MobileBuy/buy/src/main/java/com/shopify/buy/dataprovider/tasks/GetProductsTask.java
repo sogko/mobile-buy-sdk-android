@@ -64,6 +64,7 @@ public class GetProductsTask extends BaseTask<Product> {
     public void run() {
         final AtomicBoolean foundInDb = new AtomicBoolean(false);
 
+        // If this check fails, it means we're fetching ALL products as part of a data sync, so ignore the db
         if (!TextUtils.isEmpty(collectionId) || !CollectionUtils.isEmpty(productIds)) {
             // check the local database first
             List<Product> products = null;

@@ -45,6 +45,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Manages the SQLite database that stores the shop's collections and products.
+ */
 public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     /*
@@ -85,6 +88,9 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         onCreate(db);
     }
 
+    /**
+     * @return A list of all the {@link Collection} objects in the database.
+     */
     public List<Collection> getCollections() {
         List<Collection> results = new ArrayList<>();
 
@@ -99,6 +105,11 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         return results;
     }
 
+    /**
+     * Inserts a list of {@link Collection} objects into the database.
+     *
+     * @param collections The collections to save.
+     */
     public void saveCollections(List<Collection> collections) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -111,6 +122,10 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         }
     }
 
+    /**
+     * @param productIds The list of IDs for the products we want to fetch from the database.
+     * @return A list of {@link Product} objects matching the specified IDs.
+     */
     public List<Product> getProducts(List<String> productIds) {
         List<Product> results = new ArrayList<>();
 
@@ -126,6 +141,11 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         return results;
     }
 
+    /**
+     * Inserts a list of {@link Product} objects into the database.
+     *
+     * @param products The products to save.
+     */
     public void saveProducts(List<Product> products) {
         // TODO We need some way to delete products should no longer be visible to the user.
 
@@ -136,6 +156,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
             deleteProduct(db, product);
 
             db.insert(TABLE_PRODUCTS, null, QueryHelper.contentValues(product));
+
+            // need to populate each of the product sub-tables
             for (Image image : product.getImages()) {
                 db.insert(TABLE_IMAGES, null, QueryHelper.contentValues(image));
             }
@@ -151,6 +173,11 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         }
     }
 
+    /**
+     * @param query       Term to search for.
+     * @param isCancelled This AtomicBoolean will be checked periodically to see whether this search should be cancelled.
+     * @return A list of {@link Product} objects that match the serch term.
+     */
     public List<Product> searchProducts(final String query, final AtomicBoolean isCancelled) {
         List<Product> results = new ArrayList<>();
         if (!TextUtils.isEmpty(query)) {
@@ -163,6 +190,9 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         return results;
     }
 
+    /**
+     * Deletes a product from the database, including all sub-tables.
+     */
     private void deleteProduct(SQLiteDatabase db, Product product) {
         final String productId = product.getProductId();
 
@@ -173,12 +203,21 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         db.delete(TABLE_PRODUCT_VARIANTS, String.format("%s = \'%s\'", ProductVariantsTable.PRODUCT_ID, productId), null);
     }
 
-    // TODO need serious documentation here, shouldn't merge without it
+    /**
+     * Helper function for building a list of products from a simple query on the products table. This will handle all
+     * of the sub-table querying that is required to get the images, options, and variants associated with each product.
+     *
+     * @param productsCursor Contains the row data from a query on the products table.
+     * @param isCancelled    This AtomicBoolean will be checked periodically to see whether this search should be cancelled.
+     * @return A list of fully populated {@link Product} objects from the original cursor rows.
+     */
     private List<Product> buildProducts(Cursor productsCursor, final AtomicBoolean isCancelled) {
+        // If the cursor from the Products table doesn't have any rows, return an empty list
         if (!productsCursor.moveToFirst()) {
             return Collections.EMPTY_LIST;
         }
 
+        // Extract a list of the Product IDs that we can use to query the image, option, variant, and option value tables
         List<String> productIds = new ArrayList<>();
         do {
             productIds.add(productsCursor.getString(productsCursor.getColumnIndex(ProductsTable.PRODUCT_ID)));
@@ -186,7 +225,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
         if (isCancelled.get()) return Collections.EMPTY_LIST;
 
-        Map<String, List<Image>> imagesbyProduct = new CursorAdapter<Image>().buildMap(TABLE_IMAGES, ImagesTable.PRODUCT_ID, productIds, ImagesTable.POSITION, getReadableDatabase(), new CursorAdapter.ObjectBuilder<Image>() {
+        // Map each Product ID to the list of Images for that Product
+        Map<String, List<Image>> imagesByProduct = new CursorAdapter<Image>().buildMap(TABLE_IMAGES, ImagesTable.PRODUCT_ID, productIds, ImagesTable.POSITION, getReadableDatabase(), new CursorAdapter.ObjectBuilder<Image>() {
             @Override
             public Image build(Cursor cursor) {
                 return QueryHelper.image(cursor);
@@ -195,6 +235,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
         if (isCancelled.get()) return Collections.EMPTY_LIST;
 
+        // Map each Product ID to the list of Options for that Product
         Map<String, List<Option>> optionsByProduct = new CursorAdapter<Option>().buildMap(TABLE_OPTIONS, OptionsTable.PRODUCT_ID, productIds, OptionsTable.POSITION, getReadableDatabase(), new CursorAdapter.ObjectBuilder<Option>() {
             @Override
             public Option build(Cursor cursor) {
@@ -204,6 +245,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
         if (isCancelled.get()) return Collections.EMPTY_LIST;
 
+        // Map each Product ID to the list of OptionsValues for that Product (OptionValues are actually associated with ProductVariants, but we'll get to that)
         Map<String, List<ModelFactory.DBOptionValue>> optionValuesByProduct = new CursorAdapter<ModelFactory.DBOptionValue>().buildMap(TABLE_OPTION_VALUES, OptionValuesTable.PRODUCT_ID, productIds, null, getReadableDatabase(), new CursorAdapter.ObjectBuilder<ModelFactory.DBOptionValue>() {
             @Override
             public ModelFactory.DBOptionValue build(Cursor cursor) {
@@ -213,35 +255,45 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
         if (isCancelled.get()) return Collections.EMPTY_LIST;
 
+        // Map each Product ID to a nested map, which itself maps each ProductVariant ID to the list of OptionValues for that ProductVariant
         final Map<String, Map<String, List<ModelFactory.DBOptionValue>>> optionValuesByProductByVariant = new HashMap<>();
         for (String productId : optionsByProduct.keySet()) {
+
+            // Get the list of all OptionValues the current Product ID (includes all OptionValues for all ProductVariants for this Product)
             List<ModelFactory.DBOptionValue> optionValues = optionValuesByProduct.get(productId);
 
+            // If our outer map doesn't contain this Product ID as a key yet, add it
             if (!optionValuesByProductByVariant.containsKey(productId)) {
                 optionValuesByProductByVariant.put(productId, new HashMap<String, List<ModelFactory.DBOptionValue>>());
             }
 
+            // Map each ProductVariant ID to the list of OptionValues for that ProductVariant (this is building our nested map)
             for (ModelFactory.DBOptionValue optionValue : optionValues) {
                 String variantId = optionValue.getVariantId();
 
+                // If our nested map doesn't contain this ProductVariant ID as a key yet, add it
                 List<ModelFactory.DBOptionValue> optionValuesForVariant = optionValuesByProductByVariant.get(productId).get(variantId);
                 if (optionValuesForVariant == null) {
                     optionValuesForVariant = new ArrayList<>();
                 }
                 optionValuesForVariant.add(optionValue);
 
+                // Update the OptionValue list in the nested map to include the current OptionValue
                 optionValuesByProductByVariant.get(productId).put(variantId, optionValuesForVariant);
             }
         }
 
         if (isCancelled.get()) return Collections.EMPTY_LIST;
 
+        // Map each Product ID to the list of ProductVariants for that Product
         Map<String, List<ProductVariant>> variantsByProduct = new CursorAdapter<ProductVariant>().buildMap(TABLE_PRODUCT_VARIANTS, ProductVariantsTable.PRODUCT_ID, productIds, null, getReadableDatabase(), new CursorAdapter.ObjectBuilder<ProductVariant>() {
             @Override
             public ProductVariant build(Cursor cursor) {
+                // The QueryHelper needs a list of OptionValues to build a ProductVariant, so we extract it out of the nested map we built earlier
                 String productId = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.PRODUCT_ID));
                 String variantId = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.ID));
                 List<OptionValue> optionValues = new ArrayList<>();
+                // The first get(productId) returns a map of ProductVariant IDs to OptionValue lists, and then get(variantId) returns the list of OptionValues
                 optionValues.addAll(optionValuesByProductByVariant.get(productId).get(variantId));
                 return QueryHelper.productVariant(cursor, optionValues);
             }
@@ -249,11 +301,12 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
         if (isCancelled.get()) return Collections.EMPTY_LIST;
 
+        // Finally, use the original cursor from the Products table along with all of our maps to create fully populated Product objects
         List<Product> products = new ArrayList<>();
         productsCursor.moveToFirst();
         do {
             String productId = productsCursor.getString(productsCursor.getColumnIndex(ProductsTable.PRODUCT_ID));
-            products.add(QueryHelper.product(productsCursor, imagesbyProduct.get(productId), variantsByProduct.get(productId), optionsByProduct.get(productId)));
+            products.add(QueryHelper.product(productsCursor, imagesByProduct.get(productId), variantsByProduct.get(productId), optionsByProduct.get(productId)));
         } while (productsCursor.moveToNext());
 
         return products;
