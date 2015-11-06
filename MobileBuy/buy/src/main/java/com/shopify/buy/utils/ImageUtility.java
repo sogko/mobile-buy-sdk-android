@@ -41,6 +41,8 @@ import java.net.URI;
 public class ImageUtility {
     private static final String LOG_TAG = ImageUtility.class.getSimpleName();
 
+    public static int SIZE_UNKNOWN = -1;
+
     /**
      * Return the URL of an appropriate file to display for the given product image. This method
      * examines the default URL for the image, and returns the URL for a resized version of that
@@ -121,7 +123,9 @@ public class ImageUtility {
      */
     private static String getImageSuffixForDimensions(int width, int height) {
         final int pixels = Math.max(width, height);
-        if (pixels <= 16) {
+        if (pixels == SIZE_UNKNOWN) {
+            return "";
+        } else if (pixels <= 16) {
             return "_pico";
         } else if (pixels <= 32) {
             return "_icon";

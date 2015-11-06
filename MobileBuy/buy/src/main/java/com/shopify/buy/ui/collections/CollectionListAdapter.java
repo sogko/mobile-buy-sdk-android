@@ -85,7 +85,7 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
         private TextView nameText;
 
         public CollectionViewHolder(View itemView, ShopifyTheme theme, ClickListener<Collection> clickListener) {
-            super(itemView, ImageAspectRatio.SIXTEEN_BY_NINE, true, clickListener);
+            super(itemView, true, clickListener);
 
             nameText = (TextView) itemView.findViewById(R.id.collection_name);
             imageView = (ImageView) itemView.findViewById(R.id.collection_image);

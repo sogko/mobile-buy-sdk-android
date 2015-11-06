@@ -65,6 +65,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     @Override
     public ProductViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.product_list_item, viewGroup, false);
+
         ProductViewHolder viewHolder = new ProductViewHolder(view, theme, clickListener);
         return viewHolder;
     }
@@ -93,7 +94,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         public TextView priceView;
 
         public ProductViewHolder(View itemView, ShopifyTheme theme, ClickListener<Product> clickListener) {
-            super(itemView, ImageAspectRatio.SQUARE, false, clickListener);
+            super(itemView, false, clickListener);
 
             titleView = (TextView) itemView.findViewById(R.id.item_title);
             priceView = (TextView) itemView.findViewById(R.id.item_price);
