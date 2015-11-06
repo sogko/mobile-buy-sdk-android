@@ -30,6 +30,7 @@ import android.text.TextUtils;
 
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
+import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
@@ -40,14 +41,16 @@ import com.shopify.buy.utils.DateUtility;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class QueryHelper implements DatabaseConstants {
 
     static String createCollectionsTable() {
-        StringBuilder sql = new StringBuilder("CREATE TABLE ")
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_COLLECTIONS)
                 .append(" (")
                 .append(CollectionsTable.COLLECTION_ID).append(" TEXT PRIMARY KEY, ")
@@ -101,7 +104,7 @@ public class QueryHelper implements DatabaseConstants {
     }
 
     static String createProductsTable() {
-        StringBuilder sql = new StringBuilder("CREATE TABLE ")
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_PRODUCTS)
                 .append(" (")
                 .append(ProductsTable.PRODUCT_ID).append(" TEXT PRIMARY KEY, ")
@@ -169,7 +172,7 @@ public class QueryHelper implements DatabaseConstants {
     }
 
     static String createImagesTable() {
-        StringBuilder sql = new StringBuilder("CREATE TABLE ")
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_IMAGES)
                 .append(" (")
                 .append(ImagesTable.PRODUCT_ID).append(" TEXT, ")
@@ -214,7 +217,7 @@ public class QueryHelper implements DatabaseConstants {
     }
 
     static String createOptionsTable() {
-        StringBuilder sql = new StringBuilder("CREATE TABLE ")
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_OPTIONS)
                 .append(" (")
                 .append(OptionsTable.ID).append(" INTEGER, ")
@@ -245,7 +248,7 @@ public class QueryHelper implements DatabaseConstants {
     }
 
     static String createProductVariantsTable() {
-        StringBuilder sql = new StringBuilder("CREATE TABLE ")
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_PRODUCT_VARIANTS)
                 .append(" (")
                 .append(ProductVariantsTable.ID).append(" TEXT PRIMARY KEY, ")
@@ -309,7 +312,7 @@ public class QueryHelper implements DatabaseConstants {
 
     static String createOptionValuesTable() {
         // TODO it might speed up searching to create an index on the PRODUCT_ID column
-        StringBuilder sql = new StringBuilder("CREATE TABLE ")
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_OPTION_VALUES)
                 .append(" (")
                 .append(OptionValuesTable.OPTION_ID).append(" TEXT, ")
@@ -340,6 +343,106 @@ public class QueryHelper implements DatabaseConstants {
         String variantId = cursor.getString(cursor.getColumnIndex(OptionValuesTable.VARIANT_ID));
 
         return new ModelFactory.DBOptionValue(optionId, name, value, variantId);
+    }
+
+    static String createLineItemsTable() {
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
+                .append(TABLE_LINE_ITEMS)
+                .append(" (")
+                .append(LineItemsTable.USER_ID).append(" TEXT, ")
+                .append(LineItemsTable.LINE_ITEM_ID).append(" TEXT, ")
+                .append(LineItemsTable.QUANTITY).append(" INTEGER, ")
+                .append(LineItemsTable.PRICE).append(" TEXT, ")
+                .append(LineItemsTable.REQUIRES_SHIPPING).append(" INTEGER, ")
+                .append(LineItemsTable.VARIANT_ID).append(" TEXT, ")
+                .append(LineItemsTable.TITLE).append(" TEXT, ")
+                .append(LineItemsTable.PRODUCT_ID).append(" TEXT, ")
+                .append(LineItemsTable.VARIANT_TITLE).append(" TEXT, ")
+                .append(LineItemsTable.LINE_PRICE).append(" TEXT, ")
+                .append(LineItemsTable.COMPARE_AT_PRICE).append(" TEXT, ")
+                .append(LineItemsTable.SKU).append(" TEXT, ")
+                .append(LineItemsTable.TAXABLE).append(" INTEGER, ")
+                .append(LineItemsTable.GRAMS).append(" INTEGER, ")
+                .append(LineItemsTable.FULFILLMENT_SERVICE).append(" TEXT, ")
+                .append("PRIMARY KEY (").append(LineItemsTable.USER_ID).append(", ").append(LineItemsTable.LINE_ITEM_ID).append(")")
+                .append(")");
+        return sql.toString();
+    }
+
+    static ContentValues contentValues(LineItem lineItem, String userId) {
+        ContentValues values = new ContentValues();
+        values.put(LineItemsTable.USER_ID, userId);
+        values.put(LineItemsTable.LINE_ITEM_ID, lineItem.getId());
+        values.put(LineItemsTable.QUANTITY, lineItem.getQuantity());
+        values.put(LineItemsTable.PRICE, lineItem.getPrice());
+        values.put(LineItemsTable.REQUIRES_SHIPPING, lineItem.isRequiresShipping() ? 1 : 0);
+        values.put(LineItemsTable.VARIANT_ID, lineItem.getVariantId());
+        values.put(LineItemsTable.TITLE, lineItem.getTitle());
+        values.put(LineItemsTable.PRODUCT_ID, lineItem.getProductId());
+        values.put(LineItemsTable.VARIANT_TITLE, lineItem.getVariantTitle());
+        values.put(LineItemsTable.LINE_PRICE, lineItem.getLinePrice());
+        values.put(LineItemsTable.COMPARE_AT_PRICE, lineItem.getCompareAtPrice());
+        values.put(LineItemsTable.SKU, lineItem.getSku());
+        values.put(LineItemsTable.TAXABLE, lineItem.isTaxable() ? 1 : 0);
+        values.put(LineItemsTable.GRAMS, lineItem.getGrams());
+        values.put(LineItemsTable.FULFILLMENT_SERVICE, lineItem.getFulfillmentService());
+        return values;
+    }
+
+    static LineItem lineItem(Cursor cursor, Map<String, String> properties) {
+        String lineItemId = cursor.getString(cursor.getColumnIndex(LineItemsTable.LINE_ITEM_ID));
+        int quantity = cursor.getInt(cursor.getColumnIndex(LineItemsTable.QUANTITY));
+        String price = cursor.getString(cursor.getColumnIndex(LineItemsTable.PRICE));
+        boolean requiresShipping = cursor.getInt(cursor.getColumnIndex(LineItemsTable.REQUIRES_SHIPPING)) == 1;
+        String variantId = cursor.getString(cursor.getColumnIndex(LineItemsTable.VARIANT_ID));
+        String title = cursor.getString(cursor.getColumnIndex(LineItemsTable.TITLE));
+        String productId = cursor.getString(cursor.getColumnIndex(LineItemsTable.PRODUCT_ID));
+        String variantTitle = cursor.getString(cursor.getColumnIndex(LineItemsTable.VARIANT_TITLE));
+        String linePrice = cursor.getString(cursor.getColumnIndex(LineItemsTable.LINE_PRICE));
+        String compareAtPrice = cursor.getString(cursor.getColumnIndex(LineItemsTable.COMPARE_AT_PRICE));
+        String sku = cursor.getString(cursor.getColumnIndex(LineItemsTable.SKU));
+        boolean taxable = cursor.getInt(cursor.getColumnIndex(LineItemsTable.TAXABLE)) == 1;
+        long grams = cursor.getLong(cursor.getColumnIndex(LineItemsTable.GRAMS));
+        String fulfillmentService = cursor.getString(cursor.getColumnIndex(LineItemsTable.FULFILLMENT_SERVICE));
+
+
+        return new ModelFactory.DBLineItem(quantity, lineItemId, price, requiresShipping, variantId, title, productId, variantTitle, linePrice, compareAtPrice, sku, taxable, grams, fulfillmentService, properties);
+    }
+
+    static String createLineItemPropertiesTable() {
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
+                .append(TABLE_LINE_ITEM_PROPERTIES)
+                .append(" (")
+                .append(LineItemPropertiesTable.LINE_ITEM_ID).append(" TEXT, ")
+                .append(LineItemPropertiesTable.KEY).append(" TEXT, ")
+                .append(LineItemPropertiesTable.VALUE).append(" TEXT, ")
+                .append("PRIMARY KEY (").append(LineItemPropertiesTable.LINE_ITEM_ID).append(", ").append(LineItemPropertiesTable.KEY).append(")")
+                .append(")");
+        return sql.toString();
+    }
+
+    static List<ContentValues> contentValues(String lineItemId, Map<String, String> properties) {
+        List<ContentValues> valuesList = new ArrayList<>();
+        for (String key : properties.keySet()) {
+            ContentValues values = new ContentValues();
+            values.put(LineItemPropertiesTable.LINE_ITEM_ID, lineItemId);
+            values.put(LineItemPropertiesTable.KEY, key);
+            values.put(LineItemPropertiesTable.VALUE, properties.get(key));
+            valuesList.add(values);
+        }
+        return valuesList;
+    }
+
+    static Map<String, String> lineItemProperties(Cursor cursor) {
+        Map<String, String> properties = new HashMap<>();
+        if (cursor.moveToFirst()) {
+            do {
+                String key = cursor.getString(cursor.getColumnIndex(LineItemPropertiesTable.KEY));
+                String value = cursor.getString(cursor.getColumnIndex(LineItemPropertiesTable.VALUE));
+                properties.put(key, value);
+            } while (cursor.moveToNext());
+        }
+        return properties;
     }
 
 }

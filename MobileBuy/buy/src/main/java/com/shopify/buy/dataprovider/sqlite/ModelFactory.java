@@ -26,6 +26,7 @@ package com.shopify.buy.dataprovider.sqlite;
 
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
+import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
@@ -34,6 +35,7 @@ import com.shopify.buy.model.internal.CollectionImage;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 class ModelFactory {
@@ -138,6 +140,28 @@ class ModelFactory {
             this.productId = productId;
             this.variantIds = variantIds;
             this.src = src;
+        }
+
+    }
+
+    static class DBLineItem extends LineItem {
+
+        public DBLineItem(long quantity, String id, String price, boolean requiresShipping, String variantId, String title, String productId, String variantTitle, String linePrice, String compareAtPrice, String sku, boolean taxable, long grams, String fulfillmentService, Map<String, String> properties) {
+            this.quantity = quantity;
+            this.id = id;
+            this.price = price;
+            this.requiresShipping = requiresShipping;
+            this.variantId = Long.parseLong(variantId);
+            this.title = title;
+            this.productId = productId;
+            this.variantTitle = variantTitle;
+            this.linePrice = linePrice;
+            this.compareAtPrice = compareAtPrice;
+            this.sku = sku;
+            this.taxable = taxable;
+            this.grams = grams;
+            this.fulfillmentService = fulfillmentService;
+            this.properties = properties;
         }
 
     }

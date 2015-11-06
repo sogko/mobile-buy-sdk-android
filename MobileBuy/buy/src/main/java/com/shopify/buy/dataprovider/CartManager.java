@@ -24,6 +24,9 @@
 
 package com.shopify.buy.dataprovider;
 
+import android.content.Context;
+
+import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.model.Cart;
 
 public class CartManager {
@@ -34,14 +37,28 @@ public class CartManager {
         return instance;
     }
 
-    private final Cart cart;
+    private BuyDatabase database;
+    private Cart cart;
 
     private CartManager() {
-        cart = new Cart();
+    }
+
+    public void loadCart(String userId, Context context) {
+        if (database == null) {
+            database = new BuyDatabase(context);
+        }
+        cart = database.getCart(userId);
     }
 
     public Cart getCart() {
         return cart;
+    }
+
+    public void saveCart(String userId, Context context) {
+        if (database == null) {
+            database = new BuyDatabase(context);
+        }
+        database.saveCart(cart, userId);
     }
 
 }

@@ -30,12 +30,19 @@ interface DatabaseConstants {
 
     String DATABASE_NAME = "mobile_buy_sdk_sqlite_database";
 
+    // Collections tables
     String TABLE_COLLECTIONS = "collections";
+
+    // Products tables
     String TABLE_PRODUCTS = "products";
     String TABLE_IMAGES = "images";
     String TABLE_OPTIONS = "options";
     String TABLE_PRODUCT_VARIANTS = "product_variants";
     String TABLE_OPTION_VALUES = "option_values";
+
+    // Cart tables
+    String TABLE_LINE_ITEMS = "line_items";
+    String TABLE_LINE_ITEM_PROPERTIES = "line_item_properties";
 
     interface CollectionsTable {
         String TITLE = "title";
@@ -105,6 +112,30 @@ interface DatabaseConstants {
         String VARIANT_ID = "variant_id";
         String PRODUCT_ID = "product_id";
         String NAME = "name";
+        String VALUE = "value";
+    }
+
+    interface LineItemsTable {
+        String USER_ID = "user_id";
+        String LINE_ITEM_ID = "line_item_id";
+        String QUANTITY = "quantity";
+        String PRICE = "price";
+        String REQUIRES_SHIPPING = "requires_shipping";
+        String VARIANT_ID = "variant_id";
+        String TITLE = "title";
+        String PRODUCT_ID = "product_id";
+        String VARIANT_TITLE = "variant_title";
+        String LINE_PRICE = "line_price";
+        String COMPARE_AT_PRICE = "compare_at_price";
+        String SKU = "sku";
+        String TAXABLE = "taxable";
+        String GRAMS = "grams";
+        String FULFILLMENT_SERVICE = "fulfillment_service";
+    }
+
+    interface LineItemPropertiesTable {
+        String LINE_ITEM_ID = "line_item_id";
+        String KEY = "key";
         String VALUE = "value";
     }
 

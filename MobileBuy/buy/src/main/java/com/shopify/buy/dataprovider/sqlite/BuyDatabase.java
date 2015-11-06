@@ -30,6 +30,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
+import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
 import com.shopify.buy.model.Option;
@@ -70,21 +71,27 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     @Override
     public void onCreate(android.database.sqlite.SQLiteDatabase db) {
         db.execSQL(QueryHelper.createCollectionsTable());
+
         db.execSQL(QueryHelper.createProductsTable());
         db.execSQL(QueryHelper.createImagesTable());
         db.execSQL(QueryHelper.createOptionsTable());
         db.execSQL(QueryHelper.createOptionValuesTable());
         db.execSQL(QueryHelper.createProductVariantsTable());
+
+        db.execSQL(QueryHelper.createLineItemsTable());
+        db.execSQL(QueryHelper.createLineItemPropertiesTable());
     }
 
     @Override
     public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COLLECTIONS);
+
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_OPTION_VALUES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_OPTIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCT_VARIANTS);
+
         onCreate(db);
     }
 
@@ -310,6 +317,15 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         } while (productsCursor.moveToNext());
 
         return products;
+    }
+
+    public void saveCart(Cart cart, String userId) {
+        // TODO
+    }
+
+    public Cart getCart(String userId) {
+        // TODO
+        return null;
     }
 
     private Cursor querySimple(String table, String where, String orderBy) {
