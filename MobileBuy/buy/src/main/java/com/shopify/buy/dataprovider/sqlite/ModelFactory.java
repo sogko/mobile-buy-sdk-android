@@ -70,10 +70,17 @@ class ModelFactory {
 
     static class DBOptionValue extends OptionValue {
 
-        public DBOptionValue(String optionId, String name, String value) {
+        private final String variantId;
+
+        public DBOptionValue(String optionId, String name, String value, String variantId) {
             this.optionId = optionId;
             this.name = name;
             this.value = value;
+            this.variantId = variantId;
+        }
+
+        public String getVariantId() {
+            return variantId;
         }
     }
 

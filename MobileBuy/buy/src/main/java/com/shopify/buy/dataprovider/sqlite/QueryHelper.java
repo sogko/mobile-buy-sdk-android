@@ -37,7 +37,6 @@ import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.internal.CollectionImage;
 import com.shopify.buy.utils.DateUtility;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -86,7 +85,7 @@ public class QueryHelper implements DatabaseConstants {
         return values;
     }
 
-    static Collection collection(Cursor cursor) throws ParseException {
+    static Collection collection(Cursor cursor) {
         String title = cursor.getString(cursor.getColumnIndex(CollectionsTable.TITLE));
         String htmlDescription = cursor.getString(cursor.getColumnIndex(CollectionsTable.BODY_HTML));
         String handle = cursor.getString(cursor.getColumnIndex(CollectionsTable.HANDLE));
@@ -140,7 +139,7 @@ public class QueryHelper implements DatabaseConstants {
         return values;
     }
 
-    static Product product(Cursor cursor, List<Image> images, List<ProductVariant> variants, List<Option> options) throws ParseException {
+    static Product product(Cursor cursor, List<Image> images, List<ProductVariant> variants, List<Option> options) {
         String productId = cursor.getString(cursor.getColumnIndex(ProductsTable.PRODUCT_ID));
         String channelId = cursor.getString(cursor.getColumnIndex(ProductsTable.CHANNEL_ID));
         String title = cursor.getString(cursor.getColumnIndex(ProductsTable.TITLE));
@@ -288,7 +287,7 @@ public class QueryHelper implements DatabaseConstants {
         return values;
     }
 
-    static ProductVariant productVariant(Cursor cursor, List<OptionValue> optionValues) throws ParseException {
+    static ProductVariant productVariant(Cursor cursor, List<OptionValue> optionValues) {
         long id = Long.parseLong(cursor.getString(cursor.getColumnIndex(ProductVariantsTable.ID)));
         String title = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.TITLE));
         String price = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.PRICE));
@@ -309,11 +308,13 @@ public class QueryHelper implements DatabaseConstants {
     }
 
     static String createOptionValuesTable() {
+        // TODO it might speed up searching to create an index on the PRODUCT_ID column
         StringBuilder sql = new StringBuilder("CREATE TABLE ")
                 .append(TABLE_OPTION_VALUES)
                 .append(" (")
                 .append(OptionValuesTable.OPTION_ID).append(" TEXT, ")
                 .append(OptionValuesTable.VARIANT_ID).append(" TEXT, ")
+                .append(OptionValuesTable.PRODUCT_ID).append(" TEXT, ")
                 .append(OptionValuesTable.NAME).append(" TEXT, ")
                 .append(OptionValuesTable.VALUE).append(" TEXT, ")
                 .append("PRIMARY KEY (").append(OptionValuesTable.OPTION_ID).append(", ").append(OptionValuesTable.VARIANT_ID).append(")")
@@ -321,21 +322,24 @@ public class QueryHelper implements DatabaseConstants {
         return sql.toString();
     }
 
-    static ContentValues contentValues(OptionValue optionValue, String variantId) {
+    static ContentValues contentValues(OptionValue optionValue, String variantId, String productId) {
         ContentValues values = new ContentValues();
         values.put(OptionValuesTable.OPTION_ID, optionValue.getOptionId());
         values.put(OptionValuesTable.VARIANT_ID, variantId);
+        values.put(OptionValuesTable.PRODUCT_ID, productId);
         values.put(OptionValuesTable.NAME, optionValue.getName());
         values.put(OptionValuesTable.VALUE, optionValue.getValue());
         return values;
     }
 
-    static OptionValue optionValue(Cursor cursor) {
+    // This needs to return the DBOptionValue class so that we have access to the variant id
+    static ModelFactory.DBOptionValue optionValue(Cursor cursor) {
         String optionId = cursor.getString(cursor.getColumnIndex(OptionValuesTable.OPTION_ID));
         String name = cursor.getString(cursor.getColumnIndex(OptionValuesTable.NAME));
         String value = cursor.getString(cursor.getColumnIndex(OptionValuesTable.VALUE));
+        String variantId = cursor.getString(cursor.getColumnIndex(OptionValuesTable.VARIANT_ID));
 
-        return new ModelFactory.DBOptionValue(optionId, name, value);
+        return new ModelFactory.DBOptionValue(optionId, name, value, variantId);
     }
 
 }

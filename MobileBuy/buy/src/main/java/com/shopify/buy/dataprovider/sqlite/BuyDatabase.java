@@ -29,7 +29,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
@@ -39,11 +38,16 @@ import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.utils.CollectionUtils;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Manages the SQLite database that stores the shop's collections and products.
+ */
 public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     /*
@@ -58,8 +62,6 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     sqlite3 mobile_buy_sdk_sqlite_database
     [Ctrl-D to exit sqlite3]
      */
-
-    private static final String LOG_TAG = BuyDatabase.class.getSimpleName();
 
     public BuyDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -86,17 +88,16 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         onCreate(db);
     }
 
+    /**
+     * @return A list of all the {@link Collection} objects in the database.
+     */
     public List<Collection> getCollections() {
         List<Collection> results = new ArrayList<>();
 
         Cursor cursor = querySimple(TABLE_COLLECTIONS, null, null);
         if (cursor.moveToFirst()) {
             do {
-                try {
-                    results.add(QueryHelper.collection(cursor));
-                } catch (ParseException e) {
-                    Log.e(LOG_TAG, "Could not query Collection from database", e);
-                }
+                results.add(QueryHelper.collection(cursor));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -104,22 +105,11 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         return results;
     }
 
-    public Collection getCollection(long id) {
-        Collection collection = null;
-
-        Cursor cursor = querySimple(TABLE_COLLECTIONS, CollectionsTable.COLLECTION_ID + " = " + id, null);
-        if (cursor.moveToFirst()) {
-            try {
-                collection = QueryHelper.collection(cursor);
-            } catch (ParseException e) {
-                Log.e(LOG_TAG, "Could not get Collection from database", e);
-            }
-        }
-        cursor.close();
-
-        return collection;
-    }
-
+    /**
+     * Inserts a list of {@link Collection} objects into the database.
+     *
+     * @param collections The collections to save.
+     */
     public void saveCollections(List<Collection> collections) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -132,24 +122,10 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         }
     }
 
-    public List<Product> getAllProducts() {
-        List<Product> results = new ArrayList<>();
-
-        Cursor cursor = querySimple(TABLE_PRODUCTS, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                try {
-                    results.add(buildProduct(cursor));
-                } catch (ParseException e) {
-                    Log.e(LOG_TAG, "Could not get Product from database", e);
-                }
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-
-        return results;
-    }
-
+    /**
+     * @param productIds The list of IDs for the products we want to fetch from the database.
+     * @return A list of {@link Product} objects matching the specified IDs.
+     */
     public List<Product> getProducts(List<String> productIds) {
         List<Product> results = new ArrayList<>();
 
@@ -157,40 +133,19 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
             return results;
         }
 
-        StringBuilder whereClause = new StringBuilder();
-        whereClause.append(ProductsTable.PRODUCT_ID).append(" IN (").append(TextUtils.join(",", productIds.toArray())).append(")");
-
-        Cursor cursor = querySimple(TABLE_PRODUCTS, whereClause.toString(), null);
-        if (cursor.moveToFirst()) {
-            do {
-                try {
-                    results.add(buildProduct(cursor));
-                } catch (ParseException e) {
-                    Log.e(LOG_TAG, "Could not get Product from database", e);
-                }
-            } while (cursor.moveToNext());
-        }
+        String where = String.format("%s IN (%s)", ProductsTable.PRODUCT_ID, TextUtils.join(",", productIds.toArray()));
+        Cursor cursor = querySimple(TABLE_PRODUCTS, where, null);
+        results.addAll(buildProducts(cursor, new AtomicBoolean(false)));
         cursor.close();
 
         return results;
     }
 
-    public Product getProduct(long id) {
-        Product product = null;
-
-        Cursor cursor = querySimple(TABLE_PRODUCTS, ProductsTable.PRODUCT_ID + " = " + id, null);
-        if (cursor.moveToFirst()) {
-            try {
-                product = buildProduct(cursor);
-            } catch (ParseException e) {
-                Log.e(LOG_TAG, "Could not get Product from database", e);
-            }
-        }
-        cursor.close();
-
-        return product;
-    }
-
+    /**
+     * Inserts a list of {@link Product} objects into the database.
+     *
+     * @param products The products to save.
+     */
     public void saveProducts(List<Product> products) {
         // TODO We need some way to delete products should no longer be visible to the user.
 
@@ -201,6 +156,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
             deleteProduct(db, product);
 
             db.insert(TABLE_PRODUCTS, null, QueryHelper.contentValues(product));
+
+            // need to populate each of the product sub-tables
             for (Image image : product.getImages()) {
                 db.insert(TABLE_IMAGES, null, QueryHelper.contentValues(image));
             }
@@ -210,105 +167,149 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
             for (ProductVariant variant : product.getVariants()) {
                 db.insert(TABLE_PRODUCT_VARIANTS, null, QueryHelper.contentValues(variant));
                 for (OptionValue optionValue : variant.getOptionValues()) {
-                    db.insert(TABLE_OPTION_VALUES, null, QueryHelper.contentValues(optionValue, variant.getId().toString()));
+                    db.insert(TABLE_OPTION_VALUES, null, QueryHelper.contentValues(optionValue, variant.getId().toString(), product.getProductId()));
                 }
             }
         }
     }
 
+    /**
+     * @param query       Term to search for.
+     * @param isCancelled This AtomicBoolean will be checked periodically to see whether this search should be cancelled.
+     * @return A list of {@link Product} objects that match the serch term.
+     */
     public List<Product> searchProducts(final String query, final AtomicBoolean isCancelled) {
         List<Product> results = new ArrayList<>();
         if (!TextUtils.isEmpty(query)) {
             Cursor cursor = querySimple(TABLE_PRODUCTS, QueryHelper.searchProductsWhereClause(query), null);
-            if (!isCancelled.get() && cursor.moveToFirst()) {
-                do {
-                    try {
-                        results.add(buildProduct(cursor));
-                    } catch (ParseException e) {
-                        Log.e(LOG_TAG, "Could not get Product from database", e);
-                    }
-                } while (!isCancelled.get() && cursor.moveToNext());
+            if (!isCancelled.get()) {
+                results.addAll(buildProducts(cursor, isCancelled));
             }
             cursor.close();
         }
         return results;
     }
 
+    /**
+     * Deletes a product from the database, including all sub-tables.
+     */
     private void deleteProduct(SQLiteDatabase db, Product product) {
         final String productId = product.getProductId();
 
         db.delete(TABLE_PRODUCTS, String.format("%s = \'%s\'", ProductsTable.PRODUCT_ID, productId), null);
         db.delete(TABLE_IMAGES, String.format("%s = \'%s\'", ImagesTable.PRODUCT_ID, productId), null);
         db.delete(TABLE_OPTIONS, String.format("%s = \'%s\'", OptionsTable.PRODUCT_ID, productId), null);
-
-        List<ProductVariant> variants = getProductVariants(productId);
-        for (ProductVariant variant : variants) {
-            db.delete(TABLE_OPTION_VALUES, String.format("%s = \'%s\'", OptionValuesTable.VARIANT_ID, variant.getId().toString()), null);
-        }
-
+        db.delete(TABLE_OPTION_VALUES, String.format("%s = \'%s\'", OptionValuesTable.PRODUCT_ID, productId), null);
         db.delete(TABLE_PRODUCT_VARIANTS, String.format("%s = \'%s\'", ProductVariantsTable.PRODUCT_ID, productId), null);
     }
 
-    private Product buildProduct(Cursor cursor) throws ParseException {
-        String productId = cursor.getString(cursor.getColumnIndex(ProductsTable.PRODUCT_ID));
-        List<Image> images = getProductImages(productId);
-        List<ProductVariant> variants = getProductVariants(productId);
-        List<Option> options = getProductOptions(productId);
-        return QueryHelper.product(cursor, images, variants, options);
-    }
-
-    private List<Image> getProductImages(String productId) {
-        List<Image> results = new ArrayList<>();
-        Cursor cursor = querySimple(TABLE_IMAGES, ImagesTable.PRODUCT_ID + " = " + productId, ImagesTable.POSITION + " ASC");
-        if (cursor.moveToFirst()) {
-            do {
-                results.add(QueryHelper.image(cursor));
-            } while (cursor.moveToNext());
+    /**
+     * Helper function for building a list of products from a simple query on the products table. This will handle all
+     * of the sub-table querying that is required to get the images, options, and variants associated with each product.
+     *
+     * @param productsCursor Contains the row data from a query on the products table.
+     * @param isCancelled    This AtomicBoolean will be checked periodically to see whether this search should be cancelled.
+     * @return A list of fully populated {@link Product} objects from the original cursor rows.
+     */
+    private List<Product> buildProducts(Cursor productsCursor, final AtomicBoolean isCancelled) {
+        // If the cursor from the Products table doesn't have any rows, return an empty list
+        if (!productsCursor.moveToFirst()) {
+            return Collections.EMPTY_LIST;
         }
-        cursor.close();
-        return results;
-    }
 
-    private List<ProductVariant> getProductVariants(String productId) {
-        List<ProductVariant> results = new ArrayList<>();
-        Cursor cursor = querySimple(TABLE_PRODUCT_VARIANTS, ProductVariantsTable.PRODUCT_ID + " = " + productId, ProductVariantsTable.POSITION + " ASC");
-        if (cursor.moveToFirst()) {
-            do {
-                try {
-                    String variantId = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.ID));
-                    List<OptionValue> optionValues = getVariantOptionValues(variantId);
-                    results.add(QueryHelper.productVariant(cursor, optionValues));
-                } catch (ParseException e) {
-                    Log.e(LOG_TAG, "Could not query ProductVariant from database", e);
+        // Extract a list of the Product IDs that we can use to query the image, option, variant, and option value tables
+        List<String> productIds = new ArrayList<>();
+        do {
+            productIds.add(productsCursor.getString(productsCursor.getColumnIndex(ProductsTable.PRODUCT_ID)));
+        } while (productsCursor.moveToNext());
+
+        if (isCancelled.get()) return Collections.EMPTY_LIST;
+
+        // Map each Product ID to the list of Images for that Product
+        Map<String, List<Image>> imagesByProduct = new CursorAdapter<Image>().buildMap(TABLE_IMAGES, ImagesTable.PRODUCT_ID, productIds, ImagesTable.POSITION, getReadableDatabase(), new CursorAdapter.ObjectBuilder<Image>() {
+            @Override
+            public Image build(Cursor cursor) {
+                return QueryHelper.image(cursor);
+            }
+        });
+
+        if (isCancelled.get()) return Collections.EMPTY_LIST;
+
+        // Map each Product ID to the list of Options for that Product
+        Map<String, List<Option>> optionsByProduct = new CursorAdapter<Option>().buildMap(TABLE_OPTIONS, OptionsTable.PRODUCT_ID, productIds, OptionsTable.POSITION, getReadableDatabase(), new CursorAdapter.ObjectBuilder<Option>() {
+            @Override
+            public Option build(Cursor cursor) {
+                return QueryHelper.option(cursor);
+            }
+        });
+
+        if (isCancelled.get()) return Collections.EMPTY_LIST;
+
+        // Map each Product ID to the list of OptionsValues for that Product (OptionValues are actually associated with ProductVariants, but we'll get to that)
+        Map<String, List<ModelFactory.DBOptionValue>> optionValuesByProduct = new CursorAdapter<ModelFactory.DBOptionValue>().buildMap(TABLE_OPTION_VALUES, OptionValuesTable.PRODUCT_ID, productIds, null, getReadableDatabase(), new CursorAdapter.ObjectBuilder<ModelFactory.DBOptionValue>() {
+            @Override
+            public ModelFactory.DBOptionValue build(Cursor cursor) {
+                return QueryHelper.optionValue(cursor);
+            }
+        });
+
+        if (isCancelled.get()) return Collections.EMPTY_LIST;
+
+        // Map each Product ID to a nested map, which itself maps each ProductVariant ID to the list of OptionValues for that ProductVariant
+        final Map<String, Map<String, List<ModelFactory.DBOptionValue>>> optionValuesByProductByVariant = new HashMap<>();
+        for (String productId : optionsByProduct.keySet()) {
+
+            // Get the list of all OptionValues the current Product ID (includes all OptionValues for all ProductVariants for this Product)
+            List<ModelFactory.DBOptionValue> optionValues = optionValuesByProduct.get(productId);
+
+            // If our outer map doesn't contain this Product ID as a key yet, add it
+            if (!optionValuesByProductByVariant.containsKey(productId)) {
+                optionValuesByProductByVariant.put(productId, new HashMap<String, List<ModelFactory.DBOptionValue>>());
+            }
+
+            // Map each ProductVariant ID to the list of OptionValues for that ProductVariant (this is building our nested map)
+            for (ModelFactory.DBOptionValue optionValue : optionValues) {
+                String variantId = optionValue.getVariantId();
+
+                // If our nested map doesn't contain this ProductVariant ID as a key yet, add it
+                List<ModelFactory.DBOptionValue> optionValuesForVariant = optionValuesByProductByVariant.get(productId).get(variantId);
+                if (optionValuesForVariant == null) {
+                    optionValuesForVariant = new ArrayList<>();
                 }
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return results;
-    }
+                optionValuesForVariant.add(optionValue);
 
-    private List<OptionValue> getVariantOptionValues(String variantId) {
-        List<OptionValue> results = new ArrayList<>();
-        Cursor cursor = querySimple(TABLE_OPTION_VALUES, OptionValuesTable.VARIANT_ID + " = " + variantId, null);
-        if (cursor.moveToFirst()) {
-            do {
-                results.add(QueryHelper.optionValue(cursor));
-            } while (cursor.moveToNext());
+                // Update the OptionValue list in the nested map to include the current OptionValue
+                optionValuesByProductByVariant.get(productId).put(variantId, optionValuesForVariant);
+            }
         }
-        cursor.close();
-        return results;
-    }
 
-    private List<Option> getProductOptions(String productId) {
-        List<Option> results = new ArrayList<>();
-        Cursor cursor = querySimple(TABLE_OPTIONS, OptionsTable.PRODUCT_ID + " = " + productId, OptionsTable.POSITION + " ASC");
-        if (cursor.moveToFirst()) {
-            do {
-                results.add(QueryHelper.option(cursor));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return results;
+        if (isCancelled.get()) return Collections.EMPTY_LIST;
+
+        // Map each Product ID to the list of ProductVariants for that Product
+        Map<String, List<ProductVariant>> variantsByProduct = new CursorAdapter<ProductVariant>().buildMap(TABLE_PRODUCT_VARIANTS, ProductVariantsTable.PRODUCT_ID, productIds, null, getReadableDatabase(), new CursorAdapter.ObjectBuilder<ProductVariant>() {
+            @Override
+            public ProductVariant build(Cursor cursor) {
+                // The QueryHelper needs a list of OptionValues to build a ProductVariant, so we extract it out of the nested map we built earlier
+                String productId = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.PRODUCT_ID));
+                String variantId = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.ID));
+                List<OptionValue> optionValues = new ArrayList<>();
+                // The first get(productId) returns a map of ProductVariant IDs to OptionValue lists, and then get(variantId) returns the list of OptionValues
+                optionValues.addAll(optionValuesByProductByVariant.get(productId).get(variantId));
+                return QueryHelper.productVariant(cursor, optionValues);
+            }
+        });
+
+        if (isCancelled.get()) return Collections.EMPTY_LIST;
+
+        // Finally, use the original cursor from the Products table along with all of our maps to create fully populated Product objects
+        List<Product> products = new ArrayList<>();
+        productsCursor.moveToFirst();
+        do {
+            String productId = productsCursor.getString(productsCursor.getColumnIndex(ProductsTable.PRODUCT_ID));
+            products.add(QueryHelper.product(productsCursor, imagesByProduct.get(productId), variantsByProduct.get(productId), optionsByProduct.get(productId)));
+        } while (productsCursor.moveToNext());
+
+        return products;
     }
 
     private Cursor querySimple(String table, String where, String orderBy) {

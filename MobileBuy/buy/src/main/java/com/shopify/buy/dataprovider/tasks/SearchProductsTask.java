@@ -48,6 +48,7 @@ public class SearchProductsTask extends BaseTask<Product> {
 
     @Override
     public void run() {
+        // There's no network search yet, we only support local db search
         List<Product> products = buyDatabase.searchProducts(query, isCancelled);
         onSuccess(products, null);
     }

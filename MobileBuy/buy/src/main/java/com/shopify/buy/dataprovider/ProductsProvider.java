@@ -42,6 +42,4 @@ public interface ProductsProvider {
 
     void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback);
 
-    void getProduct(Long productId, BuyClient buyClient, Callback<Product> callback);
-
 }
