@@ -60,6 +60,7 @@ import android.widget.TextView;
 import com.shopify.buy.R;
 import com.shopify.buy.model.CartLineItem;
 import com.shopify.buy.model.OptionValue;
+import com.shopify.buy.ui.common.FixedAspectImageView;
 import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.buy.utils.CollectionUtils;
 import com.shopify.buy.utils.ImageUtility;
@@ -74,6 +75,7 @@ public class CartLineItemView extends LinearLayout {
     protected TextView title;
     protected TextView variant;
     protected TextView price;
+    // TODO quantity picker
     protected QuantityPicker quantityPicker;
 
     public CartLineItemView(Context context, AttributeSet attrs) {
@@ -89,10 +91,12 @@ public class CartLineItemView extends LinearLayout {
         variant = (TextView) findViewById(R.id.line_item_variant);
         price = (TextView) findViewById(R.id.line_item_price);
 
+        // TODO quantity picker
         //quantityPicker = (QuantityPicker) findViewById(R.id.quantity_picker);
     }
 
     public void init(final CartLineItem lineItem, NumberFormat currencyFormat, ShopifyTheme theme, QuantityPicker.OnQuantityChangedListener listener) {
+        // TODO - quantity picker
         //quantityPicker.setLineItem(lineItem, listener);
 
         title.setText(lineItem.getVariant().getProductTitle().toUpperCase());

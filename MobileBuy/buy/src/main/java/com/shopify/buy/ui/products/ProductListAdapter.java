@@ -29,7 +29,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shopify.buy.R;
@@ -37,6 +36,7 @@ import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.ui.common.ShopifyTheme;
+import com.shopify.buy.ui.common.FixedAspectImageView;
 import com.shopify.buy.utils.CurrencyFormatter;
 
 import java.text.NumberFormat;
@@ -98,7 +98,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
             titleView = (TextView) itemView.findViewById(R.id.item_title);
             priceView = (TextView) itemView.findViewById(R.id.item_price);
-            imageView = (ImageView) itemView.findViewById(R.id.item_image);
+            imageView = (FixedAspectImageView) itemView.findViewById(R.id.item_image);
 
             if (theme != null) {
                 titleView.setTextColor(theme.getAccentColor());
@@ -122,6 +122,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
                 productPrice = context.getString(R.string.from) + " " + productPrice;
             }
             priceView.setText(productPrice);
+            imageView.setRatio(1, 1);
         }
 
         @Override

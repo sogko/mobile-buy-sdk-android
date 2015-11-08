@@ -26,12 +26,8 @@ package com.shopify.buy.ui.common;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.shopify.buy.model.ShopifyObject;
-import com.shopify.buy.utils.ImageUtility;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 public abstract class RecyclerViewHolder<T extends ShopifyObject> extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
@@ -39,7 +35,7 @@ public abstract class RecyclerViewHolder<T extends ShopifyObject> extends Recycl
     protected final boolean cropImage;
 
     protected T item;
-    protected ImageView imageView;
+    protected FixedAspectImageView imageView;
 
     public RecyclerViewHolder(final View itemView, final boolean cropImage, final ClickListener clickListener) {
         super(itemView);
@@ -55,28 +51,8 @@ public abstract class RecyclerViewHolder<T extends ShopifyObject> extends Recycl
 
     public void setItem(T item) {
         this.item = item;
-        loadImage();
-    }
-
-    private void loadImage() {
-        if (getImageUrl() != null) {
-            final String imageUrl = ImageUtility.stripQueryFromUrl(getImageUrl());
-
-            Picasso picasso = Picasso.with(imageView.getContext());
-
-            // TODO - find a way to load smaller images if we can
-            ImageUtility.loadRemoteImageIntoViewWithoutSize(picasso, imageUrl, imageView, ImageUtility.SIZE_UNKNOWN, ImageUtility.SIZE_UNKNOWN, cropImage, new Callback() {
-                @Override
-                public void onSuccess() {
-                    // TODO we should have image loading placeholders or spinners
-                }
-
-                @Override
-                public void onError() {
-                    // TODO we should have image loading placeholders or spinners
-                }
-            });
-        }
+        imageView.setImageUrl(getImageUrl());
+        imageView.setCropImage(cropImage);
     }
 
     @Override

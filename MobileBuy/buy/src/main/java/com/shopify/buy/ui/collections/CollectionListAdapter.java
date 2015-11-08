@@ -29,13 +29,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shopify.buy.R;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.ui.common.ShopifyTheme;
+import com.shopify.buy.ui.common.FixedAspectImageView;
 
 import java.util.List;
 
@@ -88,7 +88,7 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
             super(itemView, true, clickListener);
 
             nameText = (TextView) itemView.findViewById(R.id.collection_name);
-            imageView = (ImageView) itemView.findViewById(R.id.collection_image);
+            imageView = (FixedAspectImageView) itemView.findViewById(R.id.collection_image);
 
             if (theme != null) {
                 theme.applyCustomFont(nameText);
@@ -100,6 +100,7 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
             super.setItem(collection);
 
             nameText.setText(collection.getTitle());
+            imageView.setRatio(16, 9);
         }
 
         @Override
