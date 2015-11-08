@@ -33,6 +33,13 @@ import com.shopify.buy.utils.ImageUtility;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+
+/***
+ * This class is used to create an {@link ImageView} with a fixed aspect ratio.
+ * The width of the image in the layout must be resolvable at the time onMeasure() is called, and cannot be WRAP_CONTENT.
+ * It will load a properly sized image from the url specified with {@link #setImageUrl(String)}}
+ * This view is meant to be used for items in a {@link android.support.v7.widget.RecyclerView}.
+ */
 public class FixedAspectImageView extends ImageView {
     private static String TAG = FixedAspectImageView.class.getSimpleName();
 
@@ -67,8 +74,6 @@ public class FixedAspectImageView extends ImageView {
     private void loadImage() {
         if (imageUrl != null) {
             Picasso picasso = Picasso.with(getContext());
-            picasso.setIndicatorsEnabled(true);
-            picasso.setLoggingEnabled(true);
 
             Log.i(TAG, "Requesting image - width:" + getMeasuredWidth() + " height:" + getMeasuredHeight());
             ImageUtility.loadRemoteImageIntoViewWithoutSize(picasso, imageUrl, this, getMeasuredWidth(), getMeasuredHeight(), cropImage, new Callback() {
@@ -85,10 +90,6 @@ public class FixedAspectImageView extends ImageView {
         }
     }
 
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        loadImage();
-    }
-
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -96,5 +97,7 @@ public class FixedAspectImageView extends ImageView {
         int heightSize = Math.round(widthSize * ratio) ;
         int newHeightSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY);
         super.onMeasure(widthMeasureSpec, newHeightSpec);
+
+        loadImage();
     }
 }
