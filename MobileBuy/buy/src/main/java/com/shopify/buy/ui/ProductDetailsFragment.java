@@ -225,6 +225,12 @@ public class ProductDetailsFragment extends CheckoutFragment {
     }
 
     private void showProductIfReady() {
+        final Activity activity = safelyGetActivity();
+
+        if (activity == null) {
+            return;
+        }
+
         // Check for the prerequisites before populating the views
         if (!viewCreated || product == null || shop == null) {
             // we're still loading, make sure we show the progress dialog
@@ -232,7 +238,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_product_details), new Runnable() {
                     @Override
                     public void run() {
-                        getActivity().finish();
+                        activity.finish();
                     }
                 });
             }

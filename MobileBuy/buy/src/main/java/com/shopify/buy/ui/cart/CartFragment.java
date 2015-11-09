@@ -24,6 +24,7 @@
 
 package com.shopify.buy.ui.cart;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -87,6 +88,11 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
     }
 
     private void showCartIfReady() {
+        Activity activity = safelyGetActivity();
+        if (activity == null) {
+            return;
+        }
+
         if (currencyFormat == null) {
             return;
         }
@@ -110,7 +116,7 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
             }
         };
 
-        getActivity().runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 ((ListView) getView().findViewById(R.id.cart_list_view)).setAdapter(adapter);

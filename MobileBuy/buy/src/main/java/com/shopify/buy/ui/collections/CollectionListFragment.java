@@ -140,7 +140,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
     private void showCollectionsIfReady() {
         final AppCompatActivity activity = safelyGetActivity();
-
         if (activity == null) {
             return;
         }
