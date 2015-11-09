@@ -197,16 +197,6 @@ public class BaseFragment extends Fragment {
 
     protected AppCompatActivity safelyGetActivity() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        if (activity == null) {
-            try {
-                if (!attachedLatch.await(5, TimeUnit.SECONDS)) {
-                    Log.e(LOG_TAG, "safelyGetActivity() timed out");
-                }
-            } catch (InterruptedException e) {
-                Log.e(LOG_TAG, "safelyGetActivity() failed", e);
-            }
-            activity = (AppCompatActivity) getActivity();
-        }
         return activity;
     }
 }
