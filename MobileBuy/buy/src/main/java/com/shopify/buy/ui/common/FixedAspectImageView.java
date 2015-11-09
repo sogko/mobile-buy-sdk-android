@@ -38,7 +38,6 @@ import com.squareup.picasso.Picasso;
  * This class is used to create an {@link ImageView} with a fixed aspect ratio.
  * The width of the image in the layout must be resolvable at the time onMeasure() is called, and cannot be WRAP_CONTENT.
  * It will load a properly sized image from the url specified with {@link #setImageUrl(String)}}
- * This view is meant to be used for items in a {@link android.support.v7.widget.RecyclerView}.
  */
 public class FixedAspectImageView extends ImageView {
     private static String TAG = FixedAspectImageView.class.getSimpleName();
