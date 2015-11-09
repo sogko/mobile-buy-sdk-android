@@ -176,7 +176,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         }
 
         if (!viewCreated || products == null || shop == null) {
-            if (!progressDialog.isShowing() && activity != null) {
+            if (!progressDialog.isShowing()) {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_collection_details), new Runnable() {
                     @Override
                     public void run() {
