@@ -26,6 +26,7 @@ package com.shopify.buy.ui.products;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -77,7 +78,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         super.onCreate(savedInstanceState);
 
         if (provider == null) {
-            provider = new DefaultProductsProvider(getActivity());
+            provider = new DefaultProductsProvider(safelyGetActivity());
         }
 
         Bundle bundle = getArguments();
@@ -102,11 +103,11 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = (ProductListFragmentView) inflater.inflate(R.layout.fragment_product_list, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        ProductListAdapter adapter = new ProductListAdapter(getActivity(), theme);
+        ProductListAdapter adapter = new ProductListAdapter(safelyGetActivity(), theme);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        recyclerView.setLayoutManager(new GridLayoutManager(safelyGetActivity(), 2));
         return view;
     }
 
@@ -168,12 +169,18 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
     }
 
     private void showProductsIfReady() {
+        final AppCompatActivity activity = safelyGetActivity();
+
+        if (activity == null) {
+            return;
+        }
+
         if (!viewCreated || products == null || shop == null) {
-            if (!progressDialog.isShowing()) {
+            if (!progressDialog.isShowing() && activity != null) {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_collection_details), new Runnable() {
                     @Override
                     public void run() {
-                        getActivity().finish();
+                        activity.finish();
                     }
                 });
             }

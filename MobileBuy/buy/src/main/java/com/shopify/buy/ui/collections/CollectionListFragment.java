@@ -26,6 +26,7 @@ package com.shopify.buy.ui.collections;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -138,12 +139,18 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
     }
 
     private void showCollectionsIfReady() {
+        final AppCompatActivity activity = safelyGetActivity();
+
+        if (activity == null) {
+            return;
+        }
+
         if (!viewCreated || collections == null) {
             if (!progressDialog.isShowing()) {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_collections), new Runnable() {
                     @Override
                     public void run() {
-                        getActivity().finish();
+                        activity.finish();
                     }
                 });
             }
