@@ -57,6 +57,8 @@ public class BaseFragment extends Fragment {
     protected Shop shop;
     protected ShopifyTheme theme;
 
+    private CountDownLatch attachedLatch;
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
