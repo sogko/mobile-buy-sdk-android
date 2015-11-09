@@ -29,7 +29,12 @@ import android.content.Context;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.model.Cart;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class CartManager {
+
+    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static CartManager instance = new CartManager();
 
@@ -38,27 +43,40 @@ public class CartManager {
     }
 
     private BuyDatabase database;
+    private String userId;
     private Cart cart;
 
     private CartManager() {
-    }
-
-    public void loadCart(String userId, Context context) {
-        if (database == null) {
-            database = new BuyDatabase(context);
-        }
-        cart = database.getCart(userId);
     }
 
     public Cart getCart() {
         return cart;
     }
 
-    public void saveCart(String userId, Context context) {
-        if (database == null) {
-            database = new BuyDatabase(context);
-        }
-        database.saveCart(cart, userId);
+    public void loadCart(final String userId, final Context context) {
+        this.userId = userId;
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (database == null) {
+                    database = new BuyDatabase(context);
+                }
+                cart = database.getCart(userId);
+            }
+        });
+    }
+
+    public void saveCart(final Context context) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (database == null) {
+                    database = new BuyDatabase(context);
+                }
+                database.saveCart(cart, userId);
+            }
+        });
     }
 
 }

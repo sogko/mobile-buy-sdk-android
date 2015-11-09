@@ -37,8 +37,8 @@ import java.util.Set;
 
 public class Cart {
 
-    private final List<CartLineItem> lineItems;
-    private final Set<ProductVariant> productVariants;
+    protected final List<CartLineItem> lineItems;
+    protected final Set<ProductVariant> productVariants;
 
     public Cart() {
         lineItems = new ArrayList<>();
@@ -87,8 +87,8 @@ public class Cart {
      * If a LineItem with this ProductVariant already exists in the Cart, that LineItems's quantity will be set to the new value.
      * If no LineItem with this ProductVariant exists in the Cart, a new LineItem will be created with the specified ProductVariant and quantity.
      *
-     * @param variant   the {@link ProductVariant} to update
-     * @param quantity  the new quantity
+     * @param variant  the {@link ProductVariant} to update
+     * @param quantity the new quantity
      */
     public void setVariantQuantity(ProductVariant variant, int quantity) {
         if (quantity <= 0) {
@@ -167,7 +167,7 @@ public class Cart {
     /**
      * Convenience function to return the subtotal price for this cart, before taxes and shipping.
      *
-     * @return  The subtotal price for this cart.
+     * @return The subtotal price for this cart.
      */
     public double getSubtotal() {
         double subtotal = 0;

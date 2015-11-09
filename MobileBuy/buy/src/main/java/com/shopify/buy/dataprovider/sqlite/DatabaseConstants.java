@@ -134,6 +134,7 @@ interface DatabaseConstants {
     }
 
     interface LineItemPropertiesTable {
+        String USER_ID = "user_id";
         String LINE_ITEM_ID = "line_item_id";
         String KEY = "key";
         String VALUE = "value";

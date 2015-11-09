@@ -28,6 +28,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
 
+import com.shopify.buy.model.CartLineItem;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
 import com.shopify.buy.model.LineItem;
@@ -290,7 +291,10 @@ public class QueryHelper implements DatabaseConstants {
         return values;
     }
 
-    static ProductVariant productVariant(Cursor cursor, List<OptionValue> optionValues) {
+    static ProductVariant productVariant(Cursor cursor, List<ModelFactory.DBOptionValue> optionValues) {
+        if (cursor.getPosition() < 0) {
+            cursor.moveToFirst();
+        }
         long id = Long.parseLong(cursor.getString(cursor.getColumnIndex(ProductVariantsTable.ID)));
         String title = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.TITLE));
         String price = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.PRICE));
@@ -345,6 +349,16 @@ public class QueryHelper implements DatabaseConstants {
         return new ModelFactory.DBOptionValue(optionId, name, value, variantId);
     }
 
+    static List<ModelFactory.DBOptionValue> optionValues(Cursor cursor) {
+        List<ModelFactory.DBOptionValue> optionValues = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                optionValues.add(optionValue(cursor));
+            } while (cursor.moveToNext());
+        }
+        return optionValues;
+    }
+
     static String createLineItemsTable() {
         StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_LINE_ITEMS)
@@ -389,7 +403,7 @@ public class QueryHelper implements DatabaseConstants {
         return values;
     }
 
-    static LineItem lineItem(Cursor cursor, Map<String, String> properties) {
+    static CartLineItem lineItem(Cursor cursor, Map<String, String> properties, ProductVariant variant) {
         String lineItemId = cursor.getString(cursor.getColumnIndex(LineItemsTable.LINE_ITEM_ID));
         int quantity = cursor.getInt(cursor.getColumnIndex(LineItemsTable.QUANTITY));
         String price = cursor.getString(cursor.getColumnIndex(LineItemsTable.PRICE));
@@ -406,25 +420,26 @@ public class QueryHelper implements DatabaseConstants {
         String fulfillmentService = cursor.getString(cursor.getColumnIndex(LineItemsTable.FULFILLMENT_SERVICE));
 
 
-        return new ModelFactory.DBLineItem(quantity, lineItemId, price, requiresShipping, variantId, title, productId, variantTitle, linePrice, compareAtPrice, sku, taxable, grams, fulfillmentService, properties);
+        return new ModelFactory.DBCartLineItem(variant, quantity, lineItemId, price, requiresShipping, variantId, title, productId, variantTitle, linePrice, compareAtPrice, sku, taxable, grams, fulfillmentService, properties);
     }
 
     static String createLineItemPropertiesTable() {
         StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_LINE_ITEM_PROPERTIES)
                 .append(" (")
+                .append(LineItemPropertiesTable.USER_ID).append(" TEXT, ")
                 .append(LineItemPropertiesTable.LINE_ITEM_ID).append(" TEXT, ")
                 .append(LineItemPropertiesTable.KEY).append(" TEXT, ")
-                .append(LineItemPropertiesTable.VALUE).append(" TEXT, ")
-                .append("PRIMARY KEY (").append(LineItemPropertiesTable.LINE_ITEM_ID).append(", ").append(LineItemPropertiesTable.KEY).append(")")
+                .append(LineItemPropertiesTable.VALUE).append(" TEXT")
                 .append(")");
         return sql.toString();
     }
 
-    static List<ContentValues> contentValues(String lineItemId, Map<String, String> properties) {
+    static List<ContentValues> contentValues(String lineItemId, Map<String, String> properties, String userId) {
         List<ContentValues> valuesList = new ArrayList<>();
         for (String key : properties.keySet()) {
             ContentValues values = new ContentValues();
+            values.put(LineItemPropertiesTable.USER_ID, userId);
             values.put(LineItemPropertiesTable.LINE_ITEM_ID, lineItemId);
             values.put(LineItemPropertiesTable.KEY, key);
             values.put(LineItemPropertiesTable.VALUE, properties.get(key));

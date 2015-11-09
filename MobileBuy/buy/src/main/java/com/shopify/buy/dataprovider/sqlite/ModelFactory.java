@@ -24,15 +24,17 @@
 
 package com.shopify.buy.dataprovider.sqlite;
 
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.CartLineItem;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
-import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.internal.CollectionImage;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -110,11 +112,10 @@ class ModelFactory {
 
     static class DBProductVariant extends ProductVariant {
 
-        public DBProductVariant(long id, String title, String price, List<OptionValue> optionValues, long grams, String compareAtPrice, String sku, boolean requiresShipping, boolean taxable, int position, long productId, String productTitle, Date createdAtDate, Date updatedAtDate, boolean available, String imageUrl) {
+        public DBProductVariant(long id, String title, String price, List<DBOptionValue> optionValues, long grams, String compareAtPrice, String sku, boolean requiresShipping, boolean taxable, int position, long productId, String productTitle, Date createdAtDate, Date updatedAtDate, boolean available, String imageUrl) {
             super.id = id;
             this.title = title;
             this.price = price;
-            this.optionValues = optionValues;
             this.grams = grams;
             this.compareAtPrice = compareAtPrice;
             this.sku = sku;
@@ -127,6 +128,9 @@ class ModelFactory {
             this.updatedAtDate = updatedAtDate;
             this.available = available;
             this.imageUrl = imageUrl;
+
+            this.optionValues = new ArrayList<>();
+            this.optionValues.addAll(optionValues);
         }
 
     }
@@ -144,9 +148,10 @@ class ModelFactory {
 
     }
 
-    static class DBLineItem extends LineItem {
+    static class DBCartLineItem extends CartLineItem {
 
-        public DBLineItem(long quantity, String id, String price, boolean requiresShipping, String variantId, String title, String productId, String variantTitle, String linePrice, String compareAtPrice, String sku, boolean taxable, long grams, String fulfillmentService, Map<String, String> properties) {
+        public DBCartLineItem(ProductVariant variant, long quantity, String id, String price, boolean requiresShipping, String variantId, String title, String productId, String variantTitle, String linePrice, String compareAtPrice, String sku, boolean taxable, long grams, String fulfillmentService, Map<String, String> properties) {
+            super(variant);
             this.quantity = quantity;
             this.id = id;
             this.price = price;
@@ -164,6 +169,15 @@ class ModelFactory {
             this.properties = properties;
         }
 
+    }
+
+    static class DBCart extends Cart {
+
+        public DBCart(List<CartLineItem> lineItems, Set<ProductVariant> productVariants) {
+            super();
+            this.lineItems.addAll(lineItems);
+            this.productVariants.addAll(productVariants);
+        }
     }
 
 }
