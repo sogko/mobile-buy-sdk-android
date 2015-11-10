@@ -102,9 +102,10 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
                 if (view == null) {
                     view = View.inflate(getContext(), R.layout.cart_line_item_view, null);
+                    ((CartLineItemView) view).applyTheme(theme);
                 }
 
-                ((CartLineItemView) view).init(getItem(position), currencyFormat, theme, CartFragment.this);
+                ((CartLineItemView) view).setLineItem(getItem(position), currencyFormat, CartFragment.this);
 
                 return view;
             }

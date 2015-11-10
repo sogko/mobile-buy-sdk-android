@@ -3,15 +3,6 @@
                                           android:layout_width="match_parent"
                                           android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/cart_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/checkout_button_height"
-        android:divider="@null"
-        android:dividerHeight="0dp">
-    </ListView>
-
     <LinearLayout
         android:id="@+id/cart_footer"
         android:layout_width="match_parent"
@@ -60,12 +51,22 @@
             android:paddingRight="@dimen/spacing_12dp"
             android:text="@string/continue_to_checkout"
             android:textSize="@dimen/text_medium"/>
+
     </LinearLayout>
 
     <View
         android:id="@+id/footer_divider"
         style="@style/Divider"
         android:layout_above="@id/cart_footer"/>
+
+    <ListView
+        android:id="@+id/cart_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/footer_divider"
+        android:divider="@null"
+        android:dividerHeight="0dp">
+    </ListView>
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/snackbar_location"

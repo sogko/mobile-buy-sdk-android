@@ -60,7 +60,6 @@ import android.widget.TextView;
 import com.shopify.buy.R;
 import com.shopify.buy.model.CartLineItem;
 import com.shopify.buy.model.OptionValue;
-import com.shopify.buy.ui.common.FixedAspectImageView;
 import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.buy.utils.CollectionUtils;
 import com.shopify.buy.utils.ImageUtility;
@@ -95,12 +94,23 @@ public class CartLineItemView extends LinearLayout {
         //quantityPicker = (QuantityPicker) findViewById(R.id.quantity_picker);
     }
 
-    public void init(final CartLineItem lineItem, NumberFormat currencyFormat, ShopifyTheme theme, QuantityPicker.OnQuantityChangedListener listener) {
+    public void applyTheme(ShopifyTheme theme) {
+        title.setTextColor(theme.getAccentColor());
+        variant.setTextColor(theme.getProductDescriptionColor(getResources()));
+        price.setTextColor(theme.getProductDescriptionColor(getResources()));
+
+        theme.applyCustomFont(title);
+        theme.applyCustomFont(variant);
+        theme.applyCustomFont(price);
+
+        findViewById(R.id.line_item_divider).setBackgroundColor(theme.getDividerColor(getResources()));
+    }
+
+    public void setLineItem(final CartLineItem lineItem, NumberFormat currencyFormat, QuantityPicker.OnQuantityChangedListener listener) {
         // TODO - quantity picker
         //quantityPicker.setLineItem(lineItem, listener);
 
         title.setText(lineItem.getVariant().getProductTitle().toUpperCase());
-        title.setTextColor(theme.getAccentColor());
 
         List<OptionValue> optionValues = lineItem.getVariant().getOptionValues();
         if (CollectionUtils.isEmpty(optionValues)) {
@@ -118,7 +128,6 @@ public class CartLineItemView extends LinearLayout {
                 }
             }
             variant.setText(breadcrumbs.toString());
-            variant.setTextColor(theme.getProductDescriptionColor(getResources()));
         }
 
         StringBuilder priceWithMultiplier = new StringBuilder();
@@ -126,13 +135,6 @@ public class CartLineItemView extends LinearLayout {
         priceWithMultiplier.append(" x ");
         priceWithMultiplier.append(lineItem.getQuantity());
         price.setText(priceWithMultiplier.toString());
-        price.setTextColor(theme.getProductDescriptionColor(getResources()));
-
-        theme.applyCustomFont(title);
-        theme.applyCustomFont(variant);
-        theme.applyCustomFont(price);
-
-        findViewById(R.id.line_item_divider).setBackgroundColor(theme.getDividerColor(getResources()));
 
         ViewTreeObserver viewTreeObserver = getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
