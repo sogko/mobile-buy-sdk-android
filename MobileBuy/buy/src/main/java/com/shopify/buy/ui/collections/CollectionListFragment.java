@@ -42,7 +42,6 @@ import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.dataprovider.CollectionsProvider;
 import com.shopify.buy.dataprovider.DefaultCollectionsProvider;
 import com.shopify.buy.model.Collection;
-import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 
@@ -57,7 +56,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
     private static final String TAG = CollectionListFragment.class.getSimpleName();
 
     private static final String SAVED_LAYOUT_STATE = "saved_layout_state";
-
     private Parcelable layoutState;
 
     CollectionListFragmentView view;
@@ -90,7 +88,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
         if (savedInstanceState != null) {
             parseCollections(savedInstanceState);
-
             layoutState = savedInstanceState.getParcelable(SAVED_LAYOUT_STATE);
         }
     }
@@ -103,7 +100,9 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
             outState.putString(CollectionListConfig.EXTRA_SHOP_COLLECTIONS, BuyClientFactory.createDefaultGson().toJson(collections));
         }
 
-        outState.putParcelable(SAVED_LAYOUT_STATE, recyclerView.getLayoutManager().onSaveInstanceState());
+        if (recyclerView != null && recyclerView.getLayoutManager() != null) {
+            outState.putParcelable(SAVED_LAYOUT_STATE, recyclerView.getLayoutManager().onSaveInstanceState());
+        }
     }
 
     @Override
@@ -178,7 +177,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
                     }
                 });
             }
-            return;
         } else {
             // TODO this is temporary.  The view should pull down the progressview when it has populated its subviews
             if (progressDialog.isShowing()) {
