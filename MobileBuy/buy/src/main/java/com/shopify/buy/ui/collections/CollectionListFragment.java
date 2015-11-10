@@ -63,7 +63,7 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
     private List<Collection> collections;
     RecyclerView recyclerView;
 
-    private Listener listener;
+    private OnCollectionListItemSelectedListener collectionListItemSelectedListener;
 
     private CollectionsProvider provider = null;
 
@@ -148,8 +148,8 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         }
     }
 
-    public void setListener(Listener listener) {
-        this.listener = listener;
+    public void setListener(OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
+        this.collectionListItemSelectedListener = collectionListItemSelectedListener;
     }
 
     private void fetchCollections() {
@@ -196,23 +196,22 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
     @Override
     public void onItemClick(int position, View viewHolder, Collection collection) {
         Log.i(TAG, "Collection Item clicked");
-        if (listener != null) {
-            listener.onItemClick(collection);
+        if (collectionListItemSelectedListener != null) {
+            collectionListItemSelectedListener.onCollectionListItemClick(collection);
         }
     }
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Collection collection) {
         Log.i(TAG, "Collection Item long clicked");
-        if (listener != null) {
-            listener.onItemLongClick(collection);
+        if (collectionListItemSelectedListener != null) {
+            collectionListItemSelectedListener.onCollectionListItemLongClick(collection);
         }
     }
 
-    // TODO - should these pass the view and position as well?
-    public interface Listener {
-        void onItemClick(Collection collection);
+    public interface OnCollectionListItemSelectedListener {
+        void onCollectionListItemClick(Collection collection);
 
-        void onItemLongClick(Collection collection);
+        void onCollectionListItemLongClick(Collection collection);
     }
 }

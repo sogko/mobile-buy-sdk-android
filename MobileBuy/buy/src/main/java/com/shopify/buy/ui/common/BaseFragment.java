@@ -26,7 +26,6 @@ package com.shopify.buy.ui.common;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;

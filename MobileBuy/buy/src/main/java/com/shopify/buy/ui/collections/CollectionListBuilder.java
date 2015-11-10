@@ -84,13 +84,13 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
      * Returns a new {@link CollectionListFragment} based on the params that have already been passed to the builder.
      *
      * @param provider  An optional implementation of {@link CollectionsProvider}. If you pass null, {@link com.shopify.buy.dataprovider.DefaultCollectionsProvider} will be used.
-     * @param listener  An implementation of {@link com.shopify.buy.ui.collections.CollectionListFragment.Listener} which will be notified of user actions.
+     * @param collectionListItemSelectedListener  An implementation of {@link com.shopify.buy.ui.collections.CollectionListFragment.OnCollectionListItemSelectedListener} which will be notified of user actions.
      * @return          A new {@link CollectionListFragment}.
      */
-    public CollectionListFragment buildFragment(@Nullable CollectionsProvider provider, CollectionListFragment.Listener listener) {
+    public CollectionListFragment buildFragment(@Nullable CollectionsProvider provider, CollectionListFragment.OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
         CollectionListFragment fragment = new CollectionListFragment();
         fragment.setProvider(provider);
-        fragment.setListener(listener);
+        fragment.setListener(collectionListItemSelectedListener);
         fragment.setArguments(buildBundle());
         return fragment;
     }
