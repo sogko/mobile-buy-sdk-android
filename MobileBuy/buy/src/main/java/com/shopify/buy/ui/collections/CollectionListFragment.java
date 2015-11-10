@@ -135,7 +135,7 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO add error case listeners
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         });
     }
@@ -152,7 +152,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
             }
             return;
         } else {
-            // TODO this is temporary.  The view should pull down the progressview when it has populated its subviews
             if (progressDialog.isShowing()) {
                 dismissProgressDialog();
             }
@@ -178,7 +177,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         }
     }
 
-    // TODO - should these pass the view and position as well?
     public interface Listener {
         void onItemClick(Collection collection);
 

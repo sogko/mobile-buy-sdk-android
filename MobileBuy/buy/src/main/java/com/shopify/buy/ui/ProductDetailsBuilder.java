@@ -70,7 +70,6 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
     }
 
     public ProductDetailsBuilder setProductId(String productId) {
-        // TODO should the config be a generic in the base as well?
         ((ProductDetailsConfig) config).setProductId(productId);
         return this;
     }
@@ -93,7 +92,6 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     @Override
     public Bundle buildBundle() {
-        // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
         ProductDetailsConfig productDetailsConfig = (ProductDetailsConfig) config;
 
         if (TextUtils.isEmpty(productDetailsConfig.getProductId()) && productDetailsConfig.getProduct() == null) {
