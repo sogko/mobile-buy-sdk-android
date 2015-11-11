@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.model.Shop;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseBuilder<T extends BaseBuilder> {
@@ -92,11 +91,6 @@ public abstract class BaseBuilder<T extends BaseBuilder> {
 
     public T setWebReturnToLabel(String webReturnToLabel) {
         config.setWebReturnToLabel(webReturnToLabel);
-        return (T) this;
-    }
-
-    public T setShop(Shop shop) {
-        config.setShop(shop);
         return (T) this;
     }
 

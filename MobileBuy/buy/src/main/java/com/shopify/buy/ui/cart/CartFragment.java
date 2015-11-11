@@ -34,7 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.shopify.buy.R;
-import com.shopify.buy.dataprovider.CartManager;
+import com.shopify.buy.dataprovider.ShopManager;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
 import com.shopify.buy.model.LineItem;
@@ -97,7 +97,7 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
             return;
         }
 
-        final Cart cart = CartManager.getInstance().getCart();
+        final Cart cart = ShopManager.getInstance().getCart();
 
         view.updateSubtotal(cart, currencyFormat);
 
@@ -127,14 +127,14 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
     @Override
     protected Cart getCartForCheckout() {
-        return CartManager.getInstance().getCart();
+        return ShopManager.getInstance().getCart();
     }
 
     @Override
     public void onQuantityChanged(LineItem lineItem) {
-        view.updateSubtotal(CartManager.getInstance().getCart(), currencyFormat);
+        view.updateSubtotal(ShopManager.getInstance().getCart(), currencyFormat);
 
-        CartManager.getInstance().saveCart(getActivity());
+        ShopManager.getInstance().saveCart(getActivity());
     }
 
 }

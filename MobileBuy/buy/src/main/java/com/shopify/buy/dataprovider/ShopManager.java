@@ -25,35 +25,34 @@
 package com.shopify.buy.dataprovider;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.Shop;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class CartManager {
+public class ShopManager {
 
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    private static CartManager instance = new CartManager();
+    private static ShopManager instance = new ShopManager();
 
-    public static CartManager getInstance() {
+    public static ShopManager getInstance() {
         return instance;
     }
 
     private BuyDatabase database;
+    private Shop shop;
     private String userId;
     private Cart cart;
 
-    private CartManager() {
+    private ShopManager() {
     }
 
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void loadCart(final String userId, final Context context) {
+    public void loadShopAndCart(final String userId, final Context context) {
         this.userId = userId;
 
         executorService.execute(new Runnable() {
@@ -62,9 +61,33 @@ public class CartManager {
                 if (database == null) {
                     database = new BuyDatabase(context);
                 }
+                shop = database.getShop();
                 cart = database.getCart(userId);
             }
         });
+    }
+
+    public Shop getShop() {
+        return shop;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void saveShop(final Shop shop, final Context context) {
+        if (hasChanged(shop)) {
+            this.shop = shop;
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (database == null) {
+                        database = new BuyDatabase(context);
+                    }
+                    database.saveShop(shop);
+                }
+            });
+        }
     }
 
     public void saveCart(final Context context) {
@@ -77,6 +100,28 @@ public class CartManager {
                 database.saveCart(cart, userId);
             }
         });
+    }
+
+    private boolean hasChanged(Shop newShop) {
+        if (shop == null) {
+            return true;
+        }
+        if (newShop == null) {
+            return false;
+        }
+        return !TextUtils.equals(shop.getName(), newShop.getName()) ||
+                !TextUtils.equals(shop.getCity(), newShop.getCity()) ||
+                !TextUtils.equals(shop.getProvince(), newShop.getProvince()) ||
+                !TextUtils.equals(shop.getCountry(), newShop.getCountry()) ||
+                !TextUtils.equals(shop.getContactEmail(), newShop.getContactEmail()) ||
+                !TextUtils.equals(shop.getCurrency(), newShop.getCurrency()) ||
+                !TextUtils.equals(shop.getDescription(), newShop.getDescription()) ||
+                !TextUtils.equals(shop.getDomain(), newShop.getDomain()) ||
+                !TextUtils.equals(shop.getMyshopifyDomain(), newShop.getMyshopifyDomain()) ||
+                !TextUtils.equals(shop.getMoneyFormat(), newShop.getMoneyFormat()) ||
+                !TextUtils.equals(shop.getUrl(), newShop.getUrl()) ||
+                !shop.getShipsToCountries().equals(newShop.getShipsToCountries()) ||
+                !(shop.getPublishedProductsCount() == newShop.getPublishedProductsCount());
     }
 
 }

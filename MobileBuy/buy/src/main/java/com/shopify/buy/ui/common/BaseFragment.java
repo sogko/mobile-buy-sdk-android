@@ -32,17 +32,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
+import com.shopify.buy.dataprovider.ShopManager;
 import com.shopify.buy.model.Shop;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -86,7 +85,11 @@ public class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        shop = ShopManager.getInstance().getShop();
+
         setHasOptionsMenu(true);
+
         initializeTheme();
         initializeBuyClient();
         initializeProgressDialog();
@@ -104,11 +107,6 @@ public class BaseFragment extends Fragment {
         // Retrieve the optional settings
         String webReturnToUrl = bundle.getString(BaseConfig.EXTRA_WEB_RETURN_TO_URL);
         String webReturnToLabel = bundle.getString(BaseConfig.EXTRA_WEB_RETURN_TO_LABEL);
-
-        // If we have a full shop object in the bundle, we won't need to fetch it
-        if (bundle.containsKey(BaseConfig.EXTRA_SHOP_SHOP)) {
-            shop = Shop.fromJson(bundle.getString(BaseConfig.EXTRA_SHOP_SHOP));
-        }
 
         // Create the BuyClient
         buyClient = BuyClientFactory.getBuyClient(shopDomain, apiKey, channelId, applicationName);
@@ -146,6 +144,7 @@ public class BaseFragment extends Fragment {
             @Override
             public void success(Shop shop, Response response) {
                 BaseFragment.this.shop = shop;
+                ShopManager.getInstance().saveShop(shop, getContext());
                 callback.success(shop, response);
             }
 

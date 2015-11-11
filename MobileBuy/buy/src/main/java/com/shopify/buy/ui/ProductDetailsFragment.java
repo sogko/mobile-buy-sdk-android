@@ -37,7 +37,7 @@ import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.CartManager;
+import com.shopify.buy.dataprovider.ShopManager;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
@@ -193,8 +193,8 @@ public class ProductDetailsFragment extends CheckoutFragment {
             checkoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CartManager.getInstance().getCart().addVariant(variant);
-                    CartManager.getInstance().saveCart(getActivity());
+                    ShopManager.getInstance().getCart().addVariant(variant);
+                    ShopManager.getInstance().saveCart(getActivity());
 
                     // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/594
                     Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();

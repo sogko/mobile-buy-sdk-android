@@ -30,6 +30,9 @@ interface DatabaseConstants {
 
     String DATABASE_NAME = "mobile_buy_sdk_sqlite_database";
 
+    // Shop table
+    String TABLE_SHOP = "shop";
+
     // Collections tables
     String TABLE_COLLECTIONS = "collections";
 
@@ -43,6 +46,22 @@ interface DatabaseConstants {
     // Cart tables
     String TABLE_LINE_ITEMS = "line_items";
     String TABLE_LINE_ITEM_PROPERTIES = "line_item_properties";
+
+    interface ShopTable {
+        String NAME = "name";
+        String CITY = "city";
+        String PROVINCE = "province";
+        String COUNTRY = "country";
+        String CONTACT_EMAIL = "contact_email";
+        String CURRENCY = "currency";
+        String DOMAIN = "domain";
+        String URL = "url";
+        String MYSHOPIFY_DOMAIN = "myshopify_domain";
+        String DESCRIPTION = "description";
+        String SHIPS_TO_COUNTRIES = "ships_to_countries";
+        String MONEY_FORMAT = "money_format";
+        String PUBLISHED_PRODUCTS_COUNT = "published_products_count";
+    }
 
     interface CollectionsTable {
         String TITLE = "title";

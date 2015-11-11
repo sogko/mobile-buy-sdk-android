@@ -40,6 +40,7 @@ import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
+import com.shopify.buy.model.Shop;
 import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.ArrayList;
@@ -79,6 +80,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     @Override
     public void onCreate(android.database.sqlite.SQLiteDatabase db) {
+        db.execSQL(QueryHelper.createShopTable());
+
         db.execSQL(QueryHelper.createCollectionsTable());
 
         db.execSQL(QueryHelper.createProductsTable());
@@ -93,6 +96,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     @Override
     public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOP);
+
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COLLECTIONS);
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
@@ -102,6 +107,30 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCT_VARIANTS);
 
         onCreate(db);
+    }
+
+    public Shop getShop() {
+        Cursor cursor = querySimple(TABLE_SHOP, null, null);
+        if (cursor.moveToFirst()) {
+            return QueryHelper.shop(cursor);
+        }
+        return null;
+    }
+
+    public void saveShop(Shop shop) {
+        try {
+            sWriteLock.lock();
+
+            SQLiteDatabase db = getWritableDatabase();
+
+            // Delete old shop data
+            db.delete(TABLE_SHOP, null, null);
+
+            // Save new shop data
+            db.insert(TABLE_SHOP, null, QueryHelper.contentValues(shop));
+        } finally {
+            sWriteLock.unlock();
+        }
     }
 
     /**
