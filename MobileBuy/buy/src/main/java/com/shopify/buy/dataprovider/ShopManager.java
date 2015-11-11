@@ -103,11 +103,11 @@ public class ShopManager {
     }
 
     private boolean hasChanged(Shop newShop) {
-        if (shop == null) {
-            return true;
-        }
         if (newShop == null) {
             return false;
+        }
+        if (shop == null) {
+            return true;
         }
         return !TextUtils.equals(shop.getName(), newShop.getName()) ||
                 !TextUtils.equals(shop.getCity(), newShop.getCity()) ||
