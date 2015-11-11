@@ -48,11 +48,8 @@
 package com.shopify.buy.ui.cart;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -94,11 +91,22 @@ public class CartLineItemView extends LinearLayout {
         //quantityPicker = (QuantityPicker) findViewById(R.id.quantity_picker);
     }
 
-    public void init(final CartLineItem lineItem, NumberFormat currencyFormat, ShopifyTheme theme, QuantityPicker.OnQuantityChangedListener listener) {
+    public void applyTheme(ShopifyTheme theme) {
+        title.setTextColor(theme.getAccentColor());
+        variant.setTextColor(theme.getProductDescriptionColor(getResources()));
+        price.setTextColor(theme.getProductDescriptionColor(getResources()));
+
+        theme.applyCustomFont(title);
+        theme.applyCustomFont(variant);
+        theme.applyCustomFont(price);
+
+        findViewById(R.id.line_item_divider).setBackgroundColor(theme.getDividerColor(getResources()));
+    }
+
+    public void setLineItem(final CartLineItem lineItem, NumberFormat currencyFormat, QuantityPicker.OnQuantityChangedListener listener) {
         //quantityPicker.setLineItem(lineItem, listener);
 
         title.setText(lineItem.getVariant().getProductTitle().toUpperCase());
-        title.setTextColor(theme.getAccentColor());
 
         List<OptionValue> optionValues = lineItem.getVariant().getOptionValues();
         if (CollectionUtils.isEmpty(optionValues)) {
@@ -116,7 +124,6 @@ public class CartLineItemView extends LinearLayout {
                 }
             }
             variant.setText(breadcrumbs.toString());
-            variant.setTextColor(theme.getProductDescriptionColor(getResources()));
         }
 
         StringBuilder priceWithMultiplier = new StringBuilder();
@@ -124,38 +131,9 @@ public class CartLineItemView extends LinearLayout {
         priceWithMultiplier.append(" x ");
         priceWithMultiplier.append(lineItem.getQuantity());
         price.setText(priceWithMultiplier.toString());
-        price.setTextColor(theme.getProductDescriptionColor(getResources()));
 
-        theme.applyCustomFont(title);
-        theme.applyCustomFont(variant);
-        theme.applyCustomFont(price);
-
-        findViewById(R.id.line_item_divider).setBackgroundColor(theme.getDividerColor(getResources()));
-
-        ViewTreeObserver viewTreeObserver = getViewTreeObserver();
-        if (viewTreeObserver.isAlive()) {
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                        getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    } else {
-                        getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-
-                    int height = getHeight();
-                    int width = height;
-
-                    ViewGroup.LayoutParams layoutParams = image.getLayoutParams();
-                    layoutParams.height = height;
-                    layoutParams.width = width;
-                    image.setLayoutParams(layoutParams);
-
-                    String imageUrl = ImageUtility.stripQueryFromUrl(lineItem.getVariant().getImageUrl());
-                    ImageUtility.loadImageResourceIntoSizedView(Picasso.with(getContext()), imageUrl, image, false, null);
-                }
-            });
-        }
+        String imageUrl = ImageUtility.stripQueryFromUrl(lineItem.getVariant().getImageUrl());
+        ImageUtility.loadImageResourceIntoSizedView(Picasso.with(getContext()), imageUrl, image, false, null);
     }
 
 }

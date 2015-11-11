@@ -25,6 +25,7 @@
     <dimen name="collection_image_bottom_gradient_size">40dp</dimen>
     <dimen name="drop_shadow_size">2dp</dimen>
     <dimen name="product_list_item_margin">1dp</dimen>
+    <dimen name="cart_image_size">80dp</dimen>
 
     <!-- Other -->
     <integer name="disabled_text_alpha">64</integer>
