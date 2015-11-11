@@ -27,15 +27,12 @@ package com.shopify.buy.ui.common;
 
 import android.os.Bundle;
 
-import com.shopify.buy.model.Shop;
-
 public class BaseConfig {
 
     public static final String EXTRA_SHOP_DOMAIN = "com.shopify.buy.ui.SHOP_DOMAIN";
     public static final String EXTRA_SHOP_API_KEY = "com.shopify.buy.ui.API_KEY";
     public static final String EXTRA_SHOP_CHANNEL_ID = "com.shopify.buy.ui.CHANNEL_ID";
     public static final String EXTRA_SHOP_APPLICATION_NAME = "com.shopify.buy.ui.SHOP_APPLICATION_NAME";
-    public static final String EXTRA_SHOP_SHOP = "com.shopify.buy.ui.SHOP";
     public static final String EXTRA_WEB_RETURN_TO_URL = "com.shopify.buy.ui.WEB_RETURN_TO_URL";
     public static final String EXTRA_WEB_RETURN_TO_LABEL = "com.shopify.buy.ui.WEB_RETURN_TO_LABEL";
     public static final String EXTRA_THEME = "com.shopify.buy.ui.THEME";
@@ -45,7 +42,6 @@ public class BaseConfig {
     private String channelId;
     private String applicationName;
     private ShopifyTheme theme;
-    private Shop shop;
     private String webReturnToUrl;
     private String webReturnToLabel;
 
@@ -85,10 +81,6 @@ public class BaseConfig {
         this.applicationName = applicationName;
     }
 
-    public void setShop(Shop shop) {
-        this.shop = shop;
-    }
-
     public void setTheme(ShopifyTheme theme) {
         this.theme = theme;
     }
@@ -118,10 +110,6 @@ public class BaseConfig {
 
         if (applicationName != null) {
             bundle.putString(EXTRA_SHOP_APPLICATION_NAME, applicationName);
-        }
-
-        if (shop != null) {
-            bundle.putString(EXTRA_SHOP_SHOP, shop.toJsonString());
         }
 
         if (theme != null) {

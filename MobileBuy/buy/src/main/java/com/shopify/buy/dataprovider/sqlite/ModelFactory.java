@@ -32,6 +32,7 @@ import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
+import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CollectionImage;
 
 import java.util.ArrayList;
@@ -41,6 +42,26 @@ import java.util.Map;
 import java.util.Set;
 
 class ModelFactory {
+
+    static class DBShop extends Shop {
+
+        public DBShop(String name, String city, String province, String country, String contactEmail, String currency, String domain, String url, String myshopifyDomain, String description, List<String> shipsToCountries, String moneyFormat, long publishedProductsCount) {
+            this.name = name;
+            this.city = city;
+            this.province = province;
+            this.country = country;
+            this.contactEmail = contactEmail;
+            this.currency = currency;
+            this.domain = domain;
+            this.url = url;
+            this.myshopifyDomain = myshopifyDomain;
+            this.description = description;
+            this.shipsToCountries = shipsToCountries;
+            this.moneyFormat = moneyFormat;
+            this.publishedProductsCount = publishedProductsCount;
+        }
+
+    }
 
     static class DBCollection extends Collection {
 

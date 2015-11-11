@@ -36,6 +36,7 @@ import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
+import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CollectionImage;
 import com.shopify.buy.utils.DateUtility;
 
@@ -49,6 +50,70 @@ import java.util.Map;
 import java.util.Set;
 
 public class QueryHelper implements DatabaseConstants {
+
+    static String createShopTable() {
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
+                .append(TABLE_SHOP)
+                .append(" (")
+                .append(ShopTable.NAME).append(" TEXT, ")
+                .append(ShopTable.CITY).append(" TEXT, ")
+                .append(ShopTable.PROVINCE).append(" TEXT, ")
+                .append(ShopTable.COUNTRY).append(" TEXT, ")
+                .append(ShopTable.CONTACT_EMAIL).append(" TEXT, ")
+                .append(ShopTable.CURRENCY).append(" TEXT, ")
+                .append(ShopTable.DOMAIN).append(" TEXT, ")
+                .append(ShopTable.URL).append(" TEXT, ")
+                .append(ShopTable.MYSHOPIFY_DOMAIN).append(" TEXT, ")
+                .append(ShopTable.DESCRIPTION).append(" TEXT, ")
+                .append(ShopTable.SHIPS_TO_COUNTRIES).append(" TEXT, ")
+                .append(ShopTable.MONEY_FORMAT).append(" TEXT, ")
+                .append(ShopTable.PUBLISHED_PRODUCTS_COUNT).append(" INTEGER")
+                .append(")");
+        return sql.toString();
+    }
+
+    static ContentValues contentValues(Shop shop) {
+        ContentValues values = new ContentValues();
+
+        values.put(ShopTable.NAME, shop.getName());
+        values.put(ShopTable.CITY, shop.getCity());
+        values.put(ShopTable.PROVINCE, shop.getProvince());
+        values.put(ShopTable.COUNTRY, shop.getCountry());
+        values.put(ShopTable.CONTACT_EMAIL, shop.getContactEmail());
+        values.put(ShopTable.CURRENCY, shop.getCurrency());
+        values.put(ShopTable.DOMAIN, shop.getDomain());
+        values.put(ShopTable.URL, shop.getUrl());
+        values.put(ShopTable.MYSHOPIFY_DOMAIN, shop.getMyshopifyDomain());
+        values.put(ShopTable.DESCRIPTION, shop.getDescription());
+        values.put(ShopTable.SHIPS_TO_COUNTRIES, TextUtils.join(",", shop.getShipsToCountries().toArray()));
+        values.put(ShopTable.MONEY_FORMAT, shop.getMoneyFormat());
+        values.put(ShopTable.PUBLISHED_PRODUCTS_COUNT, shop.getPublishedProductsCount());
+
+        return values;
+    }
+
+    static Shop shop(Cursor cursor) {
+        String name = cursor.getString(cursor.getColumnIndex(ShopTable.NAME));
+        String city = cursor.getString(cursor.getColumnIndex(ShopTable.CITY));
+        String province = cursor.getString(cursor.getColumnIndex(ShopTable.PROVINCE));
+        String country = cursor.getString(cursor.getColumnIndex(ShopTable.COUNTRY));
+        String contactEmail = cursor.getString(cursor.getColumnIndex(ShopTable.CONTACT_EMAIL));
+        String currency = cursor.getString(cursor.getColumnIndex(ShopTable.CURRENCY));
+        String domain = cursor.getString(cursor.getColumnIndex(ShopTable.DOMAIN));
+        String url = cursor.getString(cursor.getColumnIndex(ShopTable.URL));
+        String myshopifyDomain = cursor.getString(cursor.getColumnIndex(ShopTable.MYSHOPIFY_DOMAIN));
+        String description = cursor.getString(cursor.getColumnIndex(ShopTable.DESCRIPTION));
+        String moneyFormat = cursor.getString(cursor.getColumnIndex(ShopTable.MONEY_FORMAT));
+        long publishedProductsCount = cursor.getLong(cursor.getColumnIndex(ShopTable.PUBLISHED_PRODUCTS_COUNT));
+
+        String shipsToCountriesCSV = cursor.getString(cursor.getColumnIndex(ShopTable.SHIPS_TO_COUNTRIES));
+        List<String> shipsToCountries = new ArrayList<>();
+        if (!TextUtils.isEmpty(shipsToCountriesCSV)) {
+            shipsToCountries.addAll(Arrays.asList(shipsToCountriesCSV.split(",")));
+        }
+
+        return new ModelFactory.DBShop(name, city, province, country, contactEmail, currency, domain, url, myshopifyDomain, description, shipsToCountries, moneyFormat, publishedProductsCount);
+    }
 
     static String createCollectionsTable() {
         StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")

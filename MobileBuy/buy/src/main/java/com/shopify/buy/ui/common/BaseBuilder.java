@@ -95,8 +95,8 @@ public abstract class BaseBuilder<T extends BaseBuilder> {
         return (T) this;
     }
 
+    @Deprecated
     public T setShop(Shop shop) {
-        config.setShop(shop);
         return (T) this;
     }
 
