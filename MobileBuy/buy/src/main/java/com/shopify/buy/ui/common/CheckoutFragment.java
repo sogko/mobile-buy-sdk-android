@@ -76,11 +76,7 @@ public abstract class CheckoutFragment extends BaseFragment {
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                    TODO
-                    By moving this into a CheckoutFragment base class, we've lost the feature of calling view.setVariant(variant)
-                    on ProductDetailsFragmentView, which means that the image pager doesn't snap to the selected variant on checkout.
-                 */
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/495
                 checkoutButton.setEnabled(false);
                 cancelledCheckout.set(false);
                 createWebCheckout();

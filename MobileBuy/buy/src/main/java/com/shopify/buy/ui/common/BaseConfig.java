@@ -49,8 +49,6 @@ public class BaseConfig {
     private String webReturnToUrl;
     private String webReturnToLabel;
 
-    // TODO add constructor that takes an existing bundle
-
     public String getShopShopDomain() {
         return shopDomain;
     }

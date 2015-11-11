@@ -82,7 +82,6 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
     }
 
     public Bundle buildBundle() {
-        // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
         ProductListConfig collectionListConfig = (ProductListConfig) config;
 
         Bundle bundle = super.buildBundle();
@@ -93,9 +92,9 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
     /**
      * Returns a new {@link ProductListFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider  An optional implementation of {@link ProductsProvider}. If you pass null, {@link com.shopify.buy.dataprovider.DefaultProductsProvider} will be used.
-     * @param listener  An implementation of {@link com.shopify.buy.ui.products.ProductListFragment.Listener} which will be notified of user actions.
-     * @return          A new {@link ProductListFragment}.
+     * @param provider An optional implementation of {@link ProductsProvider}. If you pass null, {@link com.shopify.buy.dataprovider.DefaultProductsProvider} will be used.
+     * @param listener An implementation of {@link com.shopify.buy.ui.products.ProductListFragment.Listener} which will be notified of user actions.
+     * @return A new {@link ProductListFragment}.
      */
     public ProductListFragment buildFragment(ProductsProvider provider, ProductListFragment.Listener listener) {
         ProductListFragment fragment = new ProductListFragment();

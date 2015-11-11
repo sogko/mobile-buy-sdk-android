@@ -27,6 +27,7 @@ package com.shopify.buy.ui.collections;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -162,23 +163,27 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO add error case listeners
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         });
     }
 
     private void showCollectionsIfReady() {
+        final AppCompatActivity activity = safelyGetActivity();
+        if (activity == null) {
+            return;
+        }
+
         if (!viewCreated || collections == null) {
             if (!progressDialog.isShowing()) {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_collections), new Runnable() {
                     @Override
                     public void run() {
-                        getActivity().finish();
+                        activity.finish();
                     }
                 });
             }
         } else {
-            // TODO this is temporary.  The view should pull down the progressview when it has populated its subviews
             if (progressDialog.isShowing()) {
                 dismissProgressDialog();
             }

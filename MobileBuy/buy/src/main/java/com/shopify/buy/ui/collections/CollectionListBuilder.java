@@ -72,7 +72,6 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
     }
 
     public Bundle buildBundle() {
-        // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
         CollectionListConfig collectionListConfig = (CollectionListConfig) config;
 
         Bundle bundle = super.buildBundle();

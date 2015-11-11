@@ -30,7 +30,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -39,17 +41,23 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Shop;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class BaseFragment extends Fragment {
+    private final static String LOG_TAG = BaseFragment.class.getSimpleName();
 
     protected boolean viewCreated;
     protected BuyClient buyClient;
     protected ProgressDialog progressDialog;
     protected Shop shop;
     protected ShopifyTheme theme;
+
+    private CountDownLatch attachedLatch = new CountDownLatch(1);
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -185,5 +193,10 @@ public class BaseFragment extends Fragment {
         bundle.putInt(BaseConstants.EXTRA_ERROR_CODE, errorCode);
         bundle.putString(BaseConstants.EXTRA_ERROR_MESSAGE, errorMessage);
         return bundle;
+    }
+
+    protected AppCompatActivity safelyGetActivity() {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        return activity;
     }
 }

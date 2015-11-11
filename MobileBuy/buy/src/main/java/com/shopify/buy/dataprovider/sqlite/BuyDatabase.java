@@ -169,7 +169,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
      * @param products The products to save.
      */
     public void saveProducts(List<Product> products) {
-        // TODO We need some way to delete products should no longer be visible to the user.
+        // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/574
 
         // Save new products (deleting old content first)
         for (Product product : products) {
