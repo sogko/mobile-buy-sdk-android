@@ -196,7 +196,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
                     CartManager.getInstance().getCart().addVariant(variant);
                     CartManager.getInstance().saveCart(getActivity());
 
-                    // TODO the toast is just temporary
+                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/594
                     Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -226,6 +226,12 @@ public class ProductDetailsFragment extends CheckoutFragment {
     }
 
     private void showProductIfReady() {
+        final Activity activity = safelyGetActivity();
+
+        if (activity == null) {
+            return;
+        }
+
         // Check for the prerequisites before populating the views
         if (!viewCreated || product == null || shop == null) {
             // we're still loading, make sure we show the progress dialog
@@ -233,7 +239,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_product_details), new Runnable() {
                     @Override
                     public void run() {
-                        getActivity().finish();
+                        activity.finish();
                     }
                 });
             }

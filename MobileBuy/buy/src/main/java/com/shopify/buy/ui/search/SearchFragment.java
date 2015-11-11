@@ -150,7 +150,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO handle error fetching shop
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         });
 
@@ -176,7 +176,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO add error case listeners
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         };
 
@@ -185,7 +185,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     private void showProductsIfReady() {
         if (!viewCreated || CollectionUtils.isEmpty(products) || shop == null) {
-            // TODO "no results" message if products is empty and query > 3 characters
             return;
         } else {
             SearchAdapter adapter = (SearchAdapter) recyclerView.getAdapter();

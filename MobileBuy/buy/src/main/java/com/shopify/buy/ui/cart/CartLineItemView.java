@@ -74,7 +74,8 @@ public class CartLineItemView extends LinearLayout {
     protected TextView title;
     protected TextView variant;
     protected TextView price;
-    // TODO quantity picker
+
+    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/449
     protected QuantityPicker quantityPicker;
 
     public CartLineItemView(Context context, AttributeSet attrs) {
@@ -90,7 +91,6 @@ public class CartLineItemView extends LinearLayout {
         variant = (TextView) findViewById(R.id.line_item_variant);
         price = (TextView) findViewById(R.id.line_item_price);
 
-        // TODO quantity picker
         //quantityPicker = (QuantityPicker) findViewById(R.id.quantity_picker);
     }
 
@@ -107,7 +107,6 @@ public class CartLineItemView extends LinearLayout {
     }
 
     public void setLineItem(final CartLineItem lineItem, NumberFormat currencyFormat, QuantityPicker.OnQuantityChangedListener listener) {
-        // TODO - quantity picker
         //quantityPicker.setLineItem(lineItem, listener);
 
         title.setText(lineItem.getVariant().getProductTitle().toUpperCase());
