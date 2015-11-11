@@ -80,10 +80,10 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
      * Returns a new {@link SearchFragment} based on the params that have already been passed to the builder.
      *
      * @param provider An optional implementation of {@link SearchProvider}. If you pass null, {@link com.shopify.buy.dataprovider.DefaultSearchProvider} will be used.
-     * @param listener An implementation of {@link com.shopify.buy.ui.search.SearchFragment.Listener} which will be notified of user actions.
+     * @param listener An implementation of {@link com.shopify.buy.ui.search.SearchFragment.OnSearchItemSelectedListener} which will be notified of user actions.
      * @return A new {@link SearchFragment}.
      */
-    public SearchFragment buildFragment(@Nullable SearchProvider provider, SearchFragment.Listener listener) {
+    public SearchFragment buildFragment(@Nullable SearchProvider provider, SearchFragment.OnSearchItemSelectedListener listener) {
         SearchFragment fragment = new SearchFragment();
         fragment.setProvider(provider);
         fragment.setListener(listener);

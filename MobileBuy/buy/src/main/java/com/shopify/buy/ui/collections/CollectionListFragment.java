@@ -25,6 +25,7 @@
 package com.shopify.buy.ui.collections;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -42,7 +43,6 @@ import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.dataprovider.CollectionsProvider;
 import com.shopify.buy.dataprovider.DefaultCollectionsProvider;
 import com.shopify.buy.model.Collection;
-import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 
@@ -56,12 +56,15 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
     private static final String TAG = CollectionListFragment.class.getSimpleName();
 
+    private static final String SAVED_LAYOUT_STATE = "saved_layout_state";
+    private Parcelable layoutState;
+
     CollectionListFragmentView view;
 
     private List<Collection> collections;
     RecyclerView recyclerView;
 
-    private Listener listener;
+    private OnCollectionListItemSelectedListener collectionListItemSelectedListener;
 
     private CollectionsProvider provider = null;
 
@@ -78,14 +81,28 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         }
 
         Bundle bundle = getArguments();
+        parseCollections(bundle);
+    }
 
-        if (bundle.containsKey(CollectionListConfig.EXTRA_SHOP_COLLECTIONS)) {
-            String collectionsJson = bundle.getString(CollectionListConfig.EXTRA_SHOP_COLLECTIONS);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-            if (!TextUtils.isEmpty(collectionsJson)) {
-                collections = BuyClientFactory.createDefaultGson().fromJson(collectionsJson, new TypeToken<List<Product>>() {
-                }.getType());
-            }
+        if (savedInstanceState != null) {
+            parseCollections(savedInstanceState);
+            layoutState = savedInstanceState.getParcelable(SAVED_LAYOUT_STATE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (collections != null) {
+            outState.putString(CollectionListConfig.EXTRA_SHOP_COLLECTIONS, BuyClientFactory.createDefaultGson().toJson(collections));
+        }
+
+        if (recyclerView != null && recyclerView.getLayoutManager() != null) {
+            outState.putParcelable(SAVED_LAYOUT_STATE, recyclerView.getLayoutManager().onSaveInstanceState());
         }
     }
 
@@ -110,7 +127,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         viewCreated = true;
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -122,8 +138,19 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         showCollectionsIfReady();
     }
 
-    public void setListener(Listener listener) {
-        this.listener = listener;
+    private void parseCollections(Bundle bundle) {
+        if (bundle.containsKey(CollectionListConfig.EXTRA_SHOP_COLLECTIONS)) {
+            String collectionsJson = bundle.getString(CollectionListConfig.EXTRA_SHOP_COLLECTIONS);
+
+            if (!TextUtils.isEmpty(collectionsJson)) {
+                collections = BuyClientFactory.createDefaultGson().fromJson(collectionsJson, new TypeToken<List<Collection>>() {
+                }.getType());
+            }
+        }
+    }
+
+    public void setListener(OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
+        this.collectionListItemSelectedListener = collectionListItemSelectedListener;
     }
 
     private void fetchCollections() {
@@ -156,7 +183,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
                     }
                 });
             }
-            return;
         } else {
             if (progressDialog.isShowing()) {
                 dismissProgressDialog();
@@ -164,28 +190,33 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
             CollectionListAdapter adapter = (CollectionListAdapter) recyclerView.getAdapter();
             adapter.setCollections(collections);
             adapter.notifyDataSetChanged();
+
+            // restore the layout state if there was any
+            if (layoutState != null) {
+                recyclerView.getLayoutManager().onRestoreInstanceState(layoutState);
+            }
         }
     }
 
     @Override
     public void onItemClick(int position, View viewHolder, Collection collection) {
         Log.i(TAG, "Collection Item clicked");
-        if (listener != null) {
-            listener.onItemClick(collection);
+        if (collectionListItemSelectedListener != null) {
+            collectionListItemSelectedListener.onCollectionListItemClick(collection);
         }
     }
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Collection collection) {
         Log.i(TAG, "Collection Item long clicked");
-        if (listener != null) {
-            listener.onItemLongClick(collection);
+        if (collectionListItemSelectedListener != null) {
+            collectionListItemSelectedListener.onCollectionListItemLongClick(collection);
         }
     }
 
-    public interface Listener {
-        void onItemClick(Collection collection);
+    public interface OnCollectionListItemSelectedListener {
+        void onCollectionListItemClick(Collection collection);
 
-        void onItemLongClick(Collection collection);
+        void onCollectionListItemLongClick(Collection collection);
     }
 }

@@ -25,6 +25,7 @@
 package com.shopify.buy.ui.products;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -63,6 +64,9 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
     private List<String> productIds;
     private Collection collection;
 
+    private static final String SAVED_LAYOUT_STATE = "saved_layout_state";
+    private Parcelable layoutState;
+
     RecyclerView recyclerView;
 
     Listener listener;
@@ -82,20 +86,28 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         }
 
         Bundle bundle = getArguments();
+        parseProducts(bundle);
+    }
 
-        // Retrieve the list of products if they were provided
-        if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCTS)) {
-            String productsJson = bundle.getString(ProductListConfig.EXTRA_SHOP_PRODUCTS);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-            if (!TextUtils.isEmpty(productsJson)) {
-                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
-            }
+        if (savedInstanceState != null) {
+            parseProducts(savedInstanceState);
+            layoutState = savedInstanceState.getParcelable(SAVED_LAYOUT_STATE);
+        }
+    }
 
-        } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS)) {
-            productIds = bundle.getStringArrayList(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS);
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_CHANNEL_ID)) {
-            collection = Collection.fromJson(bundle.getString(ProductListConfig.EXTRA_SHOP_COLLECTION));
+        if (products != null) {
+            outState.putString(ProductListConfig.EXTRA_SHOP_PRODUCTS, BuyClientFactory.createDefaultGson().toJson(products));
+        }
+
+        if (recyclerView != null && recyclerView.getLayoutManager() != null) {
+            outState.putParcelable(SAVED_LAYOUT_STATE, recyclerView.getLayoutManager().onSaveInstanceState());
         }
     }
 
@@ -143,6 +155,23 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         showProductsIfReady();
     }
 
+    private void parseProducts(Bundle bundle) {
+        // Retrieve the list of products if they were provided
+        if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCTS)) {
+            String productsJson = bundle.getString(ProductListConfig.EXTRA_SHOP_PRODUCTS);
+
+            if (!TextUtils.isEmpty(productsJson)) {
+                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
+            }
+
+        } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS)) {
+            productIds = bundle.getStringArrayList(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS);
+
+        } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_COLLECTION)) {
+            collection = Collection.fromJson(bundle.getString(ProductListConfig.EXTRA_SHOP_COLLECTION));
+        }
+    }
+
     public void setListener(Listener listener) {
         this.listener = listener;
     }
@@ -186,7 +215,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
                     }
                 });
             }
-            return;
         } else {
             if (progressDialog.isShowing()) {
                 dismissProgressDialog();
@@ -195,6 +223,11 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
             adapter.setShop(shop);
             adapter.setProducts(products);
             adapter.notifyDataSetChanged();
+
+            // restore the layout state if there was any
+            if (layoutState != null) {
+                recyclerView.getLayoutManager().onRestoreInstanceState(layoutState);
+            }
         }
     }
 
