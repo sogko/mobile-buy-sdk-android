@@ -40,7 +40,7 @@ class ProductDetailsConfig extends BaseConfig {
 
     private String productId;
     private Product product;
-    private boolean showCartButton = true;
+    private boolean showCartButton;
 
     public String getProductId() {
         return productId;
