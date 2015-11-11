@@ -74,7 +74,6 @@ public class FixedAspectImageView extends ImageView {
         if (imageUrl != null) {
             Picasso picasso = Picasso.with(getContext());
 
-            Log.i(TAG, "Requesting image - width:" + getMeasuredWidth() + " height:" + getMeasuredHeight());
             // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/505
             ImageUtility.loadRemoteImageIntoViewWithoutSize(picasso, imageUrl, this, getMeasuredWidth(), getMeasuredHeight(), cropImage, new Callback() {
                 @Override
