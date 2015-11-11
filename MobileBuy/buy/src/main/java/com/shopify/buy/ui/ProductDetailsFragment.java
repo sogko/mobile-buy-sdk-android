@@ -185,10 +185,10 @@ public class ProductDetailsFragment extends CheckoutFragment {
 
     @Override
     protected void configureCheckoutButton() {
-        if (showCartButton) {
-            view.findViewById(R.id.checkout_button_container).setVisibility(View.VISIBLE);
+        super.configureCheckoutButton();
 
-            checkoutButton = (Button) view.findViewById(R.id.checkout_button);
+        // Override the button if we should show the cart instead of the checkout button
+        if (showCartButton) {
             checkoutButton.setText(R.string.add_to_cart);
             checkoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
