@@ -45,7 +45,7 @@ android {
             buildConfigField 'retrofit.RestAdapter.LogLevel', 'RETROFIT_LOG_LEVEL', 'retrofit.RestAdapter.LogLevel.FULL'
 
             // for legacy http support
-            useLibrary  'org.apache.http.legacy'
+            useLibrary 'org.apache.http.legacy'
 
             // We pull the shop settings either from the Environment or a file called shop.properties at the root of the project.
             // Environment variables will take precedence, we will attempt to read those first.
@@ -61,7 +61,7 @@ android {
 
             // pull the store properties from the local file if it exists.  Environment variables take precedence
             def shopProperties = new Properties();
-            File shopPropertiesFile = project.rootProject.file('shop.properties')
+            File shopPropertiesFile = project.file('shop.properties')
 
             if (shopPropertiesFile.exists()) {
                 shopProperties.load(new FileInputStream(shopPropertiesFile))
