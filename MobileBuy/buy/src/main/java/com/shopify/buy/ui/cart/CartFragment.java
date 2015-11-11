@@ -67,7 +67,7 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         });
     }

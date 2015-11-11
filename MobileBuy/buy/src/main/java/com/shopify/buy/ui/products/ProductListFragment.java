@@ -136,7 +136,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO handle error fetching shop
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         });
 
@@ -157,7 +157,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO add error case listeners
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         };
 

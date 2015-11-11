@@ -69,7 +69,6 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
     }
 
     public Bundle buildBundle() {
-        // TODO looks like config should be generic in base, lets refactor the config so we can move this function up into the base
         SearchConfig searchConfig = (SearchConfig) config;
 
         Bundle bundle = super.buildBundle();

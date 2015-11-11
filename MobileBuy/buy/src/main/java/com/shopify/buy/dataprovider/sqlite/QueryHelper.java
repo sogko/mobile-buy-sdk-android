@@ -315,7 +315,6 @@ public class QueryHelper implements DatabaseConstants {
     }
 
     static String createOptionValuesTable() {
-        // TODO it might speed up searching to create an index on the PRODUCT_ID column
         StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(TABLE_OPTION_VALUES)
                 .append(" (")
