@@ -240,6 +240,7 @@ public class Product extends ShopifyObject {
 
     /**
      * Returns the {@code Image} for the {@code ProductVariant} with the given id
+     *
      * @param variant the {@link ProductVariant} to find the {@link Image}
      * @return the {@link Image} corresponding to the {@link ProductVariant} if one was found, otherwise the {@code Image} for the {@link Product}.  This may return null if no applicable images were found.
      */
@@ -266,8 +267,8 @@ public class Product extends ShopifyObject {
     }
 
     /**
-     * @param optionValues  A list of {@link OptionValue} objects that represent a specific variant selection.
-     * @return  The {@link ProductVariant} that matches the given list of the OptionValues, or {@code null} if no such variant exists.
+     * @param optionValues A list of {@link OptionValue} objects that represent a specific variant selection.
+     * @return The {@link ProductVariant} that matches the given list of the OptionValues, or {@code null} if no such variant exists.
      */
     public ProductVariant getVariant(List<OptionValue> optionValues) {
         if (optionValues == null) {
@@ -296,7 +297,7 @@ public class Product extends ShopifyObject {
             return prices;
         }
 
-        prices = new HashSet<>(variants.size());
+        prices = new HashSet<>();
         for (ProductVariant variant : variants) {
             prices.add(variant.getPrice());
         }
@@ -305,7 +306,6 @@ public class Product extends ShopifyObject {
     }
 
     /**
-     *
      * @return The minimum price from the variants.
      */
     public String getMinimumPrice() {
