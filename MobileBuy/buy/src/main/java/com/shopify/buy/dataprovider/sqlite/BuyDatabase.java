@@ -24,14 +24,18 @@
 
 package com.shopify.buy.dataprovider.sqlite;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.CartLineItem;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
+import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
@@ -41,9 +45,13 @@ import com.shopify.buy.utils.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Manages the SQLite database that stores the shop's collections and products.
@@ -63,6 +71,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     [Ctrl-D to exit sqlite3]
      */
 
+    private static final Lock sWriteLock = new ReentrantLock();
+
     public BuyDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -70,21 +80,27 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     @Override
     public void onCreate(android.database.sqlite.SQLiteDatabase db) {
         db.execSQL(QueryHelper.createCollectionsTable());
+
         db.execSQL(QueryHelper.createProductsTable());
         db.execSQL(QueryHelper.createImagesTable());
         db.execSQL(QueryHelper.createOptionsTable());
         db.execSQL(QueryHelper.createOptionValuesTable());
         db.execSQL(QueryHelper.createProductVariantsTable());
+
+        db.execSQL(QueryHelper.createLineItemsTable());
+        db.execSQL(QueryHelper.createLineItemPropertiesTable());
     }
 
     @Override
     public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COLLECTIONS);
+
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_OPTION_VALUES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_OPTIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCT_VARIANTS);
+
         onCreate(db);
     }
 
@@ -111,14 +127,20 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
      * @param collections The collections to save.
      */
     public void saveCollections(List<Collection> collections) {
-        SQLiteDatabase db = getWritableDatabase();
+        try {
+            sWriteLock.lock();
 
-        // Delete old collections
-        db.delete(TABLE_COLLECTIONS, null, null);
+            SQLiteDatabase db = getWritableDatabase();
 
-        // Save new collections
-        for (Collection collection : collections) {
-            db.insert(TABLE_COLLECTIONS, null, QueryHelper.contentValues(collection));
+            // Delete old collections
+            db.delete(TABLE_COLLECTIONS, null, null);
+
+            // Save new collections
+            for (Collection collection : collections) {
+                db.insert(TABLE_COLLECTIONS, null, QueryHelper.contentValues(collection));
+            }
+        } finally {
+            sWriteLock.unlock();
         }
     }
 
@@ -149,26 +171,32 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     public void saveProducts(List<Product> products) {
         // TODO We need some way to delete products should no longer be visible to the user.
 
-        SQLiteDatabase db = getWritableDatabase();
-
         // Save new products (deleting old content first)
         for (Product product : products) {
-            deleteProduct(db, product);
+            try {
+                sWriteLock.lock();
 
-            db.insert(TABLE_PRODUCTS, null, QueryHelper.contentValues(product));
+                SQLiteDatabase db = getWritableDatabase();
 
-            // need to populate each of the product sub-tables
-            for (Image image : product.getImages()) {
-                db.insert(TABLE_IMAGES, null, QueryHelper.contentValues(image));
-            }
-            for (Option option : product.getOptions()) {
-                db.insert(TABLE_OPTIONS, null, QueryHelper.contentValues(option));
-            }
-            for (ProductVariant variant : product.getVariants()) {
-                db.insert(TABLE_PRODUCT_VARIANTS, null, QueryHelper.contentValues(variant));
-                for (OptionValue optionValue : variant.getOptionValues()) {
-                    db.insert(TABLE_OPTION_VALUES, null, QueryHelper.contentValues(optionValue, variant.getId().toString(), product.getProductId()));
+                deleteProduct(db, product);
+
+                db.insert(TABLE_PRODUCTS, null, QueryHelper.contentValues(product));
+
+                // need to populate each of the product sub-tables
+                for (Image image : product.getImages()) {
+                    db.insert(TABLE_IMAGES, null, QueryHelper.contentValues(image));
                 }
+                for (Option option : product.getOptions()) {
+                    db.insert(TABLE_OPTIONS, null, QueryHelper.contentValues(option));
+                }
+                for (ProductVariant variant : product.getVariants()) {
+                    db.insert(TABLE_PRODUCT_VARIANTS, null, QueryHelper.contentValues(variant));
+                    for (OptionValue optionValue : variant.getOptionValues()) {
+                        db.insert(TABLE_OPTION_VALUES, null, QueryHelper.contentValues(optionValue, variant.getId().toString(), product.getProductId()));
+                    }
+                }
+            } finally {
+                sWriteLock.unlock();
             }
         }
     }
@@ -292,7 +320,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 // The QueryHelper needs a list of OptionValues to build a ProductVariant, so we extract it out of the nested map we built earlier
                 String productId = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.PRODUCT_ID));
                 String variantId = cursor.getString(cursor.getColumnIndex(ProductVariantsTable.ID));
-                List<OptionValue> optionValues = new ArrayList<>();
+                List<ModelFactory.DBOptionValue> optionValues = new ArrayList<>();
                 // The first get(productId) returns a map of ProductVariant IDs to OptionValue lists, and then get(variantId) returns the list of OptionValues
                 optionValues.addAll(optionValuesByProductByVariant.get(productId).get(variantId));
                 return QueryHelper.productVariant(cursor, optionValues);
@@ -310,6 +338,66 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         } while (productsCursor.moveToNext());
 
         return products;
+    }
+
+    public void saveCart(Cart cart, String userId) {
+        try {
+            sWriteLock.lock();
+
+            SQLiteDatabase db = getWritableDatabase();
+
+            // Delete current cart for user
+            String deleteWhere = String.format("%s = \'%s\'", LineItemsTable.USER_ID, userId);
+            db.delete(TABLE_LINE_ITEMS, deleteWhere, null);
+            deleteWhere = String.format("%s = \'%s\'", LineItemPropertiesTable.USER_ID, userId);
+            db.delete(TABLE_LINE_ITEM_PROPERTIES, deleteWhere, null);
+
+            // Save the Cart by inserting the each line item and their properties
+            for (LineItem lineItem : cart.getLineItems()) {
+                db.insert(TABLE_LINE_ITEMS, null, QueryHelper.contentValues(lineItem, userId));
+
+                List<ContentValues> valuesList = QueryHelper.contentValues(lineItem.getId(), lineItem.getProperties(), userId);
+                for (ContentValues values : valuesList) {
+                    db.insert(TABLE_LINE_ITEM_PROPERTIES, null, values);
+                }
+            }
+        } finally {
+            sWriteLock.unlock();
+        }
+    }
+
+    public Cart getCart(String userId) {
+        List<CartLineItem> lineItems = new ArrayList<>();
+        Set<ProductVariant> productVariants = new HashSet<>();
+
+        String where = String.format("%s = \'%s\'", LineItemsTable.USER_ID, userId);
+        Cursor lineItemsCursor = querySimple(TABLE_LINE_ITEMS, where, null);
+        if (lineItemsCursor.moveToFirst()) {
+            do {
+                // Get the line item properties
+                String lineItemId = lineItemsCursor.getString(lineItemsCursor.getColumnIndex(LineItemsTable.LINE_ITEM_ID));
+                where = String.format("%s = \'%s\' AND %s = \'%s\'", LineItemsTable.USER_ID, userId, LineItemsTable.LINE_ITEM_ID, lineItemId);
+                Cursor propertiesCursor = querySimple(TABLE_LINE_ITEM_PROPERTIES, where, null);
+                Map<String, String> properties = QueryHelper.lineItemProperties(propertiesCursor);
+
+                // Get the OptionValues for the ProductVariant
+                String variantId = lineItemsCursor.getString(lineItemsCursor.getColumnIndex(LineItemsTable.VARIANT_ID));
+                where = String.format("%s = \'%s\'", OptionValuesTable.VARIANT_ID, variantId);
+                Cursor optionValuesCursor = querySimple(TABLE_OPTION_VALUES, where, null);
+                List<ModelFactory.DBOptionValue> optionValues = QueryHelper.optionValues(optionValuesCursor);
+
+                // Build the ProductVariant
+                where = String.format("%s = \'%s\'", ProductVariantsTable.ID, variantId);
+                Cursor variantCursor = querySimple(TABLE_PRODUCT_VARIANTS, where, null);
+                ProductVariant variant = QueryHelper.productVariant(variantCursor, optionValues);
+
+                // Add the LineItem and ProductVariant to the collections
+                productVariants.add(variant);
+                lineItems.add(QueryHelper.lineItem(lineItemsCursor, properties, variant));
+            } while (lineItemsCursor.moveToNext());
+        }
+
+        return new ModelFactory.DBCart(lineItems, productVariants);
     }
 
     private Cursor querySimple(String table, String where, String orderBy) {

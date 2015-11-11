@@ -24,9 +24,17 @@
 
 package com.shopify.buy.dataprovider;
 
+import android.content.Context;
+
+import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.model.Cart;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class CartManager {
+
+    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static CartManager instance = new CartManager();
 
@@ -34,14 +42,41 @@ public class CartManager {
         return instance;
     }
 
-    private final Cart cart;
+    private BuyDatabase database;
+    private String userId;
+    private Cart cart;
 
     private CartManager() {
-        cart = new Cart();
     }
 
     public Cart getCart() {
         return cart;
+    }
+
+    public void loadCart(final String userId, final Context context) {
+        this.userId = userId;
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (database == null) {
+                    database = new BuyDatabase(context);
+                }
+                cart = database.getCart(userId);
+            }
+        });
+    }
+
+    public void saveCart(final Context context) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (database == null) {
+                    database = new BuyDatabase(context);
+                }
+                database.saveCart(cart, userId);
+            }
+        });
     }
 
 }

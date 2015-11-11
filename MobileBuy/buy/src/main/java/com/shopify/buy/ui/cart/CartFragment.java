@@ -132,6 +132,8 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
     @Override
     public void onQuantityChanged(LineItem lineItem) {
         view.updateSubtotal(CartManager.getInstance().getCart(), currencyFormat);
+
+        CartManager.getInstance().saveCart(getActivity());
     }
 
 }

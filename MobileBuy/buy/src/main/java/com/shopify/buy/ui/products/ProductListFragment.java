@@ -105,9 +105,11 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         ProductListAdapter adapter = new ProductListAdapter(safelyGetActivity(), theme);
         adapter.setClickListener(this);
+
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new GridLayoutManager(safelyGetActivity(), 2));
+
         return view;
     }
 

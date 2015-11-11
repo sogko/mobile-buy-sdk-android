@@ -29,8 +29,10 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.extensions.ShopifyAndroidTestCase;
+import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
+import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
@@ -38,6 +40,7 @@ import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -68,6 +71,11 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
     }
 
     public void testCollectionsTable() throws InterruptedException {
+        // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/579
+        if (USE_MOCK_RESPONSES) {
+            return;
+        }
+
         final CountDownLatch latch = new CountDownLatch(1);
         final WipeableDatabase db = new WipeableDatabase(getContext());
         db.wipe();
@@ -92,6 +100,11 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
     }
 
     public void testProductsTable() throws InterruptedException {
+        // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/579
+        if (USE_MOCK_RESPONSES) {
+            return;
+        }
+
         final CountDownLatch latch = new CountDownLatch(1);
         final WipeableDatabase db = new WipeableDatabase(getContext());
         db.wipe();
@@ -105,6 +118,41 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
                 for (int i = 0; i < apiProducts.size(); i++) {
                     assertExactMatch(apiProducts.get(i), dbProducts.get(i));
                 }
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail();
+            }
+        });
+        latch.await();
+        db.close();
+    }
+
+    public void testCartsTable() throws InterruptedException {
+        // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/579
+        if (USE_MOCK_RESPONSES) {
+            return;
+        }
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final WipeableDatabase db = new WipeableDatabase(getContext());
+        db.wipe();
+        final String userId = "testUserId";
+        buyClient.getProduct(data.getProductIdWithVariants(), new Callback<Product>() {
+            @Override
+            public void success(Product product, Response response) {
+                db.saveProducts(Arrays.asList(product));
+
+                Cart cart = new Cart();
+                cart.setVariantQuantity(product.getVariants().get(0), 4);
+                cart.setVariantQuantity(product.getVariants().get(1), 2);
+                db.saveCart(cart, userId);
+
+                Cart dbCart = db.getCart(userId);
+                assertExactMatch(cart, dbCart);
+
                 latch.countDown();
             }
 
@@ -241,6 +289,32 @@ public class DatabaseTest extends ShopifyAndroidTestCase {
         assertEquals(o1.getName(), o2.getName());
         assertEquals(o1.getPosition(), o2.getPosition());
         assertEquals(o1.getProductId(), o2.getProductId());
+    }
+
+    private void assertExactMatch(Cart c1, Cart c2) {
+        assertEquals(c1.getSize(), c2.getSize());
+        for (int i = 0; i < c1.getLineItems().size() || i < c2.getLineItems().size(); i++) {
+            assertExactMatch(c1.getLineItems().get(i), c2.getLineItems().get(i));
+            assertExactMatch(c1.getProductVariant(c1.getLineItems().get(i)), c2.getProductVariant(c2.getLineItems().get(i)));
+        }
+    }
+
+    private void assertExactMatch(LineItem li1, LineItem li2) {
+        assertEquals(li1.getProperties(), li2.getProperties());
+        assertEquals(li1.getId(), li2.getId());
+        assertEquals(li1.getQuantity(), li2.getQuantity());
+        assertEquals(li1.getPrice(), li2.getPrice());
+        assertEquals(li1.isRequiresShipping(), li2.isRequiresShipping());
+        assertEquals(li1.getVariantId(), li2.getVariantId());
+        assertEquals(li1.getTitle(), li2.getTitle());
+        assertEquals(li1.getProductId(), li2.getProductId());
+        assertEquals(li1.getVariantTitle(), li2.getVariantTitle());
+        assertEquals(li1.getLinePrice(), li2.getLinePrice());
+        assertEquals(li1.getCompareAtPrice(), li2.getCompareAtPrice());
+        assertEquals(li1.getSku(), li2.getSku());
+        assertEquals(li1.isTaxable(), li2.isTaxable());
+        assertEquals(li1.getGrams(), li2.getGrams());
+        assertEquals(li1.getFulfillmentService(), li2.getFulfillmentService());
     }
 
 }

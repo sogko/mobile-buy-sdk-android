@@ -34,42 +34,45 @@ import java.util.Map;
  */
 public class LineItem {
 
-    private long quantity;
+    protected long quantity;
 
-    private String id;
+    protected String id;
 
-    private String price;
+    protected String price;
 
     @SerializedName("requires_shipping")
-    private boolean requiresShipping;
+    protected boolean requiresShipping;
 
     @SerializedName("variant_id")
-    private Long variantId;
+    protected Long variantId;
 
-    private String title;
+    protected String title;
 
     @SerializedName("product_id")
-    private String productId;
+    protected String productId;
 
     @SerializedName("variant_title")
-    private String variantTitle;
+    protected String variantTitle;
 
     @SerializedName("line_price")
-    private String linePrice;
+    protected String linePrice;
 
     @SerializedName("compare_at_price")
-    private String compareAtPrice;
+    protected String compareAtPrice;
 
-    private String sku;
+    protected String sku;
 
-    private boolean taxable;
+    protected boolean taxable;
 
-    private long grams;
+    protected long grams;
 
     @SerializedName("fulfillment_service")
-    private String fulfillmentService;
+    protected String fulfillmentService;
 
-    private Map<String, String> properties;
+    protected Map<String, String> properties;
+
+    protected LineItem() {
+    }
 
     public LineItem(ProductVariant variant) {
         variantId = variant.getId();
