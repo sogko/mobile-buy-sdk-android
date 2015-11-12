@@ -47,7 +47,9 @@ public class FixedAspectImageView extends ImageView {
     private float ratio = 1;
 
     public void setImageUrl(String imageUrl) {
-        this.imageUrl = ImageUtility.stripQueryFromUrl(imageUrl);
+        if (imageUrl != null) {
+            this.imageUrl = ImageUtility.stripQueryFromUrl(imageUrl);
+        }
     }
 
     public void setCropImage(boolean cropImage) {
