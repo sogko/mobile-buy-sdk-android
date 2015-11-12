@@ -26,6 +26,7 @@ package com.shopify.buy.ui.common;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -41,13 +42,12 @@ import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.dataprovider.ShopManager;
 import com.shopify.buy.model.Shop;
 
-import java.util.concurrent.CountDownLatch;
-
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class BaseFragment extends Fragment {
+
     private final static String LOG_TAG = BaseFragment.class.getSimpleName();
 
     protected boolean viewCreated;
@@ -55,8 +55,6 @@ public class BaseFragment extends Fragment {
     protected ProgressDialog progressDialog;
     protected Shop shop;
     protected ShopifyTheme theme;
-
-    private CountDownLatch attachedLatch = new CountDownLatch(1);
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -93,6 +91,21 @@ public class BaseFragment extends Fragment {
         initializeTheme();
         initializeBuyClient();
         initializeProgressDialog();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Uri uri = getActivity().getIntent().getData();
+        String webReturnToUrl = buyClient.getWebReturnToUrl();
+        if (uri != null && webReturnToUrl != null && webReturnToUrl.startsWith(uri.getScheme())) {
+            // If the app was launched using the scheme, we know we just successfully completed an order so let's delete the cart
+            ShopManager.getInstance().deleteCart(getContext());
+        } else {
+            // Check if we need to delete the cart because a checkout was completed
+            ShopManager.getInstance().checkLastCheckout(getContext(), buyClient);
+        }
     }
 
     protected void initializeBuyClient() {
@@ -135,8 +148,9 @@ public class BaseFragment extends Fragment {
         }
     }
 
-    protected void fetchShopIfNecessary(final Callback<Shop> callback) {
+    protected void getShop(final Callback<Shop> callback) {
         if (shop != null) {
+            callback.success(shop, null);
             return;
         }
 

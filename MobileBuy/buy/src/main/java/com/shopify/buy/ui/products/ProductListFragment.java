@@ -56,6 +56,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class ProductListFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Product> {
+
     private static final String TAG = ProductListFragment.class.getSimpleName();
 
     ProductListFragmentView view;
@@ -140,7 +141,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
             fetchProducts();
         }
 
-        fetchShopIfNecessary(new Callback<Shop>() {
+        getShop(new Callback<Shop>() {
             @Override
             public void success(Shop shop, Response response) {
                 showProductsIfReady();
@@ -151,8 +152,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
                 // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         });
-
-        showProductsIfReady();
     }
 
     private void parseProducts(Bundle bundle) {

@@ -29,10 +29,16 @@ import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Shop;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class ShopManager {
 
@@ -48,6 +54,8 @@ public class ShopManager {
     private Shop shop;
     private String userId;
     private Cart cart;
+
+    private final AtomicBoolean isCheckingLastCheckout = new AtomicBoolean(false);
 
     private ShopManager() {
     }
@@ -102,6 +110,42 @@ public class ShopManager {
         });
     }
 
+    public void saveCheckout(final Context context, final Checkout checkout) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (database == null) {
+                    database = new BuyDatabase(context);
+                }
+                database.saveCheckout(checkout, userId);
+            }
+        });
+    }
+
+    public void checkLastCheckout(final Context context, final BuyClient buyClient) {
+        if (isCheckingLastCheckout.getAndSet(true)) {
+            return;
+        }
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (database == null) {
+                    database = new BuyDatabase(context);
+                }
+                checkCompletionStatus(database.getCheckout(userId), buyClient, context);
+            }
+        });
+    }
+
+    public void deleteCart(final Context context) {
+        cart = new Cart();
+        saveCart(context);
+
+        // If we're deleting the cart, we can also delete any checkout for this user
+        saveCheckout(context, null);
+    }
+
     private boolean hasChanged(Shop newShop) {
         if (newShop == null) {
             return false;
@@ -122,6 +166,31 @@ public class ShopManager {
                 !TextUtils.equals(shop.getUrl(), newShop.getUrl()) ||
                 !shop.getShipsToCountries().equals(newShop.getShipsToCountries()) ||
                 !(shop.getPublishedProductsCount() == newShop.getPublishedProductsCount());
+    }
+
+    private void checkCompletionStatus(final Checkout checkout, final BuyClient buyClient, final Context context) {
+        if (checkout == null) {
+            return;
+        }
+
+        buyClient.getCheckoutCompletionStatus(checkout, new Callback<Boolean>() {
+            @Override
+            public void success(Boolean aBoolean, Response response) {
+                // If we get a 2XX status code back, the checkout is either processing or completed, so let's delete the cart and the checkout
+                deleteCart(context);
+                saveCheckout(context, null);
+
+                isCheckingLastCheckout.set(false);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // If we get an error status code back, the cart was probably abandoned so we'll delete the checkout but keep the cart
+                saveCheckout(context, null);
+
+                isCheckingLastCheckout.set(false);
+            }
+        });
     }
 
 }

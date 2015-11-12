@@ -25,8 +25,10 @@
 package com.shopify.buy.ui.cart;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +39,6 @@ import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.ShopManager;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
-import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.utils.CurrencyFormatter;
@@ -53,12 +54,13 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
     protected NumberFormat currencyFormat;
     protected CartFragmentView view;
+    protected ArrayAdapter<CartLineItem> adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        fetchShopIfNecessary(new Callback<Shop>() {
+        getShop(new Callback<Shop>() {
             @Override
             public void success(Shop shop, Response response) {
                 currencyFormat = CurrencyFormatter.getFormatter(Locale.getDefault(), shop.getCurrency());
@@ -89,11 +91,7 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
     private void showCartIfReady() {
         Activity activity = safelyGetActivity();
-        if (activity == null) {
-            return;
-        }
-
-        if (currencyFormat == null) {
+        if (activity == null || currencyFormat == null || !viewCreated) {
             return;
         }
 
@@ -101,7 +99,7 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
         view.updateSubtotal(cart, currencyFormat);
 
-        final ArrayAdapter<CartLineItem> adapter = new ArrayAdapter<CartLineItem>(getActivity(), R.layout.cart_line_item_view, cart.getLineItems()) {
+        adapter = new ArrayAdapter<CartLineItem>(getActivity(), R.layout.cart_line_item_view, cart.getLineItems()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;
@@ -131,10 +129,45 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
     }
 
     @Override
-    public void onQuantityChanged(LineItem lineItem) {
-        view.updateSubtotal(ShopManager.getInstance().getCart(), currencyFormat);
+    public void onQuantityDecreased(CartLineItem lineItem) {
+        final Cart cart = ShopManager.getInstance().getCart();
+        if (lineItem.getQuantity() == 1) {
+            promptForLineItemDeletion(lineItem);
+        } else {
+            adjustQuantity(lineItem, -1);
+        }
+    }
 
+    @Override
+    public void onQuantityIncreased(CartLineItem lineItem) {
+        adjustQuantity(lineItem, +1);
+    }
+
+    private void promptForLineItemDeletion(final CartLineItem lineItem) {
+        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == DialogInterface.BUTTON_POSITIVE) {
+                    adjustQuantity(lineItem, -1);
+                }
+                dialog.dismiss();
+            }
+        };
+
+        new AlertDialog.Builder(getContext())
+                .setMessage(getString(R.string.delete_prompt))
+                .setPositiveButton(R.string.yes, dialogClickListener)
+                .setNegativeButton(R.string.cancel, dialogClickListener)
+                .show();
+    }
+
+    private void adjustQuantity(CartLineItem lineItem, int delta) {
+        final Cart cart = ShopManager.getInstance().getCart();
+        cart.setVariantQuantity(lineItem.getVariant(), (int) lineItem.getQuantity() + delta);
         ShopManager.getInstance().saveCart(getActivity());
+
+        adapter.notifyDataSetChanged();
+        view.updateSubtotal(cart, currencyFormat);
     }
 
 }

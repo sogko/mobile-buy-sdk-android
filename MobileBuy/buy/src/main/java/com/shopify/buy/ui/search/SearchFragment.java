@@ -142,7 +142,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         // Search the products if we already have a query
         fetchProducts();
 
-        fetchShopIfNecessary(new Callback<Shop>() {
+        getShop(new Callback<Shop>() {
             @Override
             public void success(Shop shop, Response response) {
                 showProductsIfReady();
@@ -153,8 +153,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
                 // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
             }
         });
-
-        showProductsIfReady();
     }
 
     public void setListener(OnSearchItemSelectedListener listener) {
