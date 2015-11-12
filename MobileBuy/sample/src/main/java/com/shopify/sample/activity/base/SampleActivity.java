@@ -24,13 +24,13 @@
 
 package com.shopify.sample.activity.base;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
@@ -52,7 +52,7 @@ import retrofit.client.Response;
 /**
  * Base class for all activities in the app. Manages the ProgressDialog that is displayed while network activity is occurring.
  */
-public class SampleActivity extends Activity {
+public class SampleActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = SampleActivity.class.getSimpleName();
 
@@ -160,9 +160,7 @@ public class SampleActivity extends Activity {
 
     /**
      * When we encounter an error with one of our network calls, we abort and return to the previous activity.
-     * In a production app, you'll want to handle these types of errors more gracefully.
-     *
-     * @param errorMessage
+     * In a production app, you'll want to handle these types of errors more gracefully.*
      */
     protected void onError(String errorMessage) {
         progressDialog.dismiss();

@@ -46,7 +46,7 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
     final Context context;
     final ShopifyTheme theme;
 
-    // Listener used to pass click events back to the fragment or adapter
+    // OnProductListItemSelectedListener used to pass click events back to the fragment or adapter
     private RecyclerViewHolder.ClickListener<Collection> clickListener;
 
     public CollectionListAdapter(Context context, ShopifyTheme theme) {

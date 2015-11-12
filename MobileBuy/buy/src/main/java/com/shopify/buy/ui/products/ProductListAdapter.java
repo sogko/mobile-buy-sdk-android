@@ -53,7 +53,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     Shop shop;
     NumberFormat currencyFormatter;
 
-    // Listener used to pass click events back to the fragment or adapter
+    // OnProductListItemSelectedListener used to pass click events back to the fragment or adapter
     private RecyclerViewHolder.ClickListener<Product> clickListener;
 
     public ProductListAdapter(Context context, ShopifyTheme theme) {
