@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.ToggleButton;
 
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Product;
@@ -85,7 +86,7 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
         productViewOptionsContainer = findViewById(R.id.product_view_options_container);
         productViewOptionsContainer.setVisibility(View.GONE);
 
-        ((Switch) findViewById(R.id.product_details_activity_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((ToggleButton) findViewById(R.id.product_details_activity_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 useProductDetailsActivity = isChecked;
@@ -93,14 +94,14 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
             }
         });
 
-        ((Switch) findViewById(R.id.theme_style_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((ToggleButton) findViewById(R.id.theme_style_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 theme.setStyle(isChecked ? ShopifyTheme.Style.LIGHT : ShopifyTheme.Style.DARK);
             }
         });
 
-        ((Switch) findViewById(R.id.product_image_bg_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((ToggleButton) findViewById(R.id.product_image_bg_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 theme.setShowProductImageBackground(isChecked);
