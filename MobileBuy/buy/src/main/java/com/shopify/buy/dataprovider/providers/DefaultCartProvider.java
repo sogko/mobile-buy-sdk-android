@@ -22,24 +22,34 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider;
+package com.shopify.buy.dataprovider.providers;
 
-import com.shopify.buy.model.Product;
+import android.content.Context;
 
-import java.util.List;
+import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.tasks.GetCartTask;
+import com.shopify.buy.dataprovider.tasks.SaveCartTask;
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.ui.common.CartProvider;
 
 import retrofit.Callback;
 
-/**
- * The UI should use the ProductsProvider interface to load {@link Product} objects.
- * The default implementation uses a SQLite database to allow offline product browsing.
- */
-public interface ProductsProvider {
+public class DefaultCartProvider extends BaseProviderImpl implements CartProvider {
 
-    void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback);
+    public DefaultCartProvider(Context context) {
+        super(context);
+    }
 
-    void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback);
+    @Override
+    public void getCart(final BuyClient buyClient, final String userId, final Callback<Cart> callback) {
+        GetCartTask task = new GetCartTask(userId, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
 
-    void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback);
+    @Override
+    public void saveCart(Cart cart, BuyClient buyClient, String userId) {
+        SaveCartTask task = new SaveCartTask(cart, userId, buyDatabase, buyClient, handler, executorService);
+        executorService.execute(task);
+    }
 
 }

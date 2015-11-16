@@ -95,13 +95,18 @@ public abstract class BaseBuilder<T extends BaseBuilder> {
         return (T) this;
     }
 
-    @Deprecated
     public T setShop(Shop shop) {
+        config.setShop(shop);
         return (T) this;
     }
 
     public T setTheme(ShopifyTheme theme) {
         config.setTheme(theme);
+        return (T) this;
+    }
+
+    public T setUserId(String userId) {
+        config.setUserId(userId);
         return (T) this;
     }
 

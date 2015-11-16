@@ -22,50 +22,20 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.cart;
-
-import android.content.Context;
+package com.shopify.buy.ui.common;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Cart;
-import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BaseConfig;
-import com.shopify.buy.ui.common.CheckoutListener;
+import com.shopify.buy.model.Shop;
 
-public class CartBuilder extends BaseBuilder<CartBuilder> {
+import retrofit.Callback;
 
-    public CartBuilder(Context context) {
-        super(context);
-    }
+public interface CartProvider {
 
-    public CartBuilder(Context context, BuyClient client) {
-        super(context, client);
-    }
+    void getShop(BuyClient buyClient, Callback<Shop> callback);
 
-    @Override
-    protected BaseConfig getConfig() {
-        if (config == null) {
-            config = new BaseConfig();
-        }
-        return config;
-    }
+    void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
 
-    public CartBuilder setCart(Cart cart) {
-        config.setCart(cart);
-        return this;
-    }
-
-    /**
-     * Returns a new {@link CartFragment} based on the params that have already been passed to the builder.
-     *
-     * @param listener An implementation of {@link CheckoutListener} which will be sent checkout status updates.
-     * @return A new {@link CartFragment}.
-     */
-    public CartFragment buildFragment(CheckoutListener listener) {
-        CartFragment fragment = new CartFragment();
-        fragment.setCheckoutListener(listener);
-        fragment.setArguments(buildBundle());
-        return fragment;
-    }
+    void saveCart(Cart cart, BuyClient buyClient, String userId);
 
 }

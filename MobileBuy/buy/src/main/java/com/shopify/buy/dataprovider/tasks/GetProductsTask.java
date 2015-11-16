@@ -26,6 +26,7 @@ package com.shopify.buy.dataprovider.tasks;
 
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
@@ -41,7 +42,9 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class GetProductsTask extends BaseTask<Product> {
+public class GetProductsTask extends BaseTask<List<Product>> {
+
+    private static final String LOG_TAG = GetProductsTask.class.getSimpleName();
 
     private String collectionId;
     private List<String> productIds;
@@ -67,16 +70,20 @@ public class GetProductsTask extends BaseTask<Product> {
         // If this check fails, it means we're fetching ALL products as part of a data sync, so ignore the db
         if (!TextUtils.isEmpty(collectionId) || !CollectionUtils.isEmpty(productIds)) {
             // check the local database first
-            List<Product> products = null;
-            if (!TextUtils.isEmpty(collectionId)) {
-                // TODO this case relies on: https://github.com/Shopify/shopify/issues/56585
-            } else if (!CollectionUtils.isEmpty(productIds)) {
-                products = buyDatabase.getProducts(productIds);
-            }
+            try {
+                List<Product> products = null;
+                if (!TextUtils.isEmpty(collectionId)) {
+                    // TODO this case relies on: https://github.com/Shopify/shopify/issues/56585
+                } else if (!CollectionUtils.isEmpty(productIds)) {
+                    products = buyDatabase.getProducts(productIds);
+                }
 
-            if (!CollectionUtils.isEmpty(products)) {
-                foundInDb.set(true);
-                onSuccess(products, null);
+                if (!CollectionUtils.isEmpty(products)) {
+                    foundInDb.set(true);
+                    onSuccess(products, null);
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Could not get Products from database.", e);
             }
         }
 

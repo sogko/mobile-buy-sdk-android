@@ -22,29 +22,38 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider;
+package com.shopify.buy.dataprovider.tasks;
 
-import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
+import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
+import com.shopify.buy.model.Cart;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public abstract class BaseProviderImpl {
+public class SaveCartTask extends BaseTask<Cart> {
 
-    protected static final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private static final String LOG_TAG = GetShopTask.class.getSimpleName();
 
-    protected static BuyDatabase buyDatabase;
+    private final Cart cart;
+    private final String userId;
 
-    protected final Handler handler;
+    public SaveCartTask(Cart cart, String userId, BuyDatabase buyDatabase, BuyClient buyClient, Handler handler, ExecutorService executorService) {
+        super(buyDatabase, buyClient, null, handler, executorService);
+        this.cart = cart;
+        this.userId = userId;
+    }
 
-    public BaseProviderImpl(Context context) {
-        if (buyDatabase == null) {
-            buyDatabase = new BuyDatabase(context);
+    @Override
+    public void run() {
+        // Carts are only stored locally, not in the cloud
+        try {
+            buyDatabase.saveCart(cart, userId);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Could not save Cart to database.", e);
         }
-        this.handler = new Handler(context.getMainLooper());
     }
 
 }

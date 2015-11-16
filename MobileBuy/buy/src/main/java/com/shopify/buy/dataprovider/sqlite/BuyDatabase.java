@@ -373,6 +373,10 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     public void saveCart(Cart cart, String userId) {
+        if (TextUtils.isEmpty(userId)) {
+            throw new IllegalArgumentException("Trying to save Cart to database with invalid userId: " + userId);
+        }
+
         try {
             sWriteLock.lock();
 
@@ -399,6 +403,10 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     public Cart getCart(String userId) {
+        if (TextUtils.isEmpty(userId)) {
+            throw new IllegalArgumentException("Trying to save Cart t   o database with invalid userId: " + userId);
+        }
+
         List<CartLineItem> lineItems = new ArrayList<>();
         Set<ProductVariant> productVariants = new HashSet<>();
 

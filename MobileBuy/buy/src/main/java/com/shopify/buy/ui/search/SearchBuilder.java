@@ -29,7 +29,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.SearchProvider;
+import com.shopify.buy.dataprovider.providers.DefaultSearchProvider;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
 
@@ -79,7 +79,7 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
     /**
      * Returns a new {@link SearchFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider An optional implementation of {@link SearchProvider}. If you pass null, {@link com.shopify.buy.dataprovider.DefaultSearchProvider} will be used.
+     * @param provider An optional implementation of {@link SearchProvider}. If you pass null, {@link DefaultSearchProvider} will be used.
      * @param listener An implementation of {@link com.shopify.buy.ui.search.SearchFragment.OnSearchItemSelectedListener} which will be notified of user actions.
      * @return A new {@link SearchFragment}.
      */

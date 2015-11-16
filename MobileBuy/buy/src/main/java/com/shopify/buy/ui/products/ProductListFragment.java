@@ -40,8 +40,7 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.DefaultProductsProvider;
-import com.shopify.buy.dataprovider.ProductsProvider;
+import com.shopify.buy.dataprovider.providers.DefaultProductsProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
@@ -141,17 +140,20 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
             fetchProducts();
         }
 
-        getShop(new Callback<Shop>() {
-            @Override
-            public void success(Shop shop, Response response) {
-                showProductsIfReady();
-            }
+        if (shop == null) {
+            provider.getShop(buyClient, new Callback<Shop>() {
+                @Override
+                public void success(Shop shop, Response response) {
+                    ProductListFragment.this.shop = shop;
+                    showProductsIfReady();
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                }
+            });
+        }
     }
 
     private void parseProducts(Bundle bundle) {

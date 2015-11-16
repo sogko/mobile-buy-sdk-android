@@ -39,8 +39,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 
 import com.shopify.buy.R;
-import com.shopify.buy.dataprovider.DefaultSearchProvider;
-import com.shopify.buy.dataprovider.SearchProvider;
+import com.shopify.buy.dataprovider.providers.DefaultSearchProvider;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
@@ -142,17 +141,20 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         // Search the products if we already have a query
         fetchProducts();
 
-        getShop(new Callback<Shop>() {
-            @Override
-            public void success(Shop shop, Response response) {
-                showProductsIfReady();
-            }
+        if (shop == null) {
+            provider.getShop(buyClient, new Callback<Shop>() {
+                @Override
+                public void success(Shop shop, Response response) {
+                    SearchFragment.this.shop = shop;
+                    showProductsIfReady();
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                }
+            });
+        }
     }
 
     public void setListener(OnSearchItemSelectedListener listener) {

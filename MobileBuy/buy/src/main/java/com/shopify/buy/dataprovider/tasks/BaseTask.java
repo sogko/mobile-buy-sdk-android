@@ -28,24 +28,22 @@ import android.os.Handler;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
-import com.shopify.buy.model.ShopifyObject;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
+public abstract class BaseTask<T> implements Runnable {
 
     protected final BuyDatabase buyDatabase;
     protected final BuyClient buyClient;
-    protected final Callback<List<T>> callback;
+    protected final Callback<T> callback;
     protected final Handler handler;
     protected final ExecutorService executorService;
 
-    public BaseTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<T>> callback, Handler handler, ExecutorService executorService) {
+    public BaseTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<T> callback, Handler handler, ExecutorService executorService) {
         this.buyDatabase = buyDatabase;
         this.buyClient = buyClient;
         this.callback = callback;
@@ -53,15 +51,17 @@ public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
         this.executorService = executorService;
 
         // bump up the page size for fetches
-        this.buyClient.setPageSize(50);
+        if (buyClient != null) {
+            this.buyClient.setPageSize(50);
+        }
     }
 
-    protected void onSuccess(final List<T> results, final Response response) {
+    protected void onSuccess(final T result, final Response response) {
         handler.post(new Runnable() {
             @Override
             public void run() {
                 if (callback != null) {
-                    callback.success(results, response);
+                    callback.success(result, response);
                 }
             }
         });
@@ -76,6 +76,10 @@ public abstract class BaseTask<T extends ShopifyObject> implements Runnable {
                 }
             }
         });
+    }
+
+    protected void onFailure(final Exception exception) {
+        onFailure(RetrofitError.unexpectedError(null, exception));
     }
 
 }
