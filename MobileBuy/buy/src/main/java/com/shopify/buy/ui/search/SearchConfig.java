@@ -35,6 +35,7 @@ import com.shopify.buy.ui.common.BaseConfig;
 class SearchConfig extends BaseConfig {
 
     public static final String EXTRA_SEARCH_QUERY = "com.shopify.buy.ui.SEARCH_QUERY";
+    public static final String EXTRA_SEARCH_RESULTS = "com.shopify.buy.ui.SEARCH_RESULTS";
 
     private String query;
 

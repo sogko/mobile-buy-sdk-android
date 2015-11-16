@@ -51,6 +51,11 @@ public abstract class RecyclerViewHolder<T extends ShopifyObject> extends Recycl
 
     public void setItem(T item) {
         this.item = item;
+
+        // Clear the current image
+        imageView.setImageDrawable(null);
+
+        // Set the image that we want Picasso to fetch
         imageView.setImageUrl(getImageUrl());
         imageView.setCropImage(cropImage);
     }

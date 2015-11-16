@@ -82,12 +82,12 @@ public class BaseFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        processArguments();
+        parseArguments();
 
         initializeProgressDialog();
     }
 
-    protected void processArguments() {
+    protected void parseArguments() {
         Bundle bundle = getArguments();
 
         // Retrieve all the items required to create a BuyClient
