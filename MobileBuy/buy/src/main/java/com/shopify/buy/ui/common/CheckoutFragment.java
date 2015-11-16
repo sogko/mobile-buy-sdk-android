@@ -69,8 +69,8 @@ public abstract class CheckoutFragment extends BaseFragment {
     }
 
     @Override
-    protected void processArguments() {
-        super.processArguments();
+    protected void parseArguments() {
+        super.parseArguments();
 
         Bundle bundle = getArguments();
 
