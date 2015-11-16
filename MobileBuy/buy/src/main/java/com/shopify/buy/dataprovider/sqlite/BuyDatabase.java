@@ -404,7 +404,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
     public Cart getCart(String userId) {
         if (TextUtils.isEmpty(userId)) {
-            throw new IllegalArgumentException("Trying to save Cart t   o database with invalid userId: " + userId);
+            throw new IllegalArgumentException("Trying to save Cart to database with invalid userId: " + userId);
         }
 
         List<CartLineItem> lineItems = new ArrayList<>();
