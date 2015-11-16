@@ -38,11 +38,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 
+import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
+import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.dataprovider.DefaultSearchProvider;
 import com.shopify.buy.dataprovider.SearchProvider;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.ui.collections.CollectionListConfig;
 import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.utils.CollectionUtils;
@@ -68,7 +71,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
     private String query = null;
     private SearchProvider provider = null;
 
-    private final List<Product> products = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     public void setProvider(SearchProvider provider) {
         this.provider = provider;
@@ -85,10 +88,27 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         }
 
         Bundle bundle = getArguments();
+        parseExtras(bundle);
+    }
 
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            parseExtras(savedInstanceState);
+        }
+    }
+
+    private void parseExtras(Bundle bundle) {
         // Retrieve the search query if it was provided
         if (bundle.containsKey(SearchConfig.EXTRA_SEARCH_QUERY)) {
             query = bundle.getString(SearchConfig.EXTRA_SEARCH_QUERY);
+        }
+
+        // Retrieve the current search results to display if there is one
+        String productsJson = bundle.getString(SearchConfig.EXTRA_SEARCH_RESULTS);
+        if (!TextUtils.isEmpty(productsJson)) {
+            products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
         }
     }
 
@@ -136,11 +156,22 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
     }
 
     @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (products != null) {
+            outState.putString(SearchConfig.EXTRA_SEARCH_RESULTS, BuyClientFactory.createDefaultGson().toJson(products));
+        }
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
 
-        // Search the products if we already have a query
-        fetchProducts();
+        // Search the products if we already have a query, and don't have a previous search result already
+        if (products == null) {
+            fetchProducts();
+        }
 
         fetchShopIfNecessary(new Callback<Shop>() {
             @Override
