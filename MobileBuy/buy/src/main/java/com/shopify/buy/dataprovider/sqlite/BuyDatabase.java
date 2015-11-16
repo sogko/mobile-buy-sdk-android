@@ -33,6 +33,7 @@ import android.text.TextUtils;
 
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
+import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
 import com.shopify.buy.model.LineItem;
@@ -92,6 +93,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
         db.execSQL(QueryHelper.createLineItemsTable());
         db.execSQL(QueryHelper.createLineItemPropertiesTable());
+
+        db.execSQL(QueryHelper.createCheckoutsTable());
     }
 
     @Override
@@ -370,6 +373,10 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     public void saveCart(Cart cart, String userId) {
+        if (TextUtils.isEmpty(userId)) {
+            throw new IllegalArgumentException("Trying to save Cart to database with invalid userId: " + userId);
+        }
+
         try {
             sWriteLock.lock();
 
@@ -396,6 +403,10 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
     }
 
     public Cart getCart(String userId) {
+        if (TextUtils.isEmpty(userId)) {
+            throw new IllegalArgumentException("Trying to save Cart to database with invalid userId: " + userId);
+        }
+
         List<CartLineItem> lineItems = new ArrayList<>();
         Set<ProductVariant> productVariants = new HashSet<>();
 
@@ -425,8 +436,54 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                 lineItems.add(QueryHelper.lineItem(lineItemsCursor, properties, variant));
             } while (lineItemsCursor.moveToNext());
         }
+        lineItemsCursor.close();
 
         return new ModelFactory.DBCart(lineItems, productVariants);
+    }
+
+    public void saveCheckout(Checkout checkout, String userId) {
+        try {
+            sWriteLock.lock();
+
+            SQLiteDatabase db = getWritableDatabase();
+
+            // Delete current Checkout for user
+            String deleteWhere = String.format("%s = \'%s\'", CheckoutsTable.USER_ID, userId);
+            db.delete(TABLE_CHECKOUTS, deleteWhere, null);
+
+            // Save the Checkout
+            if (checkout != null) {
+                db.insert(TABLE_CHECKOUTS, null, QueryHelper.contentValues(checkout, userId));
+            }
+        } finally {
+            sWriteLock.unlock();
+        }
+    }
+
+    public Checkout getCheckout(String userId) {
+        Checkout checkout = null;
+
+        String where = String.format("%s = \'%s\'", CheckoutsTable.USER_ID, userId);
+        Cursor cursor = querySimple(TABLE_CHECKOUTS, where, null);
+        if (cursor.moveToFirst()) {
+            checkout = QueryHelper.checkout(cursor);
+        }
+        cursor.close();
+
+        return checkout;
+    }
+
+    public void deleteCheckout(String userId) {
+        try {
+            sWriteLock.lock();
+
+            SQLiteDatabase db = getWritableDatabase();
+
+            String deleteWhere = String.format("%s = \'%s\'", CheckoutsTable.USER_ID, userId);
+            db.delete(TABLE_CHECKOUTS, deleteWhere, null);
+        } finally {
+            sWriteLock.unlock();
+        }
     }
 
     private Cursor querySimple(String table, String where, String orderBy) {

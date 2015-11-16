@@ -32,7 +32,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +39,7 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.DefaultProductsProvider;
-import com.shopify.buy.dataprovider.ProductsProvider;
+import com.shopify.buy.dataprovider.providers.DefaultProductsProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
@@ -56,7 +54,6 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class ProductListFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Product> {
-    private static final String TAG = ProductListFragment.class.getSimpleName();
 
     ProductListFragmentView view;
 
@@ -140,19 +137,20 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
             fetchProducts();
         }
 
-        fetchShopIfNecessary(new Callback<Shop>() {
-            @Override
-            public void success(Shop shop, Response response) {
-                showProductsIfReady();
-            }
+        if (shop == null) {
+            provider.getShop(buyClient, new Callback<Shop>() {
+                @Override
+                public void success(Shop shop, Response response) {
+                    ProductListFragment.this.shop = shop;
+                    showProductsIfReady();
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
-            }
-        });
-
-        showProductsIfReady();
+                @Override
+                public void failure(RetrofitError error) {
+                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                }
+            });
+        }
     }
 
     private void parseProducts(Bundle bundle) {
@@ -233,7 +231,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
-        Log.i(TAG, "ProductList Item clicked");
         if (listener != null) {
             listener.onItemClick(product);
         }
@@ -241,7 +238,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
-        Log.i(TAG, "ProductList Item long clicked");
         if (listener != null) {
             listener.onItemLongClick(product);
         }

@@ -29,6 +29,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.shopify.buy.model.CartLineItem;
+import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
 import com.shopify.buy.model.LineItem;
@@ -522,6 +523,28 @@ public class QueryHelper implements DatabaseConstants {
             } while (cursor.moveToNext());
         }
         return properties;
+    }
+
+    static String createCheckoutsTable() {
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
+                .append(TABLE_CHECKOUTS)
+                .append(" (")
+                .append(CheckoutsTable.USER_ID).append(" TEXT PRIMARY KEY, ")
+                .append(CheckoutsTable.CHECKOUT_JSON).append(" TEXT")
+                .append(")");
+        return sql.toString();
+    }
+
+    static ContentValues contentValues(Checkout checkout, String userId) {
+        ContentValues values = new ContentValues();
+        values.put(CheckoutsTable.USER_ID, userId);
+        values.put(CheckoutsTable.CHECKOUT_JSON, checkout.toJsonString());
+        return values;
+    }
+
+    static Checkout checkout(Cursor cursor) {
+        String checkoutJson = cursor.getString(cursor.getColumnIndex(CheckoutsTable.CHECKOUT_JSON));
+        return Checkout.fromJson(checkoutJson);
     }
 
 }

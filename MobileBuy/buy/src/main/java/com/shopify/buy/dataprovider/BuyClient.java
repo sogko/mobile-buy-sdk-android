@@ -684,16 +684,18 @@ public class BuyClient {
      * Extracts the body of the {@code Response} associated with this error
      *
      * @param error the {@link RetrofitError}
-     * @return the body of the response
+     * @return the body of the response, or the error message if the body is null
      */
     public static String getErrorBody(RetrofitError error) {
-        String json = null;
+        if (error == null) {
+            return "null";
+        }
         try {
-            json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+            return new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
         } catch (Throwable e) {
             e.printStackTrace();
         }
-        return json;
+        return error.getMessage();
     }
 
     private String parsePaymentSessionResponse(com.squareup.okhttp.Response response) throws IOException {

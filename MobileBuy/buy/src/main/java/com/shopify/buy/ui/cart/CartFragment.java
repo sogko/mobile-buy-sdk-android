@@ -27,17 +27,19 @@ package com.shopify.buy.ui.cart;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.shopify.buy.R;
-import com.shopify.buy.dataprovider.ShopManager;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
-import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.utils.CurrencyFormatter;
@@ -53,30 +55,49 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
     protected NumberFormat currencyFormat;
     protected CartFragmentView view;
+    protected ArrayAdapter<CartLineItem> adapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onStart() {
+        super.onStart();
 
-        fetchShopIfNecessary(new Callback<Shop>() {
-            @Override
-            public void success(Shop shop, Response response) {
-                currencyFormat = CurrencyFormatter.getFormatter(Locale.getDefault(), shop.getCurrency());
-                showCartIfReady();
-            }
+        if (shop == null) {
+            provider.getShop(buyClient, new Callback<Shop>() {
+                @Override
+                public void success(Shop shop, Response response) {
+                    CartFragment.this.shop = shop;
+                    currencyFormat = CurrencyFormatter.getFormatter(Locale.getDefault(), shop.getCurrency());
+                    showCartIfReady();
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                }
+            });
+        }
+
+        if (cart == null) {
+            provider.getCart(buyClient, userId, new Callback<Cart>() {
+                        @Override
+                        public void success(Cart cart, Response response) {
+                            CartFragment.this.cart = cart;
+                            showCartIfReady();
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                        }
+                    }
+            );
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = (CartFragmentView) inflater.inflate(R.layout.cart_fragment, container, false);
-        view.setTheme(theme);
         return view;
     }
 
@@ -84,24 +105,20 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        this.view.setTheme(theme);
+
         showCartIfReady();
     }
 
     private void showCartIfReady() {
         Activity activity = safelyGetActivity();
-        if (activity == null) {
+        if (activity == null || currencyFormat == null || cart == null || !viewCreated) {
             return;
         }
-
-        if (currencyFormat == null) {
-            return;
-        }
-
-        final Cart cart = ShopManager.getInstance().getCart();
 
         view.updateSubtotal(cart, currencyFormat);
 
-        final ArrayAdapter<CartLineItem> adapter = new ArrayAdapter<CartLineItem>(getActivity(), R.layout.cart_line_item_view, cart.getLineItems()) {
+        adapter = new ArrayAdapter<CartLineItem>(getActivity(), R.layout.cart_line_item_view, cart.getLineItems()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;
@@ -120,21 +137,48 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((ListView) getView().findViewById(R.id.cart_list_view)).setAdapter(adapter);
+                ListView listView = ((ListView) getView().findViewById(R.id.cart_list_view));
+                listView.setAdapter(adapter);
+                registerForContextMenu(listView);
             }
         });
     }
 
     @Override
-    protected Cart getCartForCheckout() {
-        return ShopManager.getInstance().getCart();
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.cart_item_context_menu, menu);
     }
 
     @Override
-    public void onQuantityChanged(LineItem lineItem) {
-        view.updateSubtotal(ShopManager.getInstance().getCart(), currencyFormat);
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.delete_cart_item) {
+            // Delete the line item from the cart
+            int lineItemIndex = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
+            CartLineItem lineItem = cart.getLineItems().get(lineItemIndex);
+            adjustQuantity(lineItem, -(int) lineItem.getQuantity());
+            return true;
+        }
+        return super.onContextItemSelected(item);
+    }
 
-        ShopManager.getInstance().saveCart(getActivity());
+    @Override
+    public void onQuantityDecreased(CartLineItem lineItem) {
+        adjustQuantity(lineItem, -1);
+    }
+
+    @Override
+    public void onQuantityIncreased(CartLineItem lineItem) {
+        adjustQuantity(lineItem, +1);
+    }
+
+    private void adjustQuantity(CartLineItem lineItem, int delta) {
+        cart.setVariantQuantity(lineItem.getVariant(), (int) lineItem.getQuantity() + delta);
+        provider.saveCart(cart, buyClient, userId);
+
+        adapter.notifyDataSetChanged();
+        view.updateSubtotal(cart, currencyFormat);
     }
 
 }

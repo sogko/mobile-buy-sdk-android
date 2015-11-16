@@ -47,6 +47,9 @@ interface DatabaseConstants {
     String TABLE_LINE_ITEMS = "line_items";
     String TABLE_LINE_ITEM_PROPERTIES = "line_item_properties";
 
+    // Checkouts table
+    String TABLE_CHECKOUTS = "checkouts";
+
     interface ShopTable {
         String NAME = "name";
         String CITY = "city";
@@ -157,6 +160,11 @@ interface DatabaseConstants {
         String LINE_ITEM_ID = "line_item_id";
         String KEY = "key";
         String VALUE = "value";
+    }
+
+    interface CheckoutsTable {
+        String USER_ID = "user_id";
+        String CHECKOUT_JSON = "checkout_json";
     }
 
 }

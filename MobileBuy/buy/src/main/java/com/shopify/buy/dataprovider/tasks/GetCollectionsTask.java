@@ -25,6 +25,7 @@
 package com.shopify.buy.dataprovider.tasks;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
@@ -39,7 +40,9 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class GetCollectionsTask extends BaseTask<Collection> {
+public class GetCollectionsTask extends BaseTask<List<Collection>> {
+
+    private static final String LOG_TAG = GetCollectionsTask.class.getSimpleName();
 
     public GetCollectionsTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Collection>> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
@@ -50,10 +53,14 @@ public class GetCollectionsTask extends BaseTask<Collection> {
         final AtomicBoolean foundInDb = new AtomicBoolean(false);
 
         // check the local database first
-        List<Collection> collections = buyDatabase.getCollections();
-        if (!CollectionUtils.isEmpty(collections)) {
-            foundInDb.set(true);
-            onSuccess(collections, null);
+        try {
+            List<Collection> collections = buyDatabase.getCollections();
+            if (!CollectionUtils.isEmpty(collections)) {
+                foundInDb.set(true);
+                onSuccess(collections, null);
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Could not get Collections from database.", e);
         }
 
         // need to fetch from the cloud

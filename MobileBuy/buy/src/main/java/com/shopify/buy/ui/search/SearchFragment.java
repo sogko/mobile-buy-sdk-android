@@ -31,7 +31,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,11 +40,9 @@ import android.widget.SearchView;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.DefaultSearchProvider;
-import com.shopify.buy.dataprovider.SearchProvider;
+import com.shopify.buy.dataprovider.providers.DefaultSearchProvider;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.collections.CollectionListConfig;
 import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.utils.CollectionUtils;
@@ -58,8 +55,6 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class SearchFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Product>, SearchView.OnQueryTextListener {
-
-    private static final String TAG = SearchFragment.class.getSimpleName();
 
     SearchFragmentView view;
     RecyclerView recyclerView;
@@ -108,7 +103,8 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         // Retrieve the current search results to display if there is one
         String productsJson = bundle.getString(SearchConfig.EXTRA_SEARCH_RESULTS);
         if (!TextUtils.isEmpty(productsJson)) {
-            products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
+            products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {
+            }.getType());
         }
     }
 
@@ -173,19 +169,20 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
             fetchProducts();
         }
 
-        fetchShopIfNecessary(new Callback<Shop>() {
-            @Override
-            public void success(Shop shop, Response response) {
-                showProductsIfReady();
-            }
+        if (shop == null) {
+            provider.getShop(buyClient, new Callback<Shop>() {
+                @Override
+                public void success(Shop shop, Response response) {
+                    SearchFragment.this.shop = shop;
+                    showProductsIfReady();
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
-            }
-        });
-
-        showProductsIfReady();
+                @Override
+                public void failure(RetrofitError error) {
+                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                }
+            });
+        }
     }
 
     public void setListener(OnSearchItemSelectedListener listener) {
@@ -227,7 +224,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
-        Log.i(TAG, "Search Item clicked");
         if (listener != null) {
             listener.onSearchItemClick(product);
         }
@@ -235,7 +231,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
-        Log.i(TAG, "Search Item long clicked");
         if (listener != null) {
             listener.onSearchItemLongClick(product);
         }

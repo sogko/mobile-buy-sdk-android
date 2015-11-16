@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
@@ -81,6 +82,11 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     public ProductDetailsBuilder showCartButton(boolean showCartButton) {
         ((ProductDetailsConfig) config).showCartButton(showCartButton);
+        return this;
+    }
+
+    public ProductDetailsBuilder setCart(Cart cart) {
+        config.setCart(cart);
         return this;
     }
 

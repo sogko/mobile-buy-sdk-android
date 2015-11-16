@@ -27,6 +27,9 @@ package com.shopify.buy.ui.common;
 
 import android.os.Bundle;
 
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.Shop;
+
 public class BaseConfig {
 
     public static final String EXTRA_SHOP_DOMAIN = "com.shopify.buy.ui.SHOP_DOMAIN";
@@ -36,6 +39,9 @@ public class BaseConfig {
     public static final String EXTRA_WEB_RETURN_TO_URL = "com.shopify.buy.ui.WEB_RETURN_TO_URL";
     public static final String EXTRA_WEB_RETURN_TO_LABEL = "com.shopify.buy.ui.WEB_RETURN_TO_LABEL";
     public static final String EXTRA_THEME = "com.shopify.buy.ui.THEME";
+    public static final String EXTRA_USER_ID = "com.shopify.buy.ui.USER_ID";
+    public static final String EXTRA_SHOP = "com.shopify.buy.ui.SHOP";
+    public static final String EXTRA_CART = "com.shopify.buy.ui.CART";
 
     private String shopDomain;
     private String apiKey;
@@ -44,6 +50,17 @@ public class BaseConfig {
     private ShopifyTheme theme;
     private String webReturnToUrl;
     private String webReturnToLabel;
+    private String userId;
+    private Shop shop;
+    private Cart cart;
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
 
     public String getShopShopDomain() {
         return shopDomain;
@@ -59,10 +76,6 @@ public class BaseConfig {
 
     public String getApplicationName() {
         return applicationName;
-    }
-
-    public ShopifyTheme getTheme() {
-        return theme;
     }
 
     public void setShopDomain(String shopDomain) {
@@ -91,6 +104,14 @@ public class BaseConfig {
 
     public void setWebReturnToLabel(String webReturnToLabel) {
         this.webReturnToLabel = webReturnToLabel;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setShop(Shop shop) {
+        this.shop = shop;
     }
 
     public Bundle toBundle() {
@@ -122,6 +143,18 @@ public class BaseConfig {
 
         if (webReturnToLabel != null) {
             bundle.putString(EXTRA_WEB_RETURN_TO_LABEL, webReturnToLabel);
+        }
+
+        if (userId != null) {
+            bundle.putString(EXTRA_USER_ID, userId);
+        }
+
+        if (shop != null) {
+            bundle.putString(EXTRA_SHOP, shop.toJsonString());
+        }
+
+        if (cart != null) {
+            bundle.putString(EXTRA_CART, cart.toJsonString());
         }
 
         return bundle;

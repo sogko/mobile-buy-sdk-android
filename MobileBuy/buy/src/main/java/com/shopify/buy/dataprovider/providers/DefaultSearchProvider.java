@@ -22,26 +22,33 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider;
+package com.shopify.buy.dataprovider.providers;
 
 import android.content.Context;
 
-import com.shopify.buy.dataprovider.tasks.GetCollectionsTask;
-import com.shopify.buy.model.Collection;
+import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.tasks.SearchProductsTask;
+import com.shopify.buy.model.Product;
+import com.shopify.buy.ui.search.SearchProvider;
 
 import java.util.List;
 
 import retrofit.Callback;
 
-public class DefaultCollectionsProvider extends BaseProviderImpl implements CollectionsProvider {
+public class DefaultSearchProvider extends BaseProviderImpl implements SearchProvider {
 
-    public DefaultCollectionsProvider(Context context) {
+    public DefaultSearchProvider(Context context) {
         super(context);
     }
 
+    private SearchProductsTask task;
+
     @Override
-    public void getCollections(final BuyClient buyClient, final Callback<List<Collection>> callback) {
-        GetCollectionsTask task = new GetCollectionsTask(buyDatabase, buyClient, callback, handler, executorService);
+    public void searchProducts(String query, BuyClient buyClient, Callback<List<Product>> callback) {
+        if (task != null) {
+            task.cancel();
+        }
+        task = new SearchProductsTask(query, buyDatabase, buyClient, callback, handler, executorService);
         executorService.execute(task);
     }
 

@@ -29,39 +29,64 @@ import android.util.Log;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
-import com.shopify.buy.model.Product;
+import com.shopify.buy.model.Shop;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
-public class SearchProductsTask extends BaseTask<List<Product>> {
+public class GetShopTask extends BaseTask<Shop> {
 
-    private static final String LOG_TAG = SearchProductsTask.class.getSimpleName();
+    private static final String LOG_TAG = GetShopTask.class.getSimpleName();
 
-    private final AtomicBoolean isCancelled = new AtomicBoolean(false);
-    private final String query;
-
-    public SearchProductsTask(String query, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
+    public GetShopTask(BuyDatabase buyDatabase, BuyClient buyClient, Callback<Shop> callback, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, callback, handler, executorService);
-        this.query = query;
     }
 
     @Override
     public void run() {
-        // There's no network search yet, we only support local db search
+        final AtomicBoolean foundInDb = new AtomicBoolean(false);
+
+        // check the local database first
         try {
-            List<Product> products = buyDatabase.searchProducts(query, isCancelled);
-            onSuccess(products, null);
+            Shop shop = buyDatabase.getShop();
+            if (shop != null) {
+                foundInDb.set(true);
+                onSuccess(shop, null);
+            }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Could not get Products from database.", e);
+            Log.e(LOG_TAG, "Could not get Shop from database.", e);
         }
+
+        // need to fetch from the cloud
+        buyClient.getShop(new Callback<Shop>() {
+            @Override
+            public void success(Shop shop, Response response) {
+                saveShop(shop);
+                if (!foundInDb.get()) {
+                    onSuccess(shop, response);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (!foundInDb.get()) {
+                    onFailure(error);
+                }
+            }
+        });
     }
 
-    public void cancel() {
-        isCancelled.set(true);
+    private void saveShop(final Shop shop) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                buyDatabase.saveShop(shop);
+            }
+        });
     }
 
 }
