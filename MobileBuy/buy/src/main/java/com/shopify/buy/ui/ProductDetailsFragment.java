@@ -177,6 +177,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
     @Override
     protected void createWebCheckout() {
         cart.addVariant(variant);
+        view.setVariant(variant);
         super.createWebCheckout();
     }
 
