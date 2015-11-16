@@ -106,7 +106,6 @@ public abstract class CheckoutFragment extends BaseFragment {
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/495
                 checkoutButton.setEnabled(false);
                 cancelledCheckout.set(false);
                 createWebCheckout();
