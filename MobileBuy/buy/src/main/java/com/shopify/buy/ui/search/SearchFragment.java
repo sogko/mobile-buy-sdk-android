@@ -31,7 +31,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,8 +53,6 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class SearchFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Product>, SearchView.OnQueryTextListener {
-
-    private static final String TAG = SearchFragment.class.getSimpleName();
 
     SearchFragmentView view;
     RecyclerView recyclerView;
@@ -196,7 +193,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
-        Log.i(TAG, "Search Item clicked");
         if (listener != null) {
             listener.onSearchItemClick(product);
         }
@@ -204,7 +200,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
-        Log.i(TAG, "Search Item long clicked");
         if (listener != null) {
             listener.onSearchItemLongClick(product);
         }

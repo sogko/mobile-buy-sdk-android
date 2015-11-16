@@ -32,7 +32,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +54,6 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class ProductListFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Product> {
-
-    private static final String TAG = ProductListFragment.class.getSimpleName();
 
     ProductListFragmentView view;
 
@@ -234,7 +231,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
-        Log.i(TAG, "ProductList Item clicked");
         if (listener != null) {
             listener.onItemClick(product);
         }
@@ -242,7 +238,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
-        Log.i(TAG, "ProductList Item long clicked");
         if (listener != null) {
             listener.onItemLongClick(product);
         }

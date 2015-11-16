@@ -20,8 +20,6 @@
     <string name="continue_to_checkout">CONTINUE TO CHECKOUT</string>
     <string name="subtotal">SUBTOTAL</string>
     <string name="shipping_and_taxes">Shipping and taxes are calculated at checkout.</string>
-    <string name="delete_prompt">Are you sure you want to remove %s from your cart?</string>
-    <string name="yes">YES</string>
-    <string name="cancel">CANCEL</string>
+    <string name="delete">DELETE</string>
 
 </resources>

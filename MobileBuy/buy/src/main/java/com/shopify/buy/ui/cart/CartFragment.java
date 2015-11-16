@@ -27,9 +27,13 @@ package com.shopify.buy.ui.cart;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -133,9 +137,30 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((ListView) getView().findViewById(R.id.cart_list_view)).setAdapter(adapter);
+                ListView listView = ((ListView) getView().findViewById(R.id.cart_list_view));
+                listView.setAdapter(adapter);
+                registerForContextMenu(listView);
             }
         });
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.cart_item_context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.delete_cart_item) {
+            // Delete the line item from the cart
+            int lineItemIndex = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
+            CartLineItem lineItem = cart.getLineItems().get(lineItemIndex);
+            adjustQuantity(lineItem, -(int) lineItem.getQuantity());
+            return true;
+        }
+        return super.onContextItemSelected(item);
     }
 
     @Override
