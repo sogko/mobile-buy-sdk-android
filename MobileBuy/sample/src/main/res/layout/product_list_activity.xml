@@ -12,7 +12,7 @@
             style="@style/ProductOptionsTextView"
             android:text="@string/demo_product_details_activity"/>
 
-        <Switch
+        <ToggleButton
             android:id="@+id/product_details_activity_switch"
             style="@style/Switch"
             android:textOff="@string/no"

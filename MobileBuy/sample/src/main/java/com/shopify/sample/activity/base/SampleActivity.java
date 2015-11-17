@@ -193,7 +193,6 @@ public class SampleActivity extends AppCompatActivity {
             }
         }
         ((TextView) findViewById(R.id.gift_card_value)).setText("-$" + Double.toString(totalGiftCards));
-
         ((TextView) findViewById(R.id.shipping_value)).setText('$' + checkout.getShippingRate().getPrice());
         ((TextView) findViewById(R.id.taxes_value)).setText('$' + checkout.getTotalTax());
         ((TextView) findViewById(R.id.total_value)).setText('$' + checkout.getPaymentDue());

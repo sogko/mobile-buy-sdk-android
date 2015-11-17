@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.ToggleButton;
 
 import com.shopify.buy.model.Checkout;
@@ -186,6 +185,7 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
                     .setTheme(theme)
                     .setWebReturnToUrl(getString(R.string.web_return_to_url))
                     .setWebReturnToLabel(getString(R.string.web_return_to_label))
+                    .setShop(getSampleApplication().getShop())
                     .build();
             startActivity(intent);
         } else {

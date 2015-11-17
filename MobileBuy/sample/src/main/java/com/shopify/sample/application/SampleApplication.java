@@ -24,9 +24,7 @@
 
 package com.shopify.sample.application;
 
-import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -35,13 +33,10 @@ import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
-import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.CreditCard;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.ProductDetailsBuilder;
-import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.sample.BuildConfig;
 import com.shopify.sample.R;
 
@@ -103,11 +98,6 @@ public class SampleApplication extends Application {
         });
     }
 
-    public void getAllProducts(final Callback<List<Product>> callback) {
-        // For this sample app, "all" products will just be the first page of products
-        buyClient.getProductPage(1, callback);
-    }
-
     /**
      * Create a new checkout with the selected product. For convenience in the sample app we will hardcode the user's shipping address.
      * The shipping rates fetched in ShippingRateListActivity will be for this address.
@@ -142,6 +132,8 @@ public class SampleApplication extends Application {
     public Checkout getCheckout() {
         return checkout;
     }
+
+    public Shop getShop() { return shop; }
 
     public void getShippingRates(final Callback<List<ShippingRate>> callback) {
         buyClient.getShippingRates(checkout.getToken(), callback);

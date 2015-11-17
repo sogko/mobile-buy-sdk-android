@@ -54,6 +54,7 @@ public class CollectionListActivity extends SampleActivity implements Collection
                 .setChannelid(BuildConfig.CHANNEL_ID)
                 .setShopDomain(BuildConfig.SHOP_DOMAIN)
                 .setApplicationName(getString(R.string.app_name))
+                .setShop(getSampleApplication().getShop())
                 .buildFragment(null, this);
 
         collectionListFragment.setListener(this);
@@ -76,6 +77,7 @@ public class CollectionListActivity extends SampleActivity implements Collection
                 .setShopDomain(BuildConfig.SHOP_DOMAIN)
                 .setApplicationName(getString(R.string.app_name))
                 .setCollection(collection)
+                .setShop(getSampleApplication().getShop())
                 .buildBundle();
         Intent intent = new Intent(this, ProductListActivity.class);
         intent.putExtras(bundle);
