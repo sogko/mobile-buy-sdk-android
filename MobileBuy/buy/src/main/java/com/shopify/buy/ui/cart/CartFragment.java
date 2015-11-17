@@ -75,7 +75,6 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
     @Override
     protected void fetchDataIfNecessary() {
-        super.fetchDataIfNecessary();
 
         if (shop == null) {
             provider.getShop(buyClient, new Callback<Shop>() {

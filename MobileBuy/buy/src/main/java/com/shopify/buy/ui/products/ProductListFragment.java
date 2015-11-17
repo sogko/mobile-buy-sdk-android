@@ -151,7 +151,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     @Override
     protected void fetchDataIfNecessary() {
-        super.fetchDataIfNecessary();
 
         if (products == null) {
             fetchProducts();

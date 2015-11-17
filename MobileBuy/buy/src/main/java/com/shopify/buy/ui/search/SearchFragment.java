@@ -166,7 +166,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     @Override
     protected void fetchDataIfNecessary() {
-        super.fetchDataIfNecessary();
 
         // Search the products if we already have a query, and don't have a previous search result already
         if (products == null) {

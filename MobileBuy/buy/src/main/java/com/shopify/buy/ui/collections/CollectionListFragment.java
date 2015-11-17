@@ -140,7 +140,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
     @Override
     protected void fetchDataIfNecessary() {
-        super.fetchDataIfNecessary();
 
         // Fetch the Collections if we don't have them
         if (collections == null) {

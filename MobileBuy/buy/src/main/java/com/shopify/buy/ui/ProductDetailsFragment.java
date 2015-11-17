@@ -135,7 +135,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
 
     @Override
     protected void fetchDataIfNecessary() {
-        super.fetchDataIfNecessary();
 
         // fetch the Shop and Product data if we don't have them already
         if (product == null && !TextUtils.isEmpty(productId)) {
