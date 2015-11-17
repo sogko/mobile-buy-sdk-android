@@ -123,17 +123,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         viewCreated = true;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // Fetch the Collections if we don't have them
-        if (collections == null) {
-            fetchCollections();
-        }
-        showCollectionsIfReady();
-    }
-
     private void parseCollections(Bundle bundle) {
         if (bundle.containsKey(CollectionListConfig.EXTRA_SHOP_COLLECTIONS)) {
             String collectionsJson = bundle.getString(CollectionListConfig.EXTRA_SHOP_COLLECTIONS);
@@ -149,12 +138,22 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         this.collectionListItemSelectedListener = collectionListItemSelectedListener;
     }
 
+    @Override
+    protected void fetchDataIfNecessary() {
+        super.fetchDataIfNecessary();
+
+        // Fetch the Collections if we don't have them
+        if (collections == null) {
+            fetchCollections();
+        }
+    }
+
     private void fetchCollections() {
         provider.getCollections(buyClient, new Callback<List<Collection>>() {
             @Override
             public void success(List<Collection> collections, Response response) {
                 CollectionListFragment.this.collections = collections;
-                showCollectionsIfReady();
+                showViewIfReady();
             }
 
             @Override
@@ -164,7 +163,8 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         });
     }
 
-    private void showCollectionsIfReady() {
+    @Override
+    protected void showViewIfReady() {
         final AppCompatActivity activity = safelyGetActivity();
         if (activity == null) {
             return;

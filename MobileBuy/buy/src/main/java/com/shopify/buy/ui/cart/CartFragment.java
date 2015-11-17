@@ -57,9 +57,25 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
     protected CartFragmentView view;
     protected ArrayAdapter<CartLineItem> adapter;
 
+    @Nullable
     @Override
-    public void onStart() {
-        super.onStart();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = (CartFragmentView) inflater.inflate(R.layout.cart_fragment, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        this.view.setTheme(theme);
+
+        showViewIfReady();
+    }
+
+    @Override
+    protected void fetchDataIfNecessary() {
+        super.fetchDataIfNecessary();
 
         if (shop == null) {
             provider.getShop(buyClient, new Callback<Shop>() {
@@ -67,7 +83,7 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
                 public void success(Shop shop, Response response) {
                     CartFragment.this.shop = shop;
                     currencyFormat = CurrencyFormatter.getFormatter(Locale.getDefault(), shop.getCurrency());
-                    showCartIfReady();
+                    showViewIfReady();
                 }
 
                 @Override
@@ -82,7 +98,7 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
                         @Override
                         public void success(Cart cart, Response response) {
                             CartFragment.this.cart = cart;
-                            showCartIfReady();
+                            showViewIfReady();
                         }
 
                         @Override
@@ -94,23 +110,8 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = (CartFragmentView) inflater.inflate(R.layout.cart_fragment, container, false);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        this.view.setTheme(theme);
-
-        showCartIfReady();
-    }
-
-    private void showCartIfReady() {
+    protected void showViewIfReady() {
         Activity activity = safelyGetActivity();
         if (activity == null || currencyFormat == null || cart == null || !viewCreated) {
             return;

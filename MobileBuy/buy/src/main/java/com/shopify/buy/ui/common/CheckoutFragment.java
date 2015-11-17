@@ -35,12 +35,14 @@ import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.customTabs.CustomTabActivityHelper;
 import com.shopify.buy.dataprovider.providers.DefaultCartProvider;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
+import com.shopify.buy.utils.NetworkUtility;
 
 import java.net.HttpURLConnection;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -106,17 +108,24 @@ public abstract class CheckoutFragment extends BaseFragment {
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkoutButton.setEnabled(false);
-                cancelledCheckout.set(false);
-                createWebCheckout();
 
-                showProgressDialog(getString(R.string.loading), getString(R.string.loading_checkout_page), new Runnable() {
-                    @Override
-                    public void run() {
-                        checkoutButton.setEnabled(true);
-                        cancelledCheckout.set(true);
-                    }
-                });
+                Activity activity = safelyGetActivity();
+
+                if (!NetworkUtility.getInstance().isConnectedToNetwork(activity)) {
+                    onCheckoutFailure(getString(R.string.network_unavailable_error));
+                } else {
+                    checkoutButton.setEnabled(false);
+                    cancelledCheckout.set(false);
+                    createWebCheckout();
+
+                    showProgressDialog(getString(R.string.loading), getString(R.string.loading_checkout_page), new Runnable() {
+                        @Override
+                        public void run() {
+                            checkoutButton.setEnabled(true);
+                            cancelledCheckout.set(true);
+                        }
+                    });
+                }
             }
         });
 
@@ -134,13 +143,13 @@ public abstract class CheckoutFragment extends BaseFragment {
                     // Start the web checkout
                     launchWebCheckout(checkout);
                 } else {
-                    onCheckoutFailure();
+                    onCheckoutFailure(getString(R.string.default_checkout_error));
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                onCheckoutFailure();
+                onCheckoutFailure(getString(R.string.default_checkout_error));
             }
         });
 
@@ -149,12 +158,12 @@ public abstract class CheckoutFragment extends BaseFragment {
     /**
      * Show the error message in a {@link Snackbar}
      */
-    private void onCheckoutFailure() {
+    private void onCheckoutFailure(String message) {
         dismissProgressDialog();
 
         CoordinatorLayout snackbarLayout = (CoordinatorLayout) getView().findViewById(R.id.snackbar_location);
 
-        Snackbar snackbar = Snackbar.make(snackbarLayout, R.string.default_checkout_error, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(snackbarLayout, message, Snackbar.LENGTH_SHORT);
         View snackbarView = snackbar.getView();
         snackbarView.setBackgroundColor(getResources().getColor(R.color.error_background));
 
@@ -229,7 +238,7 @@ public abstract class CheckoutFragment extends BaseFragment {
                     startActivity(intent);
 
                 } catch (Exception launchOtherException) {
-                    onCheckoutFailure();
+                    onCheckoutFailure(getString(R.string.default_checkout_error));
                     return;
                 }
             }

@@ -160,9 +160,13 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         }
     }
 
+    public void setListener(OnSearchItemSelectedListener listener) {
+        this.listener = listener;
+    }
+
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void fetchDataIfNecessary() {
+        super.fetchDataIfNecessary();
 
         // Search the products if we already have a query, and don't have a previous search result already
         if (products == null) {
@@ -174,7 +178,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
                 @Override
                 public void success(Shop shop, Response response) {
                     SearchFragment.this.shop = shop;
-                    showProductsIfReady();
+                    showViewIfReady();
                 }
 
                 @Override
@@ -183,10 +187,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
                 }
             });
         }
-    }
-
-    public void setListener(OnSearchItemSelectedListener listener) {
-        this.listener = listener;
     }
 
     private void fetchProducts() {
@@ -199,7 +199,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
             @Override
             public void success(List<Product> products, Response response) {
                 setProducts(products);
-                showProductsIfReady();
+                showViewIfReady();
             }
 
             @Override
@@ -211,7 +211,8 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         provider.searchProducts(query, buyClient, callback);
     }
 
-    private void showProductsIfReady() {
+    @Override
+    protected void showViewIfReady() {
         if (!viewCreated || CollectionUtils.isEmpty(products) || shop == null) {
             return;
         } else {
