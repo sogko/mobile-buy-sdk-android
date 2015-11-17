@@ -13,8 +13,8 @@
             android:text="@string/demo_product_details_activity"/>
 
         <ToggleButton
-            android:id="@+id/product_details_activity_switch"
-            style="@style/Switch"
+            android:id="@+id/product_details_activity_toggle"
+            style="@style/Toggle"
             android:textOff="@string/no"
             android:textOn="@string/yes"/>
 
@@ -36,8 +36,8 @@
                 android:text="@string/theme_style"/>
 
             <ToggleButton
-                android:id="@+id/theme_style_switch"
-                style="@style/Switch"
+                android:id="@+id/theme_style_toggle"
+                style="@style/Toggle"
                 android:checked="true"
                 android:textOff="@string/dark"
                 android:textOn="@string/light"/>
@@ -54,8 +54,8 @@
                 android:text="@string/shows_product_image_bg"/>
 
             <ToggleButton
-                android:id="@+id/product_image_bg_switch"
-                style="@style/Switch"
+                android:id="@+id/product_image_bg_toggle"
+                style="@style/Toggle"
                 android:checked="true"
                 android:textOff="@string/no"
                 android:textOn="@string/yes"/>

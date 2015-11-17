@@ -85,7 +85,7 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
         productViewOptionsContainer = findViewById(R.id.product_view_options_container);
         productViewOptionsContainer.setVisibility(View.GONE);
 
-        ((ToggleButton) findViewById(R.id.product_details_activity_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((ToggleButton) findViewById(R.id.product_details_activity_toggle)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 useProductDetailsActivity = isChecked;
@@ -93,14 +93,14 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
             }
         });
 
-        ((ToggleButton) findViewById(R.id.theme_style_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((ToggleButton) findViewById(R.id.theme_style_toggle)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 theme.setStyle(isChecked ? ShopifyTheme.Style.LIGHT : ShopifyTheme.Style.DARK);
             }
         });
 
-        ((ToggleButton) findViewById(R.id.product_image_bg_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((ToggleButton) findViewById(R.id.product_image_bg_toggle)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 theme.setShowProductImageBackground(isChecked);
