@@ -41,7 +41,7 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Shop;
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
     private final static String LOG_TAG = BaseFragment.class.getSimpleName();
 
@@ -136,6 +136,17 @@ public class BaseFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // fetch data if we need to
+        fetchDataIfNecessary();
+
+        // show the view now if we already have the data
+        showViewIfReady();
+    }
+
     private void initializeProgressDialog() {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setIndeterminate(true);
@@ -179,4 +190,16 @@ public class BaseFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         return activity;
     }
+
+    /**
+     * Fetches data required for the view to be loaded.  This is called on the main thread, so any long
+     * running tasks should be executed asynchronously.
+     */
+    protected abstract void fetchDataIfNecessary();
+
+    /**
+     * Checks the preconditions for the view to be shown, and populates the views if the preconditions are met.
+     */
+    protected abstract void showViewIfReady();
+
 }

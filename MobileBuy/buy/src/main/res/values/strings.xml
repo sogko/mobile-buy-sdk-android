@@ -6,6 +6,7 @@
     <string name="checkout">CHECKOUT</string>
     <string name="added_to_cart">%s has been added to your cart!</string>
     <string name="default_checkout_error">Could not checkout at this time</string>
+    <string name="network_unavailable_error">Network is unavailable</string>
     <string name="loading">Loading</string>
     <string name="loading_product_details">Loading product details</string>
     <string name="loading_collections">Loading collections</string>

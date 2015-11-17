@@ -128,31 +128,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         viewCreated = true;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // Fetch the Collections if we don't have them
-        if (products == null) {
-            fetchProducts();
-        }
-
-        if (shop == null) {
-            provider.getShop(buyClient, new Callback<Shop>() {
-                @Override
-                public void success(Shop shop, Response response) {
-                    ProductListFragment.this.shop = shop;
-                    showProductsIfReady();
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
-                }
-            });
-        }
-    }
-
     private void parseProducts(Bundle bundle) {
         // Retrieve the list of products if they were provided
         if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCTS)) {
@@ -174,12 +149,39 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         this.listener = listener;
     }
 
+    @Override
+    protected void fetchDataIfNecessary() {
+
+        if (products == null) {
+            fetchProducts();
+        }
+
+        if (shop == null) {
+            fetchShop();
+        }
+    }
+
+    private void fetchShop() {
+        provider.getShop(buyClient, new Callback<Shop>() {
+            @Override
+            public void success(Shop shop, Response response) {
+                ProductListFragment.this.shop = shop;
+                showViewIfReady();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+            }
+        });
+    }
+
     private void fetchProducts() {
         Callback callback = new Callback<List<Product>>() {
             @Override
             public void success(List<Product> products, Response response) {
                 ProductListFragment.this.products = products;
-                showProductsIfReady();
+                showViewIfReady();
             }
 
             @Override
@@ -197,7 +199,8 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         }
     }
 
-    private void showProductsIfReady() {
+    @Override
+    protected void showViewIfReady() {
         final AppCompatActivity activity = safelyGetActivity();
 
         if (activity == null) {
