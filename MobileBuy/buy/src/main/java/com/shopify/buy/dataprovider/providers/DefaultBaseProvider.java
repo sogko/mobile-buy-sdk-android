@@ -26,6 +26,7 @@ package com.shopify.buy.dataprovider.providers;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
@@ -70,8 +71,8 @@ public class DefaultBaseProvider implements BaseProvider {
     }
 
     @Override
-    public void saveCart(Cart cart, BuyClient buyClient, String userId) {
-        SaveCartTask task = new SaveCartTask(cart, userId, buyDatabase, buyClient, handler, executorService);
+    public void saveCart(Cart cart, @Nullable String checkoutToken, BuyClient buyClient, String userId) {
+        SaveCartTask task = new SaveCartTask(cart, checkoutToken, userId, buyDatabase, buyClient, handler, executorService);
         executorService.execute(task);
     }
 

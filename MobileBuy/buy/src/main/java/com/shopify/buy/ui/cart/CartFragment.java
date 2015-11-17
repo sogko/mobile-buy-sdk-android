@@ -175,7 +175,7 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
 
     private void adjustQuantity(CartLineItem lineItem, int delta) {
         cart.setVariantQuantity(lineItem.getVariant(), (int) lineItem.getQuantity() + delta);
-        provider.saveCart(cart, buyClient, userId);
+        provider.saveCart(cart, null, buyClient, userId);
 
         adapter.notifyDataSetChanged();
         view.updateSubtotal(cart, currencyFormat);

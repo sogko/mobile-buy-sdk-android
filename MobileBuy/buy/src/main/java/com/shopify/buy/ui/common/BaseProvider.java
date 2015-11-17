@@ -24,6 +24,8 @@
 
 package com.shopify.buy.ui.common;
 
+import android.support.annotation.Nullable;
+
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Shop;
@@ -36,7 +38,7 @@ public interface BaseProvider {
 
     void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
 
-    void saveCart(Cart cart, BuyClient buyClient, String userId);
+    void saveCart(Cart cart, @Nullable String checkoutToken, BuyClient buyClient, String userId);
 
     void deleteCheckout(BuyClient buyClient, String userId, boolean alsoDeleteCart);
 

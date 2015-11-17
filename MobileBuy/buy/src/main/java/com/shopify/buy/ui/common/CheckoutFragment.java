@@ -129,6 +129,9 @@ public abstract class CheckoutFragment extends BaseFragment {
             @Override
             public void success(Checkout checkout, Response response) {
                 if (response.getStatus() == HttpURLConnection.HTTP_CREATED) {
+                    // Save the checkout token
+                    provider.saveCart(cart, checkout.getToken(), buyClient, userId);
+
                     // Start the web checkout
                     launchWebCheckout(checkout);
                 } else {
