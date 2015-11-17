@@ -26,15 +26,13 @@ package com.shopify.buy.ui.search;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.model.Shop;
+import com.shopify.buy.ui.common.BaseProvider;
 
 import java.util.List;
 
 import retrofit.Callback;
 
-public interface SearchProvider {
-
-    void getShop(BuyClient buyClient, Callback<Shop> callback);
+public interface SearchProvider extends BaseProvider {
 
     void searchProducts(String query, BuyClient buyClient, Callback<List<Product>> callback);
 

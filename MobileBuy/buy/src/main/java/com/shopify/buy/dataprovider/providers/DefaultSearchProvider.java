@@ -35,7 +35,7 @@ import java.util.List;
 
 import retrofit.Callback;
 
-public class DefaultSearchProvider extends BaseProviderImpl implements SearchProvider {
+public class DefaultSearchProvider extends DefaultBaseProvider implements SearchProvider {
 
     public DefaultSearchProvider(Context context) {
         super(context);

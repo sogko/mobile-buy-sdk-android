@@ -33,7 +33,6 @@ import android.text.TextUtils;
 
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.CartLineItem;
-import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Image;
 import com.shopify.buy.model.LineItem;
@@ -441,36 +440,57 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         return new ModelFactory.DBCart(lineItems, productVariants);
     }
 
-    public void saveCheckout(Checkout checkout, String userId) {
+    public void deleteCart(String userId) {
+        try {
+            sWriteLock.lock();
+
+            SQLiteDatabase db = getWritableDatabase();
+
+            // delete LineItems
+            String deleteWhere = String.format("%s = \'%s\'", LineItemsTable.USER_ID, userId);
+            db.delete(TABLE_LINE_ITEMS, deleteWhere, null);
+
+            // delete LineItem properties
+            deleteWhere = String.format("%s = \'%s\'", LineItemPropertiesTable.USER_ID, userId);
+            db.delete(TABLE_LINE_ITEM_PROPERTIES, deleteWhere, null);
+        } finally {
+            sWriteLock.unlock();
+        }
+    }
+
+    public void saveCheckoutToken(String token, String userId) {
         try {
             sWriteLock.lock();
 
             SQLiteDatabase db = getWritableDatabase();
 
             // Delete current Checkout for user
-            String deleteWhere = String.format("%s = \'%s\'", CheckoutsTable.USER_ID, userId);
-            db.delete(TABLE_CHECKOUTS, deleteWhere, null);
+            String deleteWhere = String.format("%s = \'%s\'", CheckoutTokensTable.USER_ID, userId);
+            db.delete(TABLE_CHECKOUT_TOKENS, deleteWhere, null);
 
             // Save the Checkout
-            if (checkout != null) {
-                db.insert(TABLE_CHECKOUTS, null, QueryHelper.contentValues(checkout, userId));
+            if (!TextUtils.isEmpty(token)) {
+                ContentValues values = new ContentValues();
+                values.put(CheckoutTokensTable.USER_ID, userId);
+                values.put(CheckoutTokensTable.TOKEN, token);
+                db.insert(TABLE_CHECKOUT_TOKENS, null, values);
             }
         } finally {
             sWriteLock.unlock();
         }
     }
 
-    public Checkout getCheckout(String userId) {
-        Checkout checkout = null;
+    public String getCheckoutToken(String userId) {
+        String token = null;
 
-        String where = String.format("%s = \'%s\'", CheckoutsTable.USER_ID, userId);
-        Cursor cursor = querySimple(TABLE_CHECKOUTS, where, null);
+        String where = String.format("%s = \'%s\'", CheckoutTokensTable.USER_ID, userId);
+        Cursor cursor = querySimple(TABLE_CHECKOUT_TOKENS, where, null);
         if (cursor.moveToFirst()) {
-            checkout = QueryHelper.checkout(cursor);
+            token = cursor.getString(cursor.getColumnIndex(CheckoutTokensTable.TOKEN));
         }
         cursor.close();
 
-        return checkout;
+        return token;
     }
 
     public void deleteCheckout(String userId) {
@@ -479,8 +499,8 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
             SQLiteDatabase db = getWritableDatabase();
 
-            String deleteWhere = String.format("%s = \'%s\'", CheckoutsTable.USER_ID, userId);
-            db.delete(TABLE_CHECKOUTS, deleteWhere, null);
+            String deleteWhere = String.format("%s = \'%s\'", CheckoutTokensTable.USER_ID, userId);
+            db.delete(TABLE_CHECKOUT_TOKENS, deleteWhere, null);
         } finally {
             sWriteLock.unlock();
         }

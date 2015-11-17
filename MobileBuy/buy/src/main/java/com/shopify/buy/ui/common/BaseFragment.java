@@ -26,6 +26,8 @@ package com.shopify.buy.ui.common;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -51,6 +53,7 @@ public class BaseFragment extends Fragment {
     protected Shop shop;
     protected ShopifyTheme theme;
     protected String userId;
+    protected BaseProvider provider;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -85,6 +88,21 @@ public class BaseFragment extends Fragment {
         parseArguments();
 
         initializeProgressDialog();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        
+        Intent intent = getActivity().getIntent();
+        Uri uri = intent.getData();
+
+        String returnScheme = buyClient.getWebReturnToUrl();
+
+        // If we launched from the return URL on the checkout completion page, we know that the checkout was successful so let's delete the cart and checkout
+        if (uri != null && !TextUtils.isEmpty(returnScheme) && (uri.getScheme().contains(returnScheme) || returnScheme.contains(uri.getScheme()))) {
+            provider.deleteCheckout(buyClient, userId, true);
+        }
     }
 
     protected void parseArguments() {

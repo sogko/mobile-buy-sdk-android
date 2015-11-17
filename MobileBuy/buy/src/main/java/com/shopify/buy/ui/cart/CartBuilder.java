@@ -25,11 +25,13 @@
 package com.shopify.buy.ui.cart;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.ui.common.BaseProvider;
 import com.shopify.buy.ui.common.CheckoutListener;
 
 public class CartBuilder extends BaseBuilder<CartBuilder> {
@@ -58,11 +60,13 @@ public class CartBuilder extends BaseBuilder<CartBuilder> {
     /**
      * Returns a new {@link CartFragment} based on the params that have already been passed to the builder.
      *
+     * @param provider An optional implementation of {@link BaseProvider}. If you pass null, {@link com.shopify.buy.dataprovider.providers.DefaultBaseProvider} will be used.
      * @param listener An implementation of {@link CheckoutListener} which will be sent checkout status updates.
      * @return A new {@link CartFragment}.
      */
-    public CartFragment buildFragment(CheckoutListener listener) {
+    public CartFragment buildFragment(@Nullable BaseProvider provider, CheckoutListener listener) {
         CartFragment fragment = new CartFragment();
+        fragment.setProvider(provider);
         fragment.setCheckoutListener(listener);
         fragment.setArguments(buildBundle());
         return fragment;

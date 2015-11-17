@@ -22,34 +22,22 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider.providers;
-
-import android.content.Context;
+package com.shopify.buy.ui.common;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.tasks.GetCartTask;
-import com.shopify.buy.dataprovider.tasks.SaveCartTask;
 import com.shopify.buy.model.Cart;
-import com.shopify.buy.ui.common.CartProvider;
+import com.shopify.buy.model.Shop;
 
 import retrofit.Callback;
 
-public class DefaultCartProvider extends BaseProviderImpl implements CartProvider {
+public interface BaseProvider {
 
-    public DefaultCartProvider(Context context) {
-        super(context);
-    }
+    void getShop(BuyClient buyClient, Callback<Shop> callback);
 
-    @Override
-    public void getCart(final BuyClient buyClient, final String userId, final Callback<Cart> callback) {
-        GetCartTask task = new GetCartTask(userId, buyDatabase, buyClient, callback, handler, executorService);
-        executorService.execute(task);
-    }
+    void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
 
-    @Override
-    public void saveCart(Cart cart, BuyClient buyClient, String userId) {
-        SaveCartTask task = new SaveCartTask(cart, userId, buyDatabase, buyClient, handler, executorService);
-        executorService.execute(task);
-    }
+    void saveCart(Cart cart, BuyClient buyClient, String userId);
+
+    void deleteCheckout(BuyClient buyClient, String userId, boolean alsoDeleteCart);
 
 }

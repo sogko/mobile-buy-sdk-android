@@ -22,20 +22,26 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.common;
+package com.shopify.buy.ui.products;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.model.Cart;
-import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.Product;
+import com.shopify.buy.ui.common.BaseProvider;
+
+import java.util.List;
 
 import retrofit.Callback;
 
-public interface CartProvider {
+/**
+ * The UI should use the ProductListProvider interface to load {@link Product} objects.
+ * The default implementation uses a SQLite database to allow offline product browsing.
+ */
+public interface ProductListProvider extends BaseProvider {
 
-    void getShop(BuyClient buyClient, Callback<Shop> callback);
+    void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback);
 
-    void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
+    void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback);
 
-    void saveCart(Cart cart, BuyClient buyClient, String userId);
+    void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback);
 
 }

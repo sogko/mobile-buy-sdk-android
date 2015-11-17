@@ -22,21 +22,41 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.dataprovider.tasks;
+
+import android.os.Handler;
+import android.util.Log;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.model.Collection;
+import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
+import com.shopify.buy.model.Cart;
 
-import java.util.List;
+import java.util.concurrent.ExecutorService;
 
-import retrofit.Callback;
+public class DeleteCheckoutTask extends BaseTask<Cart> {
 
-/**
- * The UI should use the CollectionsProvider interface to load {@link Collection} objects.
- * The default implementation uses a SQLite database to allow offline product browsing.
- */
-public interface CollectionsProvider {
+    private static final String LOG_TAG = DeleteCheckoutTask.class.getSimpleName();
 
-    void getCollections(BuyClient buyClient, Callback<List<Collection>> callback);
+    private final String userId;
+    private final boolean alsoDeleteCart;
 
+    public DeleteCheckoutTask(String userId, boolean alsoDeleteCart, BuyDatabase buyDatabase, BuyClient buyClient, Handler handler, ExecutorService executorService) {
+        super(buyDatabase, buyClient, null, handler, executorService);
+        this.userId = userId;
+        this.alsoDeleteCart = alsoDeleteCart;
+    }
+
+    @Override
+    public void run() {
+        try {
+            buyDatabase.deleteCheckout(userId);
+
+            if (alsoDeleteCart) {
+                buyDatabase.deleteCart(userId);
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Could not delete Checkout or Cart from database.", e);
+            onFailure(e);
+        }
+    }
 }
