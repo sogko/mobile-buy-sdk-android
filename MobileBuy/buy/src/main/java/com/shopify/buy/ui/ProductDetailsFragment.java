@@ -32,12 +32,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.ShopManager;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
@@ -144,26 +142,43 @@ public class ProductDetailsFragment extends CheckoutFragment {
             fetchProduct(productId);
         }
 
-        fetchShopIfNecessary(new Callback<Shop>() {
-            @Override
-            public void success(Shop shop, Response response) {
-                showProductIfReady();
-            }
+        if (shop == null) {
+            provider.getShop(buyClient, new Callback<Shop>() {
+                @Override
+                public void success(Shop shop, Response response) {
+                    ProductDetailsFragment.this.shop = shop;
+                    showProductIfReady();
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
-                checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_SHOP_FAILED, BuyClient.getErrorBody(error)));
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_SHOP_FAILED, BuyClient.getErrorBody(error)));
+                }
+            });
+        }
 
-        showProductIfReady();
+        if (cart == null) {
+            provider.getCart(buyClient, userId, new Callback<Cart>() {
+                        @Override
+                        public void success(Cart cart, Response response) {
+                            ProductDetailsFragment.this.cart = cart;
+                            showProductIfReady();
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                        }
+                    }
+            );
+        }
     }
 
     @Override
-    protected Cart getCartForCheckout() {
-        Cart cart = new Cart();
+    protected void createWebCheckout() {
         cart.addVariant(variant);
-        return cart;
+        view.setVariant(variant);
+        super.createWebCheckout();
     }
 
     @Override
@@ -193,8 +208,8 @@ public class ProductDetailsFragment extends CheckoutFragment {
             checkoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ShopManager.getInstance().getCart().addVariant(variant);
-                    ShopManager.getInstance().saveCart(getActivity());
+                    cart.addVariant(variant);
+                    provider.saveCart(cart, buyClient, userId);
 
                     // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/594
                     Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
@@ -233,7 +248,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
         }
 
         // Check for the prerequisites before populating the views
-        if (!viewCreated || product == null || shop == null) {
+        if (!viewCreated || product == null || shop == null || cart == null) {
             // we're still loading, make sure we show the progress dialog
             if (!progressDialog.isShowing()) {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_product_details), new Runnable() {

@@ -36,18 +36,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.ShopManager;
 import com.shopify.buy.model.Shop;
 
-import java.util.concurrent.CountDownLatch;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-
 public class BaseFragment extends Fragment {
+
     private final static String LOG_TAG = BaseFragment.class.getSimpleName();
 
     protected boolean viewCreated;
@@ -55,8 +50,7 @@ public class BaseFragment extends Fragment {
     protected ProgressDialog progressDialog;
     protected Shop shop;
     protected ShopifyTheme theme;
-
-    private CountDownLatch attachedLatch = new CountDownLatch(1);
+    protected String userId;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -86,16 +80,14 @@ public class BaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        shop = ShopManager.getInstance().getShop();
-
         setHasOptionsMenu(true);
 
-        initializeTheme();
-        initializeBuyClient();
+        parseArguments();
+
         initializeProgressDialog();
     }
 
-    protected void initializeBuyClient() {
+    protected void parseArguments() {
         Bundle bundle = getArguments();
 
         // Retrieve all the items required to create a BuyClient
@@ -107,6 +99,13 @@ public class BaseFragment extends Fragment {
         // Retrieve the optional settings
         String webReturnToUrl = bundle.getString(BaseConfig.EXTRA_WEB_RETURN_TO_URL);
         String webReturnToLabel = bundle.getString(BaseConfig.EXTRA_WEB_RETURN_TO_LABEL);
+        String shopJson = bundle.getString(BaseConfig.EXTRA_SHOP);
+
+        // We require a user id for reading and writing carts to the DB
+        userId = bundle.getString(BaseConfig.EXTRA_USER_ID);
+        if (TextUtils.isEmpty(userId)) {
+            userId = getString(R.string.default_user_id);
+        }
 
         // Create the BuyClient
         buyClient = BuyClientFactory.getBuyClient(shopDomain, apiKey, channelId, applicationName);
@@ -119,9 +118,11 @@ public class BaseFragment extends Fragment {
         if (!TextUtils.isEmpty(webReturnToLabel)) {
             buyClient.setWebReturnToLabel(webReturnToLabel);
         }
-    }
 
-    private void initializeTheme() {
+        if (!TextUtils.isEmpty(shopJson)) {
+            shop = Shop.fromJson(shopJson);
+        }
+
         // First try to get the theme from the bundle, then fallback to a default theme
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -133,26 +134,6 @@ public class BaseFragment extends Fragment {
         if (theme == null) {
             theme = new ShopifyTheme(getResources());
         }
-    }
-
-    protected void fetchShopIfNecessary(final Callback<Shop> callback) {
-        if (shop != null) {
-            return;
-        }
-
-        buyClient.getShop(new Callback<Shop>() {
-            @Override
-            public void success(Shop shop, Response response) {
-                BaseFragment.this.shop = shop;
-                ShopManager.getInstance().saveShop(shop, getContext());
-                callback.success(shop, response);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                callback.failure(error);
-            }
-        });
     }
 
     private void initializeProgressDialog() {

@@ -22,46 +22,39 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider.tasks;
+package com.shopify.buy.dataprovider.providers;
 
+import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
-import com.shopify.buy.model.Product;
+import com.shopify.buy.dataprovider.tasks.GetShopTask;
+import com.shopify.buy.model.Shop;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Executors;
 
 import retrofit.Callback;
 
-public class SearchProductsTask extends BaseTask<List<Product>> {
+public abstract class BaseProviderImpl {
 
-    private static final String LOG_TAG = SearchProductsTask.class.getSimpleName();
+    protected static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-    private final AtomicBoolean isCancelled = new AtomicBoolean(false);
-    private final String query;
+    protected static BuyDatabase buyDatabase;
 
-    public SearchProductsTask(String query, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
-        super(buyDatabase, buyClient, callback, handler, executorService);
-        this.query = query;
-    }
+    protected final Handler handler;
 
-    @Override
-    public void run() {
-        // There's no network search yet, we only support local db search
-        try {
-            List<Product> products = buyDatabase.searchProducts(query, isCancelled);
-            onSuccess(products, null);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Could not get Products from database.", e);
+    public BaseProviderImpl(Context context) {
+        if (buyDatabase == null) {
+            buyDatabase = new BuyDatabase(context);
         }
+        this.handler = new Handler(context.getMainLooper());
     }
 
-    public void cancel() {
-        isCancelled.set(true);
+    public void getShop(BuyClient buyClient, Callback<Shop> callback) {
+        GetShopTask task = new GetShopTask(buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
     }
 
 }

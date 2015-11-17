@@ -26,7 +26,9 @@ package com.shopify.sample.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.collections.CollectionListBuilder;
 import com.shopify.buy.ui.collections.CollectionListFragment;
 import com.shopify.buy.ui.products.ProductListBuilder;

@@ -27,6 +27,7 @@ package com.shopify.buy.ui.cart;
 import android.content.Context;
 
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.model.Cart;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
 import com.shopify.buy.ui.common.CheckoutListener;
@@ -47,6 +48,11 @@ public class CartBuilder extends BaseBuilder<CartBuilder> {
             config = new BaseConfig();
         }
         return config;
+    }
+
+    public CartBuilder setCart(Cart cart) {
+        config.setCart(cart);
+        return this;
     }
 
     /**

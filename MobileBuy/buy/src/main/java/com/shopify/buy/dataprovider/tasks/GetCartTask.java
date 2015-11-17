@@ -22,20 +22,38 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider;
+package com.shopify.buy.dataprovider.tasks;
 
-import com.shopify.buy.model.Collection;
+import android.os.Handler;
+import android.util.Log;
 
-import java.util.List;
+import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
+import com.shopify.buy.model.Cart;
+
+import java.util.concurrent.ExecutorService;
 
 import retrofit.Callback;
 
-/**
- * The UI should use the CollectionsProvider interface to load {@link Collection} objects.
- * The default implementation uses a SQLite database to allow offline product browsing.
- */
-public interface CollectionsProvider {
+public class GetCartTask extends BaseTask<Cart> {
 
-    void getCollections(BuyClient buyClient, Callback<List<Collection>> callback);
+    private static final String LOG_TAG = GetCartTask.class.getSimpleName();
 
+    private final String userId;
+
+    public GetCartTask(String userId, BuyDatabase buyDatabase, BuyClient buyClient, Callback<Cart> callback, Handler handler, ExecutorService executorService) {
+        super(buyDatabase, buyClient, callback, handler, executorService);
+        this.userId = userId;
+    }
+
+    @Override
+    public void run() {
+        // Carts are only stored locally, not in the cloud
+        try {
+            onSuccess(buyDatabase.getCart(userId), null);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Could not get Cart from database.", e);
+            onFailure(e);
+        }
+    }
 }

@@ -32,11 +32,13 @@ import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 
 import com.shopify.buy.R;
 import com.shopify.buy.customTabs.CustomTabActivityHelper;
+import com.shopify.buy.dataprovider.providers.DefaultCartProvider;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 
@@ -51,8 +53,32 @@ public abstract class CheckoutFragment extends BaseFragment {
 
     protected CheckoutListener checkoutListener;
     protected Button checkoutButton;
+    protected Cart cart;
+
+    protected CartProvider provider = null;
 
     private final AtomicBoolean cancelledCheckout = new AtomicBoolean(false);
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (provider == null) {
+            provider = new DefaultCartProvider(getActivity());
+        }
+    }
+
+    @Override
+    protected void parseArguments() {
+        super.parseArguments();
+
+        Bundle bundle = getArguments();
+
+        String cartJson = bundle.getString(BaseConfig.EXTRA_CART);
+        if (!TextUtils.isEmpty(cartJson)) {
+            cart = Cart.fromJson(cartJson);
+        }
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -67,6 +93,10 @@ public abstract class CheckoutFragment extends BaseFragment {
         cancelledCheckout.set(false);
     }
 
+    public void setProvider(CartProvider provider) {
+        this.provider = provider;
+    }
+
     public void setCheckoutListener(CheckoutListener checkoutListener) {
         this.checkoutListener = checkoutListener;
     }
@@ -76,7 +106,6 @@ public abstract class CheckoutFragment extends BaseFragment {
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/495
                 checkoutButton.setEnabled(false);
                 cancelledCheckout.set(false);
                 createWebCheckout();
@@ -93,14 +122,12 @@ public abstract class CheckoutFragment extends BaseFragment {
 
     }
 
-    protected abstract Cart getCartForCheckout();
-
     /**
      * Creates a checkout for use with the web checkout flow
      */
-    private void createWebCheckout() {
+    protected void createWebCheckout() {
         // Create the checkout
-        buyClient.createCheckout(new Checkout(getCartForCheckout()), new Callback<Checkout>() {
+        buyClient.createCheckout(new Checkout(cart), new Callback<Checkout>() {
             @Override
             public void success(Checkout checkout, Response response) {
                 if (response.getStatus() == HttpURLConnection.HTTP_CREATED) {

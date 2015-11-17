@@ -22,39 +22,20 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.search;
+package com.shopify.buy.ui.common;
 
-import android.os.Bundle;
-import android.text.TextUtils;
+import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.Shop;
 
-import com.shopify.buy.ui.common.BaseConfig;
+import retrofit.Callback;
 
-/***
- * Used to serialize data for the {@link SearchFragment}.
- */
-class SearchConfig extends BaseConfig {
+public interface CartProvider {
 
-    public static final String EXTRA_SEARCH_QUERY = "com.shopify.buy.ui.SEARCH_QUERY";
-    public static final String EXTRA_SEARCH_RESULTS = "com.shopify.buy.ui.SEARCH_RESULTS";
+    void getShop(BuyClient buyClient, Callback<Shop> callback);
 
-    private String query;
+    void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
 
-    public String getSearchQuery() {
-        return query;
-    }
-
-    public void setSearchQuery(String query) {
-        this.query = query;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (!TextUtils.isEmpty(query)) {
-            bundle.putString(EXTRA_SEARCH_QUERY, query);
-        }
-
-        return bundle;
-    }
+    void saveCart(Cart cart, BuyClient buyClient, String userId);
 
 }

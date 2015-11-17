@@ -22,46 +22,20 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider.tasks;
-
-import android.os.Handler;
-import android.util.Log;
+package com.shopify.buy.ui.search;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.model.Product;
+import com.shopify.buy.model.Shop;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit.Callback;
 
-public class SearchProductsTask extends BaseTask<List<Product>> {
+public interface SearchProvider {
 
-    private static final String LOG_TAG = SearchProductsTask.class.getSimpleName();
+    void getShop(BuyClient buyClient, Callback<Shop> callback);
 
-    private final AtomicBoolean isCancelled = new AtomicBoolean(false);
-    private final String query;
-
-    public SearchProductsTask(String query, BuyDatabase buyDatabase, BuyClient buyClient, Callback<List<Product>> callback, Handler handler, ExecutorService executorService) {
-        super(buyDatabase, buyClient, callback, handler, executorService);
-        this.query = query;
-    }
-
-    @Override
-    public void run() {
-        // There's no network search yet, we only support local db search
-        try {
-            List<Product> products = buyDatabase.searchProducts(query, isCancelled);
-            onSuccess(products, null);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Could not get Products from database.", e);
-        }
-    }
-
-    public void cancel() {
-        isCancelled.set(true);
-    }
+    void searchProducts(String query, BuyClient buyClient, Callback<List<Product>> callback);
 
 }

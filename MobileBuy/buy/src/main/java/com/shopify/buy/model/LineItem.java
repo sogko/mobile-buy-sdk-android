@@ -186,7 +186,7 @@ public class LineItem {
     /**
      * @param quantity The quantity of the {@link ProductVariant} being purchased in this line item.
      */
-    public void setQuantity(long quantity) {
+    void setQuantity(long quantity) {
         this.quantity = quantity;
     }
 

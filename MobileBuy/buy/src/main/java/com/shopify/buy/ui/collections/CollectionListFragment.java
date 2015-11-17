@@ -32,7 +32,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +39,7 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.CollectionsProvider;
-import com.shopify.buy.dataprovider.DefaultCollectionsProvider;
+import com.shopify.buy.dataprovider.providers.DefaultCollectionsProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
@@ -53,8 +51,6 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class CollectionListFragment extends BaseFragment implements RecyclerViewHolder.ClickListener<Collection> {
-
-    private static final String TAG = CollectionListFragment.class.getSimpleName();
 
     private static final String SAVED_LAYOUT_STATE = "saved_layout_state";
     private Parcelable layoutState;
@@ -200,7 +196,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
     @Override
     public void onItemClick(int position, View viewHolder, Collection collection) {
-        Log.i(TAG, "Collection Item clicked");
         if (collectionListItemSelectedListener != null) {
             collectionListItemSelectedListener.onCollectionListItemClick(collection);
         }
@@ -208,7 +203,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Collection collection) {
-        Log.i(TAG, "Collection Item long clicked");
         if (collectionListItemSelectedListener != null) {
             collectionListItemSelectedListener.onCollectionListItemLongClick(collection);
         }

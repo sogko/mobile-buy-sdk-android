@@ -16,8 +16,10 @@
     <string name="from">from</string>
 
     <!-- Cart -->
+    <string name="default_user_id">mobile_buy_default_user_id</string>
     <string name="continue_to_checkout">CONTINUE TO CHECKOUT</string>
     <string name="subtotal">SUBTOTAL</string>
     <string name="shipping_and_taxes">Shipping and taxes are calculated at checkout.</string>
+    <string name="delete">DELETE</string>
 
 </resources>

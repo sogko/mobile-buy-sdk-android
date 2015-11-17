@@ -22,31 +22,40 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider;
+package com.shopify.buy.dataprovider.providers;
 
 import android.content.Context;
 
-import com.shopify.buy.dataprovider.tasks.SearchProductsTask;
+import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.tasks.GetProductsTask;
 import com.shopify.buy.model.Product;
+import com.shopify.buy.ui.products.ProductsProvider;
 
 import java.util.List;
 
 import retrofit.Callback;
 
-public class DefaultSearchProvider extends BaseProviderImpl implements SearchProvider {
+public class DefaultProductsProvider extends BaseProviderImpl implements ProductsProvider {
 
-    public DefaultSearchProvider(Context context) {
+    public DefaultProductsProvider(Context context) {
         super(context);
     }
 
-    private SearchProductsTask task;
+    @Override
+    public void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
 
     @Override
-    public void searchProducts(String query, BuyClient buyClient, Callback<List<Product>> callback) {
-        if (task != null) {
-            task.cancel();
-        }
-        task = new SearchProductsTask(query, buyDatabase, buyClient, callback, handler, executorService);
+    public void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(collectionId, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
+
+    @Override
+    public void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(productIds, buyDatabase, buyClient, callback, handler, executorService);
         executorService.execute(task);
     }
 

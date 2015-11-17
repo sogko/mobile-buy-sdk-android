@@ -22,39 +22,21 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.search;
+package com.shopify.buy.ui.collections;
 
-import android.os.Bundle;
-import android.text.TextUtils;
+import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.model.Collection;
 
-import com.shopify.buy.ui.common.BaseConfig;
+import java.util.List;
 
-/***
- * Used to serialize data for the {@link SearchFragment}.
+import retrofit.Callback;
+
+/**
+ * The UI should use the CollectionsProvider interface to load {@link Collection} objects.
+ * The default implementation uses a SQLite database to allow offline product browsing.
  */
-class SearchConfig extends BaseConfig {
+public interface CollectionsProvider {
 
-    public static final String EXTRA_SEARCH_QUERY = "com.shopify.buy.ui.SEARCH_QUERY";
-    public static final String EXTRA_SEARCH_RESULTS = "com.shopify.buy.ui.SEARCH_RESULTS";
-
-    private String query;
-
-    public String getSearchQuery() {
-        return query;
-    }
-
-    public void setSearchQuery(String query) {
-        this.query = query;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (!TextUtils.isEmpty(query)) {
-            bundle.putString(EXTRA_SEARCH_QUERY, query);
-        }
-
-        return bundle;
-    }
+    void getCollections(BuyClient buyClient, Callback<List<Collection>> callback);
 
 }
