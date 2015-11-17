@@ -66,7 +66,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     RecyclerView recyclerView;
 
-    Listener listener;
+    OnProductListItemSelectedListener listener;
 
     private ProductsProvider provider = null;
 
@@ -170,7 +170,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         }
     }
 
-    public void setListener(Listener listener) {
+    public void setListener(OnProductListItemSelectedListener listener) {
         this.listener = listener;
     }
 
@@ -232,20 +232,20 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
         if (listener != null) {
-            listener.onItemClick(product);
+            listener.onProductListItemClick(product);
         }
     }
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
         if (listener != null) {
-            listener.onItemLongClick(product);
+            listener.onProductListItemLongClick(product);
         }
     }
 
-    public interface Listener {
-        void onItemClick(Product product);
+    public interface OnProductListItemSelectedListener {
+        void onProductListItemClick(Product product);
 
-        void onItemLongClick(Product product);
+        void onProductListItemLongClick(Product product);
     }
 }

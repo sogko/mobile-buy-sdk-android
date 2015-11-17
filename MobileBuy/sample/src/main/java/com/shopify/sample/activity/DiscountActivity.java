@@ -53,8 +53,6 @@ public class DiscountActivity extends SampleActivity {
         void onTextSubmitted(String text);
     }
 
-    private TextView priceText;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,11 +107,6 @@ public class DiscountActivity extends SampleActivity {
 
     /**
      * Displays a simple dialog with an EditText field and a single button, allowing the user to enter either a gift card code or a discount code.
-     *
-     * @param hint
-     * @param title
-     * @param button
-     * @param listener
      */
     private void showTextEntryDialog(final int hint, final int title, final int button, final TextEntryDialogListener listener) {
         final View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_code_entry, null);
@@ -136,7 +129,7 @@ public class DiscountActivity extends SampleActivity {
     /**
      * Add the discount code to the checkout and update the order summary when the request completes.
      *
-     * @param discountCode
+     * @param discountCode The discount code to apply.
      */
     private void setDiscountCode(final String discountCode) {
         showLoadingDialog(R.string.syncing_data);
@@ -159,7 +152,7 @@ public class DiscountActivity extends SampleActivity {
     /**
      * Add the gift card code to the checkout and update the order summary when the request completes.
      *
-     * @param giftCardCode
+     * @param giftCardCode The Gift Card Code to apply.
      */
     private void addGiftCardCode(final String giftCardCode) {
         showLoadingDialog(R.string.syncing_data);
