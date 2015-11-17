@@ -43,7 +43,7 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Shop;
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
     private final static String LOG_TAG = BaseFragment.class.getSimpleName();
 
@@ -88,21 +88,6 @@ public class BaseFragment extends Fragment {
         parseArguments();
 
         initializeProgressDialog();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        
-        Intent intent = getActivity().getIntent();
-        Uri uri = intent.getData();
-
-        String returnScheme = buyClient.getWebReturnToUrl();
-
-        // If we launched from the return URL on the checkout completion page, we know that the checkout was successful so let's delete the cart and checkout
-        if (uri != null && !TextUtils.isEmpty(returnScheme) && (uri.getScheme().contains(returnScheme) || returnScheme.contains(uri.getScheme()))) {
-            provider.deleteCheckout(buyClient, userId, true);
-        }
     }
 
     protected void parseArguments() {
@@ -154,6 +139,25 @@ public class BaseFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // fetch data if we need to
+        fetchDataIfNecessary();
+
+        // show the view now if we already have the data
+        showViewIfReady();
+
+        // If we launched from the return URL on the checkout completion page, we know that the checkout was successful so let's delete the cart and checkout
+        Intent intent = getActivity().getIntent();
+        Uri uri = intent.getData();
+        String returnScheme = buyClient.getWebReturnToUrl();
+        if (uri != null && !TextUtils.isEmpty(returnScheme) && (uri.getScheme().contains(returnScheme) || returnScheme.contains(uri.getScheme()))) {
+            provider.deleteCheckout(buyClient, userId, true);
+        }
+    }
+
     private void initializeProgressDialog() {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setIndeterminate(true);
@@ -197,4 +201,16 @@ public class BaseFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         return activity;
     }
+
+    /**
+     * Fetches data required for the view to be loaded.  This is called on the main thread, so any long
+     * running tasks should be executed asynchronously.
+     */
+    protected abstract void fetchDataIfNecessary();
+
+    /**
+     * Checks the preconditions for the view to be shown, and populates the views if the preconditions are met.
+     */
+    protected abstract void showViewIfReady();
+
 }

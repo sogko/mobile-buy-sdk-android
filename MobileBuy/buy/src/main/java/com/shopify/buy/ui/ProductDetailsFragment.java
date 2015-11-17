@@ -134,8 +134,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void fetchDataIfNecessary() {
 
         // fetch the Shop and Product data if we don't have them already
         if (product == null && !TextUtils.isEmpty(productId)) {
@@ -147,7 +146,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
                 @Override
                 public void success(Shop shop, Response response) {
                     ProductDetailsFragment.this.shop = shop;
-                    showProductIfReady();
+                    showViewIfReady();
                 }
 
                 @Override
@@ -162,7 +161,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
                         @Override
                         public void success(Cart cart, Response response) {
                             ProductDetailsFragment.this.cart = cart;
-                            showProductIfReady();
+                            showViewIfReady();
                         }
 
                         @Override
@@ -227,7 +226,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
                     ProductVariant variant = product.getVariants().get(0);
                     ProductDetailsFragment.this.product = product;
                     ProductDetailsFragment.this.variant = variant;
-                    showProductIfReady();
+                    showViewIfReady();
                 } else {
                     checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, "Product id not found: " + productId));
                 }
@@ -240,7 +239,8 @@ public class ProductDetailsFragment extends CheckoutFragment {
         });
     }
 
-    private void showProductIfReady() {
+    @Override
+    protected void showViewIfReady() {
         final Activity activity = safelyGetActivity();
 
         if (activity == null) {

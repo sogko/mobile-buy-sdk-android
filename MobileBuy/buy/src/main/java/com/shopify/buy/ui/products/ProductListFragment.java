@@ -66,7 +66,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     RecyclerView recyclerView;
 
-    Listener listener;
+    OnProductListItemSelectedListener listener;
 
     public void setProvider(ProductListProvider provider) {
         this.provider = provider;
@@ -126,31 +126,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         viewCreated = true;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // Fetch the Collections if we don't have them
-        if (products == null) {
-            fetchProducts();
-        }
-
-        if (shop == null) {
-            provider.getShop(buyClient, new Callback<Shop>() {
-                @Override
-                public void success(Shop shop, Response response) {
-                    ProductListFragment.this.shop = shop;
-                    showProductsIfReady();
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
-                }
-            });
-        }
-    }
-
     private void parseProducts(Bundle bundle) {
         // Retrieve the list of products if they were provided
         if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCTS)) {
@@ -168,8 +143,35 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         }
     }
 
-    public void setListener(Listener listener) {
+    public void setListener(OnProductListItemSelectedListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    protected void fetchDataIfNecessary() {
+
+        if (products == null) {
+            fetchProducts();
+        }
+
+        if (shop == null) {
+            fetchShop();
+        }
+    }
+
+    private void fetchShop() {
+        provider.getShop(buyClient, new Callback<Shop>() {
+            @Override
+            public void success(Shop shop, Response response) {
+                ProductListFragment.this.shop = shop;
+                showViewIfReady();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+            }
+        });
     }
 
     private void fetchProducts() {
@@ -177,7 +179,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
             @Override
             public void success(List<Product> products, Response response) {
                 ProductListFragment.this.products = products;
-                showProductsIfReady();
+                showViewIfReady();
             }
 
             @Override
@@ -195,7 +197,8 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         }
     }
 
-    private void showProductsIfReady() {
+    @Override
+    protected void showViewIfReady() {
         final AppCompatActivity activity = safelyGetActivity();
 
         if (activity == null) {
@@ -230,20 +233,20 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
         if (listener != null) {
-            listener.onItemClick(product);
+            listener.onProductListItemClick(product);
         }
     }
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
         if (listener != null) {
-            listener.onItemLongClick(product);
+            listener.onProductListItemLongClick(product);
         }
     }
 
-    public interface Listener {
-        void onItemClick(Product product);
+    public interface OnProductListItemSelectedListener {
+        void onProductListItemClick(Product product);
 
-        void onItemLongClick(Product product);
+        void onProductListItemLongClick(Product product);
     }
 }

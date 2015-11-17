@@ -30,11 +30,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shopify.sample.R;
-import com.shopify.sample.activity.base.SampleListActivity;
+import com.shopify.sample.activity.base.SampleActivity;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.ShippingRate;
 
@@ -49,11 +50,17 @@ import retrofit.client.Response;
  * If the selected product requires shipping, this activity allows the user to select a list of shipping rates.
  * For the sample app, the shipping address has been hardcoded and we will only see the shipping rates applicable to that address.
  */
-public class ShippingRateListActivity extends SampleListActivity {
+public class ShippingRateListActivity extends SampleActivity {
 
+    protected ListView listView;
+
+    protected boolean isFetching;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.shipping_list_activity);
+        listView = (ListView) findViewById(R.id.list_view);
 
         setTitle(R.string.choose_shipping_rate);
     }

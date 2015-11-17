@@ -93,10 +93,10 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
      * Returns a new {@link ProductListFragment} based on the params that have already been passed to the builder.
      *
      * @param provider An optional implementation of {@link ProductListProvider}. If you pass null, {@link DefaultProductListProvider} will be used.
-     * @param listener An implementation of {@link com.shopify.buy.ui.products.ProductListFragment.Listener} which will be notified of user actions.
+     * @param listener An implementation of {@link com.shopify.buy.ui.products.ProductListFragment.OnProductListItemSelectedListener} which will be notified of user actions.
      * @return A new {@link ProductListFragment}.
      */
-    public ProductListFragment buildFragment(ProductListProvider provider, ProductListFragment.Listener listener) {
+    public ProductListFragment buildFragment(ProductListProvider provider, ProductListFragment.OnProductListItemSelectedListener listener) {
         ProductListFragment fragment = new ProductListFragment();
         fragment.setProvider(provider);
         fragment.setListener(listener);
