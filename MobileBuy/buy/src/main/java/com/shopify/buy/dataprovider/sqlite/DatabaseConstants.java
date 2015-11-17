@@ -48,7 +48,7 @@ interface DatabaseConstants {
     String TABLE_LINE_ITEM_PROPERTIES = "line_item_properties";
 
     // Checkouts table
-    String TABLE_CHECKOUTS = "checkouts";
+    String TABLE_CHECKOUT_TOKENS = "checkout_tokens";
 
     interface ShopTable {
         String NAME = "name";
@@ -162,9 +162,9 @@ interface DatabaseConstants {
         String VALUE = "value";
     }
 
-    interface CheckoutsTable {
+    interface CheckoutTokensTable {
         String USER_ID = "user_id";
-        String CHECKOUT_JSON = "checkout_json";
+        String TOKEN = "token";
     }
 
 }

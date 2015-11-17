@@ -27,28 +27,35 @@ package com.shopify.buy.dataprovider.providers;
 import android.content.Context;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.tasks.GetCartTask;
-import com.shopify.buy.dataprovider.tasks.SaveCartTask;
-import com.shopify.buy.model.Cart;
-import com.shopify.buy.ui.common.CartProvider;
+import com.shopify.buy.dataprovider.tasks.GetProductsTask;
+import com.shopify.buy.model.Product;
+import com.shopify.buy.ui.products.ProductListProvider;
+
+import java.util.List;
 
 import retrofit.Callback;
 
-public class DefaultCartProvider extends BaseProviderImpl implements CartProvider {
+public class DefaultProductListProvider extends DefaultBaseProvider implements ProductListProvider {
 
-    public DefaultCartProvider(Context context) {
+    public DefaultProductListProvider(Context context) {
         super(context);
     }
 
     @Override
-    public void getCart(final BuyClient buyClient, final String userId, final Callback<Cart> callback) {
-        GetCartTask task = new GetCartTask(userId, buyDatabase, buyClient, callback, handler, executorService);
+    public void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(buyDatabase, buyClient, callback, handler, executorService);
         executorService.execute(task);
     }
 
     @Override
-    public void saveCart(Cart cart, BuyClient buyClient, String userId) {
-        SaveCartTask task = new SaveCartTask(cart, userId, buyDatabase, buyClient, handler, executorService);
+    public void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(collectionId, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
+
+    @Override
+    public void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(productIds, buyDatabase, buyClient, callback, handler, executorService);
         executorService.execute(task);
     }
 

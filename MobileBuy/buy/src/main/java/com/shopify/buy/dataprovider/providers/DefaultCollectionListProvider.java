@@ -22,28 +22,29 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.products;
+package com.shopify.buy.dataprovider.providers;
+
+import android.content.Context;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.model.Product;
-import com.shopify.buy.model.Shop;
+import com.shopify.buy.dataprovider.tasks.GetCollectionsTask;
+import com.shopify.buy.model.Collection;
+import com.shopify.buy.ui.collections.CollectionListProvider;
 
 import java.util.List;
 
 import retrofit.Callback;
 
-/**
- * The UI should use the ProductsProvider interface to load {@link Product} objects.
- * The default implementation uses a SQLite database to allow offline product browsing.
- */
-public interface ProductsProvider {
+public class DefaultCollectionListProvider extends DefaultBaseProvider implements CollectionListProvider {
 
-    void getShop(BuyClient buyClient, Callback<Shop> callback);
+    public DefaultCollectionListProvider(Context context) {
+        super(context);
+    }
 
-    void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback);
-
-    void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback);
-
-    void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback);
+    @Override
+    public void getCollections(final BuyClient buyClient, final Callback<List<Collection>> callback) {
+        GetCollectionsTask task = new GetCollectionsTask(buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
 
 }

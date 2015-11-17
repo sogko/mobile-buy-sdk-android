@@ -27,6 +27,7 @@ package com.shopify.buy.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
@@ -34,6 +35,7 @@ import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.ui.common.BaseProvider;
 import com.shopify.buy.ui.common.CheckoutListener;
 
 /**
@@ -112,9 +114,22 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
     /**
      * Returns a new {@link ProductDetailsFragment} based on the params that have already been passed to the builder.
      *
+     * @param provider An optional implementation of {@link BaseProvider}. If you pass null, {@link com.shopify.buy.dataprovider.providers.DefaultBaseProvider} will be used.
      * @param listener An implementation of {@link CheckoutListener} which will be sent checkout status updates.
      * @return A new {@link ProductDetailsFragment}.
      */
+    public ProductDetailsFragment buildFragment(@Nullable BaseProvider provider, CheckoutListener listener) {
+        ProductDetailsFragment fragment = new ProductDetailsFragment();
+        fragment.setProvider(provider);
+        fragment.setCheckoutListener(listener);
+        fragment.setArguments(buildBundle());
+        return fragment;
+    }
+
+    /**
+     * Deprecated. Use {@link #buildFragment(BaseProvider, CheckoutListener)}.
+     */
+    @Deprecated
     public ProductDetailsFragment buildFragment(CheckoutListener listener) {
         ProductDetailsFragment fragment = new ProductDetailsFragment();
         fragment.setCheckoutListener(listener);

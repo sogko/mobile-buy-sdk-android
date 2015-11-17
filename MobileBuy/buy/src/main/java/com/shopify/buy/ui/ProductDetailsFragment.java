@@ -208,7 +208,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
                 @Override
                 public void onClick(View v) {
                     cart.addVariant(variant);
-                    provider.saveCart(cart, buyClient, userId);
+                    provider.saveCart(cart, null, buyClient, userId);
 
                     // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/594
                     Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();

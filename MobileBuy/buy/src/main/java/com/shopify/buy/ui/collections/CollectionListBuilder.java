@@ -29,7 +29,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.providers.DefaultCollectionsProvider;
+import com.shopify.buy.dataprovider.providers.DefaultCollectionListProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
@@ -82,11 +82,11 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
     /**
      * Returns a new {@link CollectionListFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider                           An optional implementation of {@link CollectionsProvider}. If you pass null, {@link DefaultCollectionsProvider} will be used.
+     * @param provider                           An optional implementation of {@link CollectionListProvider}. If you pass null, {@link DefaultCollectionListProvider} will be used.
      * @param collectionListItemSelectedListener An implementation of {@link com.shopify.buy.ui.collections.CollectionListFragment.OnCollectionListItemSelectedListener} which will be notified of user actions.
      * @return A new {@link CollectionListFragment}.
      */
-    public CollectionListFragment buildFragment(@Nullable CollectionsProvider provider, CollectionListFragment.OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
+    public CollectionListFragment buildFragment(@Nullable CollectionListProvider provider, CollectionListFragment.OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
         CollectionListFragment fragment = new CollectionListFragment();
         fragment.setProvider(provider);
         fragment.setListener(collectionListItemSelectedListener);

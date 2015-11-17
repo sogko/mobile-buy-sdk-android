@@ -22,20 +22,41 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.common;
+package com.shopify.buy.dataprovider.tasks;
+
+import android.os.Handler;
+import android.util.Log;
 
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.model.Cart;
-import com.shopify.buy.model.Shop;
 
-import retrofit.Callback;
+import java.util.concurrent.ExecutorService;
 
-public interface CartProvider {
+public class DeleteCheckoutTask extends BaseTask<Cart> {
 
-    void getShop(BuyClient buyClient, Callback<Shop> callback);
+    private static final String LOG_TAG = DeleteCheckoutTask.class.getSimpleName();
 
-    void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
+    private final String userId;
+    private final boolean alsoDeleteCart;
 
-    void saveCart(Cart cart, BuyClient buyClient, String userId);
+    public DeleteCheckoutTask(String userId, boolean alsoDeleteCart, BuyDatabase buyDatabase, BuyClient buyClient, Handler handler, ExecutorService executorService) {
+        super(buyDatabase, buyClient, null, handler, executorService);
+        this.userId = userId;
+        this.alsoDeleteCart = alsoDeleteCart;
+    }
 
+    @Override
+    public void run() {
+        try {
+            buyDatabase.deleteCheckout(userId);
+
+            if (alsoDeleteCart) {
+                buyDatabase.deleteCart(userId);
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Could not delete Checkout or Cart from database.", e);
+            onFailure(e);
+        }
+    }
 }

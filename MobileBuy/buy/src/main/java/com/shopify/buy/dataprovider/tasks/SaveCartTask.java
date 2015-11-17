@@ -25,6 +25,8 @@
 package com.shopify.buy.dataprovider.tasks;
 
 import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.shopify.buy.dataprovider.BuyClient;
@@ -38,11 +40,13 @@ public class SaveCartTask extends BaseTask<Cart> {
     private static final String LOG_TAG = GetShopTask.class.getSimpleName();
 
     private final Cart cart;
+    private final String checkoutToken;
     private final String userId;
 
-    public SaveCartTask(Cart cart, String userId, BuyDatabase buyDatabase, BuyClient buyClient, Handler handler, ExecutorService executorService) {
+    public SaveCartTask(Cart cart, @Nullable String checkoutToken, String userId, BuyDatabase buyDatabase, BuyClient buyClient, Handler handler, ExecutorService executorService) {
         super(buyDatabase, buyClient, null, handler, executorService);
         this.cart = cart;
+        this.checkoutToken = checkoutToken;
         this.userId = userId;
     }
 
@@ -51,6 +55,10 @@ public class SaveCartTask extends BaseTask<Cart> {
         // Carts are only stored locally, not in the cloud
         try {
             buyDatabase.saveCart(cart, userId);
+
+            if (!TextUtils.isEmpty(checkoutToken)) {
+                buyDatabase.saveCheckoutToken(checkoutToken, userId);
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Could not save Cart to database.", e);
         }

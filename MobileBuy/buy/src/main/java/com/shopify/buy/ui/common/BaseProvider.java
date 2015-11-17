@@ -22,21 +22,24 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.collections;
+package com.shopify.buy.ui.common;
+
+import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.model.Collection;
-
-import java.util.List;
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.Shop;
 
 import retrofit.Callback;
 
-/**
- * The UI should use the CollectionsProvider interface to load {@link Collection} objects.
- * The default implementation uses a SQLite database to allow offline product browsing.
- */
-public interface CollectionsProvider {
+public interface BaseProvider {
 
-    void getCollections(BuyClient buyClient, Callback<List<Collection>> callback);
+    void getShop(BuyClient buyClient, Callback<Shop> callback);
+
+    void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
+
+    void saveCart(Cart cart, @Nullable String checkoutToken, BuyClient buyClient, String userId);
+
+    void deleteCheckout(BuyClient buyClient, String userId, boolean alsoDeleteCart);
 
 }

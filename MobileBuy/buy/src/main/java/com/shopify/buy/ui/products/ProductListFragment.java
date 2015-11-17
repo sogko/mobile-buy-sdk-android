@@ -39,7 +39,7 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.providers.DefaultProductsProvider;
+import com.shopify.buy.dataprovider.providers.DefaultProductListProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
@@ -68,9 +68,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     OnProductListItemSelectedListener listener;
 
-    private ProductsProvider provider = null;
-
-    public void setProvider(ProductsProvider provider) {
+    public void setProvider(ProductListProvider provider) {
         this.provider = provider;
     }
 
@@ -79,7 +77,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         super.onCreate(savedInstanceState);
 
         if (provider == null) {
-            provider = new DefaultProductsProvider(safelyGetActivity());
+            provider = new DefaultProductListProvider(safelyGetActivity());
         }
 
         Bundle bundle = getArguments();
@@ -191,11 +189,11 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         };
 
         if (!CollectionUtils.isEmpty(productIds)) {
-            provider.getProducts(productIds, buyClient, callback);
+            ((ProductListProvider) provider).getProducts(productIds, buyClient, callback);
         } else if (collection != null) {
-            provider.getProducts(collection.getCollectionId(), buyClient, callback);
+            ((ProductListProvider) provider).getProducts(collection.getCollectionId(), buyClient, callback);
         } else {
-            provider.getAllProducts(buyClient, callback);
+            ((ProductListProvider) provider).getAllProducts(buyClient, callback);
         }
     }
 

@@ -39,7 +39,7 @@ import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.customTabs.CustomTabActivityHelper;
-import com.shopify.buy.dataprovider.providers.DefaultCartProvider;
+import com.shopify.buy.dataprovider.providers.DefaultBaseProvider;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.utils.NetworkUtility;
@@ -57,8 +57,6 @@ public abstract class CheckoutFragment extends BaseFragment {
     protected Button checkoutButton;
     protected Cart cart;
 
-    protected CartProvider provider = null;
-
     private final AtomicBoolean cancelledCheckout = new AtomicBoolean(false);
 
     @Override
@@ -66,7 +64,7 @@ public abstract class CheckoutFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         if (provider == null) {
-            provider = new DefaultCartProvider(getActivity());
+            provider = new DefaultBaseProvider(getActivity());
         }
     }
 
@@ -95,7 +93,7 @@ public abstract class CheckoutFragment extends BaseFragment {
         cancelledCheckout.set(false);
     }
 
-    public void setProvider(CartProvider provider) {
+    public void setProvider(BaseProvider provider) {
         this.provider = provider;
     }
 
@@ -140,6 +138,9 @@ public abstract class CheckoutFragment extends BaseFragment {
             @Override
             public void success(Checkout checkout, Response response) {
                 if (response.getStatus() == HttpURLConnection.HTTP_CREATED) {
+                    // Save the checkout token
+                    provider.saveCart(cart, checkout.getToken(), buyClient, userId);
+
                     // Start the web checkout
                     launchWebCheckout(checkout);
                 } else {

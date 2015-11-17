@@ -22,41 +22,26 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider.providers;
-
-import android.content.Context;
+package com.shopify.buy.ui.products;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.tasks.GetProductsTask;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.products.ProductsProvider;
+import com.shopify.buy.ui.common.BaseProvider;
 
 import java.util.List;
 
 import retrofit.Callback;
 
-public class DefaultProductsProvider extends BaseProviderImpl implements ProductsProvider {
+/**
+ * The UI should use the ProductListProvider interface to load {@link Product} objects.
+ * The default implementation uses a SQLite database to allow offline product browsing.
+ */
+public interface ProductListProvider extends BaseProvider {
 
-    public DefaultProductsProvider(Context context) {
-        super(context);
-    }
+    void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback);
 
-    @Override
-    public void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback) {
-        GetProductsTask task = new GetProductsTask(buyDatabase, buyClient, callback, handler, executorService);
-        executorService.execute(task);
-    }
+    void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback);
 
-    @Override
-    public void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback) {
-        GetProductsTask task = new GetProductsTask(collectionId, buyDatabase, buyClient, callback, handler, executorService);
-        executorService.execute(task);
-    }
-
-    @Override
-    public void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback) {
-        GetProductsTask task = new GetProductsTask(productIds, buyDatabase, buyClient, callback, handler, executorService);
-        executorService.execute(task);
-    }
+    void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback);
 
 }

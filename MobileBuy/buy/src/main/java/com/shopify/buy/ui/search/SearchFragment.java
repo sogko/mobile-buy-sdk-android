@@ -64,7 +64,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
     OnSearchItemSelectedListener listener;
 
     private String query = null;
-    private SearchProvider provider = null;
 
     private List<Product> products = new ArrayList<>();
 
@@ -207,7 +206,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
             }
         };
 
-        provider.searchProducts(query, buyClient, callback);
+        ((SearchProvider) provider).searchProducts(query, buyClient, callback);
     }
 
     @Override
