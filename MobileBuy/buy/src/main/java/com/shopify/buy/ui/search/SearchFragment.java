@@ -61,7 +61,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
     SearchView searchView;
     InputMethodManager inputMethodManager;
 
-    OnSearchItemSelectedListener listener;
+    OnSearchItemSelectedListener onSearchItemSelectedListener;
 
     private String query = null;
 
@@ -159,8 +159,8 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         }
     }
 
-    public void setListener(OnSearchItemSelectedListener listener) {
-        this.listener = listener;
+    public void setOnSearchItemSelectedListener(OnSearchItemSelectedListener listener) {
+        this.onSearchItemSelectedListener = listener;
     }
 
     @Override
@@ -181,7 +181,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
                 @Override
                 public void failure(RetrofitError error) {
-                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                    onProviderError(error);
                 }
             });
         }
@@ -202,7 +202,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                onProviderError(error);
             }
         };
 
@@ -223,15 +223,15 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
-        if (listener != null) {
-            listener.onSearchItemClick(product);
+        if (onSearchItemSelectedListener != null) {
+            onSearchItemSelectedListener.onSearchItemClick(product);
         }
     }
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
-        if (listener != null) {
-            listener.onSearchItemLongClick(product);
+        if (onSearchItemSelectedListener != null) {
+            onSearchItemSelectedListener.onSearchItemLongClick(product);
         }
     }
 
@@ -254,15 +254,15 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         return true;
     }
 
+    private synchronized void setProducts(List<Product> products) {
+        this.products.clear();
+        this.products.addAll(products);
+    }
+
     public interface OnSearchItemSelectedListener {
         void onSearchItemClick(Product product);
 
         void onSearchItemLongClick(Product product);
-    }
-
-    private synchronized void setProducts(List<Product> products) {
-        this.products.clear();
-        this.products.addAll(products);
     }
 
 }

@@ -35,22 +35,17 @@ import com.shopify.buy.model.Shop;
 @SuppressWarnings("unchecked")
 public abstract class BaseBuilder<T extends BaseBuilder> {
 
-    protected final Context context;
-
     protected BaseConfig config;
 
     /**
      * Create a default BaseBuilder.
      *
-     * @param context context to use for starting the {@code Activity}
      */
-    public BaseBuilder(Context context) {
-        this(context, null);
+    public BaseBuilder() {
+        this(null);
     }
 
-    public BaseBuilder(Context context, BuyClient client) {
-        this.context = context;
-
+    public BaseBuilder(BuyClient client) {
         config = getConfig();
 
         if (client != null) {

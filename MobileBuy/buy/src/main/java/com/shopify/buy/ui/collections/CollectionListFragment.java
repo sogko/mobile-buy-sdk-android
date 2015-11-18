@@ -132,7 +132,7 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         }
     }
 
-    public void setListener(OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
+    public void setOnCollectionListItemSelectedListener(OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
         this.collectionListItemSelectedListener = collectionListItemSelectedListener;
     }
 
@@ -155,7 +155,7 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                onProviderError(error);
             }
         });
     }
@@ -210,4 +210,5 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
         void onCollectionListItemLongClick(Collection collection);
     }
+
 }
