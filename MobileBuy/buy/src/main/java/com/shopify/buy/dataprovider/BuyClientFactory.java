@@ -90,7 +90,7 @@ public class BuyClientFactory {
 
         OkHttpClient httpClient = new OkHttpClient();
 
-        httpClient.setConnectTimeout(60, TimeUnit.SECONDS);
+        httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
         httpClient.setReadTimeout(60, TimeUnit.SECONDS);
         httpClient.setWriteTimeout(60, TimeUnit.SECONDS);
 
