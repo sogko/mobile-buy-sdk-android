@@ -43,6 +43,8 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Shop;
 
+import retrofit.RetrofitError;
+
 public abstract class BaseFragment extends Fragment {
 
     private final static String LOG_TAG = BaseFragment.class.getSimpleName();
@@ -54,6 +56,8 @@ public abstract class BaseFragment extends Fragment {
     protected ShopifyTheme theme;
     protected String userId;
     protected BaseProvider provider;
+
+    protected OnProviderFailedListener onProviderFailedListener;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -213,4 +217,13 @@ public abstract class BaseFragment extends Fragment {
      */
     protected abstract void showViewIfReady();
 
+    public void setOnProviderFailedListener(OnProviderFailedListener onProviderFailedListener) {
+        this.onProviderFailedListener = onProviderFailedListener;
+    }
+
+    protected void onProviderError(RetrofitError error) {
+        if (onProviderFailedListener != null) {
+            onProviderFailedListener.onProviderFailed(error);
+        }
+    }
 }

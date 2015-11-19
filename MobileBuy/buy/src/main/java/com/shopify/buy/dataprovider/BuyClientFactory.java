@@ -38,6 +38,7 @@ import com.shopify.buy.utils.DateUtility.DateDeserializer;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -88,6 +89,10 @@ public class BuyClientFactory {
         };
 
         OkHttpClient httpClient = new OkHttpClient();
+
+        httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
+        httpClient.setReadTimeout(60, TimeUnit.SECONDS);
+        httpClient.setWriteTimeout(60, TimeUnit.SECONDS);
 
         RestAdapter adapter = new RestAdapter.Builder()
                 .setEndpoint("https://" + shopDomain)

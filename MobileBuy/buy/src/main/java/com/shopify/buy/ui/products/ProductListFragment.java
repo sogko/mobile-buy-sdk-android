@@ -66,7 +66,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     RecyclerView recyclerView;
 
-    OnProductListItemSelectedListener listener;
+    OnProductListItemSelectedListener onProductListItemSelectedListener;
 
     public void setProvider(ProductListProvider provider) {
         this.provider = provider;
@@ -143,8 +143,8 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         }
     }
 
-    public void setListener(OnProductListItemSelectedListener listener) {
-        this.listener = listener;
+    public void setOnProductListItemSelectedListener(OnProductListItemSelectedListener listener) {
+        this.onProductListItemSelectedListener = listener;
     }
 
     @Override
@@ -169,7 +169,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                onProviderError(error);
             }
         });
     }
@@ -184,7 +184,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
+                onProviderError(error);
             }
         };
 
@@ -232,15 +232,15 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
-        if (listener != null) {
-            listener.onProductListItemClick(product);
+        if (onProductListItemSelectedListener != null) {
+            onProductListItemSelectedListener.onProductListItemClick(product);
         }
     }
 
     @Override
     public void onItemLongClick(int position, View viewHolder, Product product) {
-        if (listener != null) {
-            listener.onProductListItemLongClick(product);
+        if (onProductListItemSelectedListener != null) {
+            onProductListItemSelectedListener.onProductListItemLongClick(product);
         }
     }
 
@@ -249,4 +249,5 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
         void onProductListItemLongClick(Product product);
     }
+
 }

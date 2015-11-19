@@ -43,6 +43,8 @@ import com.shopify.buy.ui.common.CheckoutListener;
  */
 public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
+    Context context;
+
     /**
      * Create a default ProductDetailsBuilder.
      * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}, and {@link #setProductId(String)} must be called.
@@ -61,7 +63,8 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
      * @param client  the {@link BuyClient} to use to configure the ProductDetailsActivity
      */
     public ProductDetailsBuilder(Context context, BuyClient client) {
-        super(context, client);
+        super(client);
+        this.context = context;
     }
 
     @Override
@@ -114,20 +117,16 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
     /**
      * Returns a new {@link ProductDetailsFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider An optional implementation of {@link BaseProvider}. If you pass null, {@link com.shopify.buy.dataprovider.providers.DefaultBaseProvider} will be used.
-     * @param listener An implementation of {@link CheckoutListener} which will be sent checkout status updates.
      * @return A new {@link ProductDetailsFragment}.
      */
-    public ProductDetailsFragment buildFragment(@Nullable BaseProvider provider, CheckoutListener listener) {
+    public ProductDetailsFragment buildFragment() {
         ProductDetailsFragment fragment = new ProductDetailsFragment();
-        fragment.setProvider(provider);
-        fragment.setCheckoutListener(listener);
         fragment.setArguments(buildBundle());
         return fragment;
     }
 
     /**
-     * Deprecated. Use {@link #buildFragment(BaseProvider, CheckoutListener)}.
+     * Deprecated. Use {@link #buildFragment()}.
      */
     @Deprecated
     public ProductDetailsFragment buildFragment(CheckoutListener listener) {

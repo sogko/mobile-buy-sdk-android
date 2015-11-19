@@ -39,10 +39,9 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
      * Create a default SearchBuilder.
      * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
      *
-     * @param context context to use for starting the {@code Activity}
      */
-    public SearchBuilder(Context context) {
-        super(context);
+    public SearchBuilder() {
+        super();
     }
 
     /**
@@ -52,7 +51,7 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
      * @param client  the {@link BuyClient} to use to configure the SearchFragment
      */
     public SearchBuilder(Context context, BuyClient client) {
-        super(context, client);
+        super(client);
     }
 
     @Override
@@ -79,14 +78,10 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
     /**
      * Returns a new {@link SearchFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider An optional implementation of {@link SearchProvider}. If you pass null, {@link DefaultSearchProvider} will be used.
-     * @param listener An implementation of {@link com.shopify.buy.ui.search.SearchFragment.OnSearchItemSelectedListener} which will be notified of user actions.
      * @return A new {@link SearchFragment}.
      */
-    public SearchFragment buildFragment(@Nullable SearchProvider provider, SearchFragment.OnSearchItemSelectedListener listener) {
+    public SearchFragment buildFragment() {
         SearchFragment fragment = new SearchFragment();
-        fragment.setProvider(provider);
-        fragment.setListener(listener);
         fragment.setArguments(buildBundle());
         return fragment;
     }
