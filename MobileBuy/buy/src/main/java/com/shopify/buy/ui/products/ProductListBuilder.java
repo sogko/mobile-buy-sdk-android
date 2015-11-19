@@ -24,11 +24,9 @@
 
 package com.shopify.buy.ui.products;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.providers.DefaultProductListProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
@@ -42,20 +40,18 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
      * Create a default ProductListBuilder.
      * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
      *
-     * @param context context to use for starting the {@code Activity}
      */
-    public ProductListBuilder(Context context) {
-        super(context);
+    public ProductListBuilder() {
+        super();
     }
 
     /**
      * Constructor that will use an existing {@link BuyClient} to configure the {@link ProductListFragment}.
      *
-     * @param context context to use for launching the {@code Activity}
      * @param client  the {@link BuyClient} to use to configure the ProductListFragment
      */
-    public ProductListBuilder(Context context, BuyClient client) {
-        super(context, client);
+    public ProductListBuilder(BuyClient client) {
+        super(client);
     }
 
     @Override
@@ -92,14 +88,10 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
     /**
      * Returns a new {@link ProductListFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider An optional implementation of {@link ProductListProvider}. If you pass null, {@link DefaultProductListProvider} will be used.
-     * @param listener An implementation of {@link com.shopify.buy.ui.products.ProductListFragment.OnProductListItemSelectedListener} which will be notified of user actions.
      * @return A new {@link ProductListFragment}.
      */
-    public ProductListFragment buildFragment(ProductListProvider provider, ProductListFragment.OnProductListItemSelectedListener listener) {
+    public ProductListFragment buildFragment() {
         ProductListFragment fragment = new ProductListFragment();
-        fragment.setProvider(provider);
-        fragment.setListener(listener);
         fragment.setArguments(buildBundle());
         return fragment;
     }

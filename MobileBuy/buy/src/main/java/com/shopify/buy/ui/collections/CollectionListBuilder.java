@@ -24,12 +24,9 @@
 
 package com.shopify.buy.ui.collections;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.providers.DefaultCollectionListProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
@@ -42,20 +39,18 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
      * Create a default CollectionListBuilder.
      * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
      *
-     * @param context context to use for starting the {@code Activity}
      */
-    public CollectionListBuilder(Context context) {
-        super(context);
+    public CollectionListBuilder() {
+        super();
     }
 
     /**
      * Constructor that will use an existing {@link BuyClient} to configure the {@link CollectionListFragment}.
      *
-     * @param context context to use for launching the {@code Activity}
      * @param client  the {@link BuyClient} to use to configure the CollectionListFragment
      */
-    public CollectionListBuilder(Context context, BuyClient client) {
-        super(context, client);
+    public CollectionListBuilder(BuyClient client) {
+        super(client);
     }
 
     @Override
@@ -82,14 +77,10 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
     /**
      * Returns a new {@link CollectionListFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider                           An optional implementation of {@link CollectionListProvider}. If you pass null, {@link DefaultCollectionListProvider} will be used.
-     * @param collectionListItemSelectedListener An implementation of {@link com.shopify.buy.ui.collections.CollectionListFragment.OnCollectionListItemSelectedListener} which will be notified of user actions.
      * @return A new {@link CollectionListFragment}.
      */
-    public CollectionListFragment buildFragment(@Nullable CollectionListProvider provider, CollectionListFragment.OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
+    public CollectionListFragment buildFragment() {
         CollectionListFragment fragment = new CollectionListFragment();
-        fragment.setProvider(provider);
-        fragment.setListener(collectionListItemSelectedListener);
         fragment.setArguments(buildBundle());
         return fragment;
     }

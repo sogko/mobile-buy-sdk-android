@@ -36,12 +36,12 @@ import com.shopify.buy.ui.common.CheckoutListener;
 
 public class CartBuilder extends BaseBuilder<CartBuilder> {
 
-    public CartBuilder(Context context) {
-        super(context);
+    public CartBuilder() {
+        super();
     }
 
     public CartBuilder(Context context, BuyClient client) {
-        super(context, client);
+        super(client);
     }
 
     @Override
@@ -60,14 +60,10 @@ public class CartBuilder extends BaseBuilder<CartBuilder> {
     /**
      * Returns a new {@link CartFragment} based on the params that have already been passed to the builder.
      *
-     * @param provider An optional implementation of {@link BaseProvider}. If you pass null, {@link com.shopify.buy.dataprovider.providers.DefaultBaseProvider} will be used.
-     * @param listener An implementation of {@link CheckoutListener} which will be sent checkout status updates.
      * @return A new {@link CartFragment}.
      */
-    public CartFragment buildFragment(@Nullable BaseProvider provider, CheckoutListener listener) {
+    public CartFragment buildFragment() {
         CartFragment fragment = new CartFragment();
-        fragment.setProvider(provider);
-        fragment.setCheckoutListener(listener);
         fragment.setArguments(buildBundle());
         return fragment;
     }

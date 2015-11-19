@@ -26,21 +26,26 @@ package com.shopify.sample.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.util.Log;
 
-import com.shopify.buy.model.Shop;
+import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.ui.collections.CollectionListBuilder;
 import com.shopify.buy.ui.collections.CollectionListFragment;
+import com.shopify.buy.ui.common.OnProviderFailedListener;
 import com.shopify.buy.ui.products.ProductListBuilder;
 import com.shopify.sample.BuildConfig;
 import com.shopify.sample.R;
 import com.shopify.buy.model.Collection;
 import com.shopify.sample.activity.base.SampleActivity;
 
+import retrofit.RetrofitError;
+
 /**
  * The first activity in the app flow. Allows the user to browse the list of collections and drill down into a list of products.
  */
-public class CollectionListActivity extends SampleActivity implements CollectionListFragment.OnCollectionListItemSelectedListener{
+public class CollectionListActivity extends SampleActivity implements CollectionListFragment.OnCollectionListItemSelectedListener {
+
+    private static final String LOG_TAG = CollectionListActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +54,22 @@ public class CollectionListActivity extends SampleActivity implements Collection
         setTitle(R.string.choose_collection);
         setContentView(R.layout.collection_list_layout);
 
-        CollectionListFragment collectionListFragment = new CollectionListBuilder(this)
+        CollectionListFragment collectionListFragment = new CollectionListBuilder()
                 .setApiKey(BuildConfig.API_KEY)
                 .setChannelid(BuildConfig.CHANNEL_ID)
                 .setShopDomain(BuildConfig.SHOP_DOMAIN)
                 .setApplicationName(getString(R.string.app_name))
                 .setShop(getSampleApplication().getShop())
-                .buildFragment(null, this);
+                .buildFragment();
 
-        collectionListFragment.setListener(this);
+        collectionListFragment.setOnCollectionListItemSelectedListener(this);
+
+        collectionListFragment.setOnProviderFailedListener(new OnProviderFailedListener() {
+            @Override
+            public void onProviderFailed(RetrofitError retrofitError) {
+                Log.e(LOG_TAG, BuyClient.getErrorBody(retrofitError));
+            }
+        });
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, collectionListFragment)
@@ -71,7 +83,7 @@ public class CollectionListActivity extends SampleActivity implements Collection
      */
     @Override
     public void onCollectionListItemClick(Collection collection) {
-        Bundle bundle = new ProductListBuilder(this)
+        Bundle bundle = new ProductListBuilder()
                 .setApiKey(BuildConfig.API_KEY)
                 .setChannelid(BuildConfig.CHANNEL_ID)
                 .setShopDomain(BuildConfig.SHOP_DOMAIN)

@@ -26,13 +26,16 @@ package com.shopify.sample.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
+import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.ProductDetailsBuilder;
+import com.shopify.buy.ui.common.OnProviderFailedListener;
 import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.buy.ui.products.ProductListFragment;
 import com.shopify.sample.BuildConfig;
@@ -48,6 +51,8 @@ import retrofit.client.Response;
  * This activity allows the user to select a product to purchase from a list of all products in a collection.
  */
 public class ProductListActivity extends SampleActivity implements ProductListFragment.OnProductListItemSelectedListener {
+
+    private static final String LOG_TAG = ProductListActivity.class.getSimpleName();
 
     private ShopifyTheme theme;
     private boolean useProductDetailsActivity;
@@ -76,7 +81,14 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
             productListFragment.setArguments(bundle);
         }
 
-        productListFragment.setListener(this);
+        productListFragment.setOnProductListItemSelectedListener(this);
+
+        productListFragment.setOnProviderFailedListener(new OnProviderFailedListener() {
+            @Override
+            public void onProviderFailed(RetrofitError retrofitError) {
+                Log.e(LOG_TAG, BuyClient.getErrorBody(retrofitError));
+            }
+        });
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, productListFragment)
@@ -198,5 +210,6 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
     public void onProductListItemLongClick(Product product) {
         // Nothing to do
     }
+
 }
 
