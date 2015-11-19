@@ -28,15 +28,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.instabug.wrapper.support.activity.InstabugAppCompatActivity;
 import com.shopify.buy.utils.DeviceUtils;
 
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends InstabugAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
