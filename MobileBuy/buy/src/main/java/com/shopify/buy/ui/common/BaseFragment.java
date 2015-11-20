@@ -29,6 +29,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -41,13 +42,25 @@ import android.widget.TextView;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
+import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Shop;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import retrofit.Callback;
 import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public abstract class BaseFragment extends Fragment {
 
     private final static String LOG_TAG = BaseFragment.class.getSimpleName();
+
+    // The amount of time in milliseconds to delay between network calls when you are polling for Shipping Rates and Checkout Completion
+    protected static final long POLL_DELAY = 1000;
+
+    // If we are polling the status of an incomplete checkout, we need to lock the cart because we don't know whether to delete it or not yet
+    // https://cloud.githubusercontent.com/assets/1058176/11193589/79267dfe-8c75-11e5-9dd1-c0301da5bb53.JPG
+    protected static final AtomicBoolean isCartLocked = new AtomicBoolean(false);
 
     protected boolean viewCreated;
     protected BuyClient buyClient;
@@ -56,7 +69,7 @@ public abstract class BaseFragment extends Fragment {
     protected ShopifyTheme theme;
     protected String userId;
     protected BaseProvider provider;
-
+    protected Handler pollingHandler;
     protected OnProviderFailedListener onProviderFailedListener;
 
     @Override
@@ -86,6 +99,8 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        pollingHandler = new Handler();
 
         setHasOptionsMenu(true);
 
@@ -159,7 +174,24 @@ public abstract class BaseFragment extends Fragment {
         String returnScheme = buyClient.getWebReturnToUrl();
         if (uri != null && !TextUtils.isEmpty(returnScheme) && (uri.getScheme().contains(returnScheme) || returnScheme.contains(uri.getScheme()))) {
             provider.deleteCheckout(buyClient, userId, true);
+            onCartDeleted();
         }
+
+        // If the current user ID is tied to a checkout token, lock the cart while we query the checkout status.
+        provider.getCheckoutToken(buyClient, userId, new Callback<String>() {
+            @Override
+            public void success(String token, Response response) {
+                if (!TextUtils.isEmpty(token)) {
+                    isCartLocked.set(true);
+                    processCheckoutToken(token);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // Empty
+            }
+        });
     }
 
     private void initializeProgressDialog() {
@@ -226,4 +258,72 @@ public abstract class BaseFragment extends Fragment {
             onProviderFailedListener.onProviderFailed(error);
         }
     }
+
+    protected void processCheckoutToken(final String checkoutToken) {
+        buyClient.getCheckout(checkoutToken, new Callback<Checkout>() {
+            @Override
+            public void success(Checkout checkout, Response response) {
+                if (checkout.hasOrderId()) {
+                    onCheckoutComplete();
+                } else {
+                    pollCheckoutCompletionStatus(checkout);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // Checkout does not exist, delete the checkout token but keep the cart
+                provider.deleteCheckout(buyClient, userId, false);
+                isCartLocked.set(false);
+            }
+        });
+    }
+
+    protected void pollCheckoutCompletionStatus(final Checkout checkout) {
+        buyClient.getCheckoutCompletionStatus(checkout, new Callback<Boolean>() {
+            @Override
+            public void success(Boolean complete, Response response) {
+                if (complete) {
+                    onCheckoutComplete();
+                } else {
+                    pollingHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            pollCheckoutCompletionStatus(checkout);
+                        }
+                    }, POLL_DELAY);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // If the checkout status check returned an error, we need to know whether the checkout has expired.
+                // We never delete the cart here because we want to allow the user to attempt the same checkout again.
+                try {
+                    // Only delete the checkout token if the checkout has expired
+                    if (checkout.getReservationTimeLeft() <= 0) {
+                        provider.deleteCheckout(buyClient, userId, false);
+                    }
+                } finally {
+                    // No matter what, we need to unlock the cart for the user
+                    isCartLocked.set(false);
+                }
+            }
+        });
+    }
+
+    private void onCheckoutComplete() {
+        // Delete the checkout token and the old cart, and unlock the cart for the user
+        provider.deleteCheckout(buyClient, userId, true);
+        onCartDeleted();
+        isCartLocked.set(false);
+    }
+
+    /**
+     * Override to be notified when the cart is deleted;
+     */
+    protected void onCartDeleted() {
+        // Empty
+    }
+
 }

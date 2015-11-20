@@ -22,5 +22,6 @@
     <string name="subtotal">SUBTOTAL</string>
     <string name="shipping_and_taxes">Shipping and taxes are calculated at checkout.</string>
     <string name="delete">DELETE</string>
+    <string name="cart_locked">Your cart is temporarily locked while we confirm the status of an ongoing checkout.</string>
 
 </resources>

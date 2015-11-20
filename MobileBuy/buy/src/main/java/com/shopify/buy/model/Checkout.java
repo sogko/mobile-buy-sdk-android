@@ -24,6 +24,8 @@
 
 package com.shopify.buy.model;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.internal.MarketingAttribution;
@@ -245,6 +247,14 @@ public class Checkout extends ShopifyObject {
         return order;
     }
 
+
+    /**
+     * @return {@code true} if checkout has been completed and there's an order with an id, {@code false} otherwise.
+     */
+    public boolean hasOrderId() {
+        return order != null && order.getId() != null && order.getId() > 0;
+    }
+
     /**
      * @return {@code true} if the fulfillment of this checkout requires shipping, {@code false} otherwise.
      */
@@ -269,10 +279,11 @@ public class Checkout extends ShopifyObject {
     /**
      * @return The list of {@link GiftCard} objects that have been added to this checkout.
      */
-    public List<GiftCard> getGiftCards() { return giftCards; }
+    public List<GiftCard> getGiftCards() {
+        return giftCards;
+    }
 
     /***
-     *
      * @return Price of the order before shipping and taxes.
      */
     public String getSubtotalPrice() {
@@ -280,7 +291,6 @@ public class Checkout extends ShopifyObject {
     }
 
     /**
-     *
      * @return The sum of all the taxes applied to the line items in the order.
      */
     public String getTotalTax() {
@@ -309,10 +319,11 @@ public class Checkout extends ShopifyObject {
     }
 
     /**
-     *
      * @return The payment due after applying giftcards or other methods of partial payment
      */
-    public String getPaymentDue() { return paymentDue; }
+    public String getPaymentDue() {
+        return paymentDue;
+    }
 
     /**
      * @return The reservation time on this checkout (in seconds).
@@ -373,23 +384,30 @@ public class Checkout extends ShopifyObject {
     /**
      * @return Channel ID where the checkout was created.
      */
-    public String getChannelId() { return channelId; }
+    public String getChannelId() {
+        return channelId;
+    }
 
     /**
      * @return URL which is used for completing checkout in browser.
      */
-    public String getWebUrl() { return webUrl; }
+    public String getWebUrl() {
+        return webUrl;
+    }
 
     /**
-     *
      * @return An optional note attached to the order.
      */
-    public String getNote() { return note; }
+    public String getNote() {
+        return note;
+    }
 
     /**
      * For internal use only.
      */
-    public MarketingAttribution getMarketingAttribution() { return marketingAttribution ;}
+    public MarketingAttribution getMarketingAttribution() {
+        return marketingAttribution;
+    }
 
     /**
      * For internal use only.
@@ -495,7 +513,6 @@ public class Checkout extends ShopifyObject {
     }
 
     /**
-     *
      * @param note An optional note attached to the order.
      */
     public void setNote(String note) {
@@ -528,6 +545,9 @@ public class Checkout extends ShopifyObject {
      * @return A checkout object created using the values in the JSON string.
      */
     public static Checkout fromJson(String json) {
+        if (TextUtils.isEmpty(json)) {
+            return null;
+        }
         return BuyClientFactory.createDefaultGson().fromJson(json, Checkout.class);
     }
 

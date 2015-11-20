@@ -35,7 +35,6 @@ import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.customTabs.CustomTabActivityHelper;
@@ -133,6 +132,9 @@ public abstract class CheckoutFragment extends BaseFragment {
      * Creates a checkout for use with the web checkout flow
      */
     protected void createWebCheckout() {
+        // Delete the old checkout
+        provider.deleteCheckout(buyClient, userId, false);
+
         // Create the checkout
         buyClient.createCheckout(new Checkout(cart), new Callback<Checkout>() {
             @Override

@@ -32,6 +32,7 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.dataprovider.tasks.DeleteCheckoutTask;
 import com.shopify.buy.dataprovider.tasks.GetCartTask;
+import com.shopify.buy.dataprovider.tasks.GetCheckoutTokenTask;
 import com.shopify.buy.dataprovider.tasks.GetShopTask;
 import com.shopify.buy.dataprovider.tasks.SaveCartTask;
 import com.shopify.buy.model.Cart;
@@ -73,6 +74,12 @@ public class DefaultBaseProvider implements BaseProvider {
     @Override
     public void saveCart(Cart cart, @Nullable String checkoutToken, BuyClient buyClient, String userId) {
         SaveCartTask task = new SaveCartTask(cart, checkoutToken, userId, buyDatabase, buyClient, handler, executorService);
+        executorService.execute(task);
+    }
+
+    @Override
+    public void getCheckoutToken(BuyClient buyClient, String userId, Callback<String> callback) {
+        GetCheckoutTokenTask task = new GetCheckoutTokenTask(userId, buyDatabase, buyClient, callback, handler, executorService);
         executorService.execute(task);
     }
 
