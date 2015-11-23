@@ -22,26 +22,36 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui.common;
+package com.shopify.buy.dataprovider.tasks;
 
-import android.support.annotation.Nullable;
+import android.os.Handler;
+import android.util.Log;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.model.Cart;
-import com.shopify.buy.model.Shop;
+import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
+
+import java.util.concurrent.ExecutorService;
 
 import retrofit.Callback;
 
-public interface BaseProvider {
+public class GetCheckoutTokenTask extends BaseTask<String> {
 
-    void getShop(BuyClient buyClient, Callback<Shop> callback);
+    private static final String LOG_TAG = GetCheckoutTokenTask.class.getSimpleName();
 
-    void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
+    private final String userId;
 
-    void saveCart(Cart cart, @Nullable String checkoutToken, BuyClient buyClient, String userId);
+    public GetCheckoutTokenTask(String userId, BuyDatabase buyDatabase, BuyClient buyClient, Callback<String> callback, Handler handler, ExecutorService executorService) {
+        super(buyDatabase, buyClient, callback, handler, executorService);
+        this.userId = userId;
+    }
 
-    void getCheckoutToken(BuyClient buyClient, String userId, Callback<String> callback);
-
-    void deleteCheckout(BuyClient buyClient, String userId, boolean alsoDeleteCart);
-
+    @Override
+    public void run() {
+        try {
+            onSuccess(buyDatabase.getCheckoutToken(userId), null);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Could not get checkout token from database.", e);
+            onFailure(e);
+        }
+    }
 }

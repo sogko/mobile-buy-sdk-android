@@ -207,11 +207,16 @@ public class ProductDetailsFragment extends CheckoutFragment {
             checkoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    cart.addVariant(variant);
-                    provider.saveCart(cart, null, buyClient, userId);
+                    if (isCartLocked.get()) {
+                        // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/636
+                        Toast.makeText(getActivity(), getString(R.string.cart_locked), Toast.LENGTH_LONG).show();
+                    } else {
+                        cart.addVariant(variant);
+                        provider.saveCart(cart, null, buyClient, userId);
 
-                    // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/594
-                    Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
+                        // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/594
+                        Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }

@@ -642,11 +642,11 @@ public class BuyClient {
     }
 
     /**
-     *  Convenience method to release all product inventory reservations by setting the `reservationTime` of the checkout `0` and calling {@link #updateCheckout(Checkout, Callback) updateCheckout(Checkout, Callback)}.
-     *  We recommend creating a new `Checkout` object from a `Cart` for further API calls.
+     * Convenience method to release all product inventory reservations by setting the `reservationTime` of the checkout `0` and calling {@link #updateCheckout(Checkout, Callback) updateCheckout(Checkout, Callback)}.
+     * We recommend creating a new `Checkout` object from a `Cart` for further API calls.
      *
-     *  @param checkout the {@link Checkout} to expire
-     *  @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @param checkout the {@link Checkout} to expire
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void removeProductReservationsFromCheckout(final Checkout checkout, final Callback<Checkout> callback) {
         if (checkout == null || TextUtils.isEmpty(checkout.getToken())) {

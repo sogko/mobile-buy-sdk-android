@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.model.Cart;
@@ -174,11 +175,24 @@ public class CartFragment extends CheckoutFragment implements QuantityPicker.OnQ
     }
 
     private void adjustQuantity(CartLineItem lineItem, int delta) {
-        cart.setVariantQuantity(lineItem.getVariant(), (int) lineItem.getQuantity() + delta);
-        provider.saveCart(cart, null, buyClient, userId);
+        if (isCartLocked.get()) {
+            // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/636
+            Toast.makeText(getActivity(), getString(R.string.cart_locked), Toast.LENGTH_LONG).show();
+        } else {
+            cart.setVariantQuantity(lineItem.getVariant(), (int) lineItem.getQuantity() + delta);
+            provider.saveCart(cart, null, buyClient, userId);
 
+            adapter.notifyDataSetChanged();
+            view.updateSubtotal(cart, currencyFormat);
+        }
+    }
+
+    @Override
+    protected void onCartDeleted() {
+        super.onCartDeleted();
+
+        cart = new Cart();
         adapter.notifyDataSetChanged();
-        view.updateSubtotal(cart, currencyFormat);
     }
 
 }
