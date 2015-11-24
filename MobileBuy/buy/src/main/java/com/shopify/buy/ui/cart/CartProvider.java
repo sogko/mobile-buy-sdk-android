@@ -22,29 +22,20 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider.providers;
+package com.shopify.buy.ui.cart;
 
-import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.tasks.GetCollectionsTask;
-import com.shopify.buy.model.Collection;
-import com.shopify.buy.ui.collections.CollectionListProvider;
-
-import java.util.List;
+import com.shopify.buy.model.Cart;
+import com.shopify.buy.ui.common.BaseProvider;
 
 import retrofit.Callback;
 
-public class DefaultCollectionListProvider extends DefaultBaseProvider implements CollectionListProvider {
 
-    public DefaultCollectionListProvider(Context context) {
-        super(context);
-    }
+public interface CartProvider extends BaseProvider {
 
-    @Override
-    public void getCollections(final BuyClient buyClient, final Callback<List<Collection>> callback) {
-        GetCollectionsTask task = new GetCollectionsTask(buyDatabase, buyClient, callback, handler, executorService);
-        executorService.execute(task);
-    }
+    void getCart(BuyClient buyClient, String userId, Callback<Cart> callback);
 
+    void saveCart(Cart cart, @Nullable String checkoutToken, BuyClient buyClient, String userId);
 }

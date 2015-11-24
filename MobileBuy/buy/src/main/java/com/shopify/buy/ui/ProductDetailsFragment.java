@@ -36,10 +36,12 @@ import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.providers.DefaultProvider;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.ui.common.BaseProvider;
 import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.ui.common.CheckoutListener;
 import com.shopify.buy.ui.common.FabListener;
@@ -117,6 +119,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
             product = Product.fromJson(bundle.getString(ProductDetailsConfig.EXTRA_SHOP_PRODUCT));
             variant = product.getVariants().get(0);
         }
+
     }
 
     @Override
@@ -131,6 +134,10 @@ public class ProductDetailsFragment extends CheckoutFragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setProvider(BaseProvider provider) {
+        this.provider = provider;
     }
 
     @Override
