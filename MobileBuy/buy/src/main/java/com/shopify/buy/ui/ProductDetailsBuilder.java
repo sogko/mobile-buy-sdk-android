@@ -62,23 +62,20 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
     public ProductDetailsBuilder(Context context, BuyClient client) {
         super(client);
         this.context = context;
-
-        // Override this for now, ProductDetailsConfig is deprecated
-        this.config = new ProductDetailsConfig();
     }
 
     public ProductDetailsBuilder setProductId(String productId) {
-        ((ProductDetailsConfig) config).setProductId(productId);
+        config.setProductId(productId);
         return this;
     }
 
     public ProductDetailsBuilder setProduct(Product product) {
-        ((ProductDetailsConfig) config).setProduct(product);
+        config.setProduct(product);
         return this;
     }
 
     public ProductDetailsBuilder showCartButton(boolean showCartButton) {
-        ((ProductDetailsConfig) config).showCartButton(showCartButton);
+        config.showCartButton(showCartButton);
         return this;
     }
 
@@ -95,15 +92,10 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     @Override
     public Bundle buildBundle() {
-        ProductDetailsConfig productDetailsConfig = (ProductDetailsConfig) config;
-
-        if (TextUtils.isEmpty(productDetailsConfig.getProductId()) && productDetailsConfig.getProduct() == null) {
+        if (TextUtils.isEmpty(config.getProductId()) && config.getProduct() == null) {
             throw new IllegalArgumentException("One of productId or product must be provided, and cannot be empty");
         }
-
-        Bundle bundle = super.buildBundle();
-        bundle.putAll(productDetailsConfig.toBundle());
-        return bundle;
+        return super.buildBundle();
     }
 
     /**

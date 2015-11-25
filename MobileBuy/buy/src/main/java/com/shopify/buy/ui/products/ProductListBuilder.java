@@ -24,8 +24,6 @@
 
 package com.shopify.buy.ui.products;
 
-import android.os.Bundle;
-
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
