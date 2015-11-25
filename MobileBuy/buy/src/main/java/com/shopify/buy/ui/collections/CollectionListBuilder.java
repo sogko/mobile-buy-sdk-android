@@ -24,12 +24,9 @@
 
 package com.shopify.buy.ui.collections;
 
-import android.os.Bundle;
-
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BuyBuilderConfig;
 
 import java.util.List;
 
