@@ -30,7 +30,6 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BaseConfig;
 
 import java.util.List;
 
@@ -54,34 +53,24 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
         super(client);
     }
 
-    @Override
-    protected BaseConfig getConfig() {
-        if (config == null) {
-            config = new ProductListConfig();
-        }
-        return config;
-    }
-
     public ProductListBuilder setProducts(List<Product> products) {
-        ((ProductListConfig) config).setProducts(products);
+        config.setProducts(products);
         return this;
     }
 
     public ProductListBuilder setProductIds(List<String> productIds) {
-        ((ProductListConfig) config).setProductIds(productIds);
+        config.setProductIds(productIds);
         return this;
     }
 
     public ProductListBuilder setCollection(Collection collection) {
-        ((ProductListConfig) config).setCollection(collection);
+        config.setCollection(collection);
         return this;
     }
 
     public Bundle buildBundle() {
-        ProductListConfig collectionListConfig = (ProductListConfig) config;
-
         Bundle bundle = super.buildBundle();
-        bundle.putAll(collectionListConfig.toBundle());
+        bundle.putAll(config.toBundle());
         return bundle;
     }
 

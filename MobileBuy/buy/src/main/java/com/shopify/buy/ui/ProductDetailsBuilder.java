@@ -27,15 +27,12 @@ package com.shopify.buy.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BaseConfig;
-import com.shopify.buy.ui.common.BaseProvider;
 import com.shopify.buy.ui.common.CheckoutListener;
 
 /**
@@ -65,14 +62,9 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
     public ProductDetailsBuilder(Context context, BuyClient client) {
         super(client);
         this.context = context;
-    }
 
-    @Override
-    protected BaseConfig getConfig() {
-        if (config == null) {
-            config = new ProductDetailsConfig();
-        }
-        return config;
+        // Override this for now, ProductDetailsConfig is deprecated
+        this.config = new ProductDetailsConfig();
     }
 
     public ProductDetailsBuilder setProductId(String productId) {

@@ -29,7 +29,7 @@ import android.os.Bundle;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.ui.common.BuyBuilderConfig;
 
 import java.util.List;
 
@@ -53,21 +53,13 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
         super(client);
     }
 
-    @Override
-    protected BaseConfig getConfig() {
-        if (config == null) {
-            config = new CollectionListConfig();
-        }
-        return config;
-    }
-
     public CollectionListBuilder setCollections(List<Collection> collections) {
-        ((CollectionListConfig) config).setCollections(collections);
+        config.setCollections(collections);
         return this;
     }
 
     public Bundle buildBundle() {
-        CollectionListConfig collectionListConfig = (CollectionListConfig) config;
+        BuyBuilderConfig collectionListConfig = (BuyBuilderConfig) config;
 
         Bundle bundle = super.buildBundle();
         bundle.putAll(collectionListConfig.toBundle());
