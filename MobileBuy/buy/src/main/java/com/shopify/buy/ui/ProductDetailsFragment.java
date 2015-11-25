@@ -36,7 +36,6 @@ import android.widget.Toast;
 
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.providers.DefaultProvider;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
