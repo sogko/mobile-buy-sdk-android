@@ -56,11 +56,6 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
         return this;
     }
 
-    public Bundle buildBundle() {
-        Bundle bundle = super.buildBundle();
-        bundle.putAll(config.toBundle());
-        return bundle;
-    }
 
     /**
      * Returns a new {@link SearchFragment} based on the params that have already been passed to the builder.
