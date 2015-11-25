@@ -68,12 +68,6 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
         return this;
     }
 
-    public Bundle buildBundle() {
-        Bundle bundle = super.buildBundle();
-        bundle.putAll(config.toBundle());
-        return bundle;
-    }
-
     /**
      * Returns a new {@link ProductListFragment} based on the params that have already been passed to the builder.
      *

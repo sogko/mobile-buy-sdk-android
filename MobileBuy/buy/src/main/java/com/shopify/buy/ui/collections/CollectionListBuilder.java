@@ -58,14 +58,6 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
         return this;
     }
 
-    public Bundle buildBundle() {
-        BuyBuilderConfig collectionListConfig = (BuyBuilderConfig) config;
-
-        Bundle bundle = super.buildBundle();
-        bundle.putAll(collectionListConfig.toBundle());
-        return bundle;
-    }
-
     /**
      * Returns a new {@link CollectionListFragment} based on the params that have already been passed to the builder.
      *
