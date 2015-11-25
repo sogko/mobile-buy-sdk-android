@@ -27,15 +27,12 @@ package com.shopify.buy.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BaseConfig;
-import com.shopify.buy.ui.common.BaseProvider;
 import com.shopify.buy.ui.common.CheckoutListener;
 
 /**
@@ -67,26 +64,18 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
         this.context = context;
     }
 
-    @Override
-    protected BaseConfig getConfig() {
-        if (config == null) {
-            config = new ProductDetailsConfig();
-        }
-        return config;
-    }
-
     public ProductDetailsBuilder setProductId(String productId) {
-        ((ProductDetailsConfig) config).setProductId(productId);
+        config.setProductId(productId);
         return this;
     }
 
     public ProductDetailsBuilder setProduct(Product product) {
-        ((ProductDetailsConfig) config).setProduct(product);
+        config.setProduct(product);
         return this;
     }
 
     public ProductDetailsBuilder showCartButton(boolean showCartButton) {
-        ((ProductDetailsConfig) config).showCartButton(showCartButton);
+        config.showCartButton(showCartButton);
         return this;
     }
 
@@ -103,15 +92,10 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     @Override
     public Bundle buildBundle() {
-        ProductDetailsConfig productDetailsConfig = (ProductDetailsConfig) config;
-
-        if (TextUtils.isEmpty(productDetailsConfig.getProductId()) && productDetailsConfig.getProduct() == null) {
+        if (TextUtils.isEmpty(config.getProductId()) && config.getProduct() == null) {
             throw new IllegalArgumentException("One of productId or product must be provided, and cannot be empty");
         }
-
-        Bundle bundle = super.buildBundle();
-        bundle.putAll(productDetailsConfig.toBundle());
-        return bundle;
+        return super.buildBundle();
     }
 
     /**

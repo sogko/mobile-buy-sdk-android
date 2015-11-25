@@ -41,6 +41,7 @@ import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.dataprovider.providers.DefaultCollectionListProvider;
 import com.shopify.buy.model.Collection;
+import com.shopify.buy.ui.common.BuyBuilderConfig;
 import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 
@@ -92,7 +93,7 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         super.onSaveInstanceState(outState);
 
         if (collections != null) {
-            outState.putString(CollectionListConfig.EXTRA_SHOP_COLLECTIONS, BuyClientFactory.createDefaultGson().toJson(collections));
+            outState.putString(BuyBuilderConfig.EXTRA_SHOP_COLLECTIONS, BuyClientFactory.createDefaultGson().toJson(collections));
         }
 
         if (recyclerView != null && recyclerView.getLayoutManager() != null) {
@@ -122,8 +123,8 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
     }
 
     private void parseCollections(Bundle bundle) {
-        if (bundle.containsKey(CollectionListConfig.EXTRA_SHOP_COLLECTIONS)) {
-            String collectionsJson = bundle.getString(CollectionListConfig.EXTRA_SHOP_COLLECTIONS);
+        if (bundle.containsKey(BuyBuilderConfig.EXTRA_SHOP_COLLECTIONS)) {
+            String collectionsJson = bundle.getString(BuyBuilderConfig.EXTRA_SHOP_COLLECTIONS);
 
             if (!TextUtils.isEmpty(collectionsJson)) {
                 collections = BuyClientFactory.createDefaultGson().fromJson(collectionsJson, new TypeToken<List<Collection>>() {
