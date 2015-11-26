@@ -49,6 +49,7 @@ public class BuyBuilderConfig {
     public static final String EXTRA_USER_ID = "com.shopify.buy.ui.USER_ID";
     public static final String EXTRA_SHOP = "com.shopify.buy.ui.SHOP";
     public static final String EXTRA_CART = "com.shopify.buy.ui.CART";
+    public static final String EXTRA_ROUTING_COORDINATOR = "com.shopify.buy.ui.ROUTING_COORDINATOR";
     public static final String EXTRA_SHOP_PRODUCT_ID = "com.shopify.buy.ui.PRODUCT_ID";
     public static final String EXTRA_SHOP_PRODUCT = "com.shopify.buy.ui.PRODUCT";
     public static final String EXTRA_SHOW_CART_BUTTON = "com.shopify.buy.ui.SHOW_CART_BUTTON";
@@ -69,6 +70,7 @@ public class BuyBuilderConfig {
     private String userId;
     private Shop shop;
     private Cart cart;
+    private RoutingCoordinator routingCoordinator;
     private String productId;
     private Product product;
     private boolean showCartButton;
@@ -138,6 +140,10 @@ public class BuyBuilderConfig {
         this.shop = shop;
     }
 
+    public void setRoutingCoordinator(RoutingCoordinator routingCoordinator) {
+        this.routingCoordinator = routingCoordinator;
+    }
+
     public String getProductId() {
         return productId;
     }
@@ -158,7 +164,7 @@ public class BuyBuilderConfig {
         return showCartButton;
     }
 
-    public void showCartButton(boolean showCartButton) {
+    public void setShowCartButton(boolean showCartButton) {
         this.showCartButton = showCartButton;
     }
 
@@ -186,9 +192,13 @@ public class BuyBuilderConfig {
         this.products = products;
     }
 
-    public void setProductIds(List<String> productIds) { this.productIds = productIds; }
+    public void setProductIds(List<String> productIds) {
+        this.productIds = productIds;
+    }
 
-    public void setCollection(Collection collection) { this.collection = collection; }
+    public void setCollection(Collection collection) {
+        this.collection = collection;
+    }
 
     public String getSearchQuery() {
         return query;
@@ -241,6 +251,9 @@ public class BuyBuilderConfig {
             bundle.putString(EXTRA_CART, cart.toJsonString());
         }
 
+        if (routingCoordinator != null) {
+            bundle.putParcelable(EXTRA_ROUTING_COORDINATOR, routingCoordinator);
+        }
         if (productId != null) {
             bundle.putString(EXTRA_SHOP_PRODUCT_ID, productId);
         }
@@ -275,4 +288,5 @@ public class BuyBuilderConfig {
 
         return bundle;
     }
+
 }

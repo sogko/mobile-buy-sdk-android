@@ -61,8 +61,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
     SearchView searchView;
     InputMethodManager inputMethodManager;
 
-    OnSearchItemSelectedListener onSearchItemSelectedListener;
-
     private String query = null;
 
     private List<Product> products = new ArrayList<>();
@@ -150,10 +148,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         }
     }
 
-    public void setOnSearchItemSelectedListener(OnSearchItemSelectedListener listener) {
-        this.onSearchItemSelectedListener = listener;
-    }
-
     @Override
     protected void fetchDataIfNecessary() {
 
@@ -214,15 +208,10 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
-        if (onSearchItemSelectedListener != null) {
-            onSearchItemSelectedListener.onSearchItemClick(product);
-        }
-    }
-
-    @Override
-    public void onItemLongClick(int position, View viewHolder, Product product) {
-        if (onSearchItemSelectedListener != null) {
-            onSearchItemSelectedListener.onSearchItemLongClick(product);
+        if (routingCoordinator != null) {
+            routingCoordinator.displayContent(product, getActivity());
+        } else {
+            launchProductDetailsActivity(product);
         }
     }
 
@@ -248,12 +237,6 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
     private synchronized void setProducts(List<Product> products) {
         this.products.clear();
         this.products.addAll(products);
-    }
-
-    public interface OnSearchItemSelectedListener {
-        void onSearchItemClick(Product product);
-
-        void onSearchItemLongClick(Product product);
     }
 
 }

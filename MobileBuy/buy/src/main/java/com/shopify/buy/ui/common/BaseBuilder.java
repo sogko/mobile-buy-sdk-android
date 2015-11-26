@@ -38,7 +38,6 @@ public class BaseBuilder<T extends BaseBuilder> {
 
     /**
      * Create a default BaseBuilder.
-     *
      */
     public BaseBuilder() {
         this(null);
@@ -67,7 +66,7 @@ public class BaseBuilder<T extends BaseBuilder> {
         return (T) this;
     }
 
-    public T setChannelid(String channelId) {
+    public T setChannelId(String channelId) {
         config.setChannelId(channelId);
         return (T) this;
     }
@@ -99,6 +98,11 @@ public class BaseBuilder<T extends BaseBuilder> {
 
     public T setUserId(String userId) {
         config.setUserId(userId);
+        return (T) this;
+    }
+
+    public T setRoutingCoordinator(RoutingCoordinator routingCoordinator) {
+        config.setRoutingCoordinator(routingCoordinator);
         return (T) this;
     }
 

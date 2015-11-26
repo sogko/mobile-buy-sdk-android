@@ -40,8 +40,8 @@ import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Collection;
-import com.shopify.buy.ui.common.BuyBuilderConfig;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.ui.common.BuyBuilderConfig;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 
 import java.util.List;
@@ -59,8 +59,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
     private List<Collection> collections;
     RecyclerView recyclerView;
-
-    private OnCollectionListItemSelectedListener collectionListItemSelectedListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,10 +121,6 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
         }
     }
 
-    public void setOnCollectionListItemSelectedListener(OnCollectionListItemSelectedListener collectionListItemSelectedListener) {
-        this.collectionListItemSelectedListener = collectionListItemSelectedListener;
-    }
-
     @Override
     protected void fetchDataIfNecessary() {
 
@@ -184,22 +178,11 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
     @Override
     public void onItemClick(int position, View viewHolder, Collection collection) {
-        if (collectionListItemSelectedListener != null) {
-            collectionListItemSelectedListener.onCollectionListItemClick(collection);
+        if (routingCoordinator != null) {
+            routingCoordinator.displayContent(collection, getActivity());
+        } else {
+            launchProductListActivity(collection);
         }
-    }
-
-    @Override
-    public void onItemLongClick(int position, View viewHolder, Collection collection) {
-        if (collectionListItemSelectedListener != null) {
-            collectionListItemSelectedListener.onCollectionListItemLongClick(collection);
-        }
-    }
-
-    public interface OnCollectionListItemSelectedListener {
-        void onCollectionListItemClick(Collection collection);
-
-        void onCollectionListItemLongClick(Collection collection);
     }
 
 }

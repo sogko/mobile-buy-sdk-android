@@ -29,7 +29,7 @@ import android.view.View;
 
 import com.shopify.buy.model.ShopifyObject;
 
-public abstract class RecyclerViewHolder<T extends ShopifyObject> extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+public abstract class RecyclerViewHolder<T extends ShopifyObject> extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     protected final ClickListener clickListener;
     protected final boolean cropImage;
@@ -41,7 +41,6 @@ public abstract class RecyclerViewHolder<T extends ShopifyObject> extends Recycl
         super(itemView);
 
         itemView.setOnClickListener(this);
-        itemView.setOnLongClickListener(this);
 
         this.clickListener = clickListener;
         this.cropImage = cropImage;
@@ -68,20 +67,8 @@ public abstract class RecyclerViewHolder<T extends ShopifyObject> extends Recycl
         }
     }
 
-    @Override
-    public boolean onLongClick(View v) {
-        if (clickListener != null) {
-            int position = getAdapterPosition();
-            clickListener.onItemLongClick(position, v, item);
-            return false;
-        }
-        return true;
-    }
-
     public interface ClickListener<T extends ShopifyObject> {
         void onItemClick(int position, View v, T t);
-
-        void onItemLongClick(int position, View v, T t);
     }
 
 }

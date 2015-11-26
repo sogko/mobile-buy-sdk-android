@@ -35,8 +35,7 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
 
     /**
      * Create a default ProductListBuilder.
-     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
-     *
+     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelId(String)}} must be called.
      */
     public ProductListBuilder() {
         super();
@@ -45,7 +44,7 @@ public class ProductListBuilder extends BaseBuilder<ProductListBuilder> {
     /**
      * Constructor that will use an existing {@link BuyClient} to configure the {@link ProductListFragment}.
      *
-     * @param client  the {@link BuyClient} to use to configure the ProductListFragment
+     * @param client the {@link BuyClient} to use to configure the ProductListFragment
      */
     public ProductListBuilder(BuyClient client) {
         super(client);

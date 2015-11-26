@@ -66,8 +66,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     RecyclerView recyclerView;
 
-    OnProductListItemSelectedListener onProductListItemSelectedListener;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +121,8 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
             String productsJson = bundle.getString(BuyBuilderConfig.EXTRA_SHOP_PRODUCTS);
 
             if (!TextUtils.isEmpty(productsJson)) {
-                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
+                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {
+                }.getType());
             }
 
         } else if (bundle.containsKey(BuyBuilderConfig.EXTRA_SHOP_PRODUCT_IDS)) {
@@ -132,10 +131,6 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         } else if (bundle.containsKey(BuyBuilderConfig.EXTRA_SHOP_COLLECTION)) {
             collection = Collection.fromJson(bundle.getString(BuyBuilderConfig.EXTRA_SHOP_COLLECTION));
         }
-    }
-
-    public void setOnProductListItemSelectedListener(OnProductListItemSelectedListener listener) {
-        this.onProductListItemSelectedListener = listener;
     }
 
     @Override
@@ -223,22 +218,11 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     @Override
     public void onItemClick(int position, View viewHolder, Product product) {
-        if (onProductListItemSelectedListener != null) {
-            onProductListItemSelectedListener.onProductListItemClick(product);
+        if (routingCoordinator != null) {
+            routingCoordinator.displayContent(product, getActivity());
+        } else {
+            launchProductDetailsActivity(product);
         }
-    }
-
-    @Override
-    public void onItemLongClick(int position, View viewHolder, Product product) {
-        if (onProductListItemSelectedListener != null) {
-            onProductListItemSelectedListener.onProductListItemLongClick(product);
-        }
-    }
-
-    public interface OnProductListItemSelectedListener {
-        void onProductListItemClick(Product product);
-
-        void onProductListItemLongClick(Product product);
     }
 
 }

@@ -34,8 +34,7 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
 
     /**
      * Create a default SearchBuilder.
-     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
-     *
+     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelId(String)}} must be called.
      */
     public SearchBuilder() {
         super();

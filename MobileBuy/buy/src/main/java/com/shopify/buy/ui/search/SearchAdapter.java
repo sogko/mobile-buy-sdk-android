@@ -34,4 +34,5 @@ public class SearchAdapter extends ProductListAdapter {
     public SearchAdapter(Context context, ShopifyTheme theme) {
         super(context, theme);
     }
+
 }

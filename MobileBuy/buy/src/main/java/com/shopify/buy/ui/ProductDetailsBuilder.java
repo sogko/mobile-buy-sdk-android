@@ -44,7 +44,7 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     /**
      * Create a default ProductDetailsBuilder.
-     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}, and {@link #setProductId(String)} must be called.
+     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelId(String)}, and {@link #setProductId(String)} must be called.
      *
      * @param context context to use for starting the {@code Activity}
      */
@@ -74,8 +74,8 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
         return this;
     }
 
-    public ProductDetailsBuilder showCartButton(boolean showCartButton) {
-        config.showCartButton(showCartButton);
+    public ProductDetailsBuilder setShowCartButton(boolean showCartButton) {
+        config.setShowCartButton(showCartButton);
         return this;
     }
 
