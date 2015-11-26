@@ -37,8 +37,7 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
 
     /**
      * Create a default CollectionListBuilder.
-     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
-     *
+     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelId(String)}} must be called.
      */
     public CollectionListBuilder() {
         super();
@@ -47,7 +46,7 @@ public class CollectionListBuilder extends BaseBuilder<CollectionListBuilder> {
     /**
      * Constructor that will use an existing {@link BuyClient} to configure the {@link CollectionListFragment}.
      *
-     * @param client  the {@link BuyClient} to use to configure the CollectionListFragment
+     * @param client the {@link BuyClient} to use to configure the CollectionListFragment
      */
     public CollectionListBuilder(BuyClient client) {
         super(client);

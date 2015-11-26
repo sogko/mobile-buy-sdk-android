@@ -24,6 +24,7 @@
 
 package com.shopify.sample.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,11 +35,9 @@ import android.widget.ToggleButton;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.ProductDetailsBuilder;
 import com.shopify.buy.ui.common.OnProviderFailedListener;
 import com.shopify.buy.ui.common.ShopifyTheme;
 import com.shopify.buy.ui.products.ProductListFragment;
-import com.shopify.sample.BuildConfig;
 import com.shopify.sample.R;
 import com.shopify.sample.activity.base.SampleActivity;
 import com.shopify.sample.dialog.HSVColorPickerDialog;
@@ -50,7 +49,7 @@ import retrofit.client.Response;
 /**
  * This activity allows the user to select a product to purchase from a list of all products in a collection.
  */
-public class ProductListActivity extends SampleActivity implements ProductListFragment.OnProductListItemSelectedListener {
+public class ProductListActivity extends SampleActivity {
 
     private static final String LOG_TAG = ProductListActivity.class.getSimpleName();
 
@@ -81,7 +80,7 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
             productListFragment.setArguments(bundle);
         }
 
-        productListFragment.setOnProductListItemSelectedListener(this);
+        productListFragment.setRoutingCoordinator(new ProductRoutingCoordinator());
 
         productListFragment.setOnProviderFailedListener(new OnProviderFailedListener() {
             @Override
@@ -178,37 +177,16 @@ public class ProductListActivity extends SampleActivity implements ProductListFr
 
     }
 
-    /***
-     * Either opens a new {@link com.shopify.buy.ui.ProductDetailsActivity} with the specified parameters,
-     * or starts the native checkout flow.
-     *
-     * @param product
-     */
-    @Override
-    public void onProductListItemClick(Product product) {
-        // Start the ProductDetailsActivity
-        if (useProductDetailsActivity) {
-            ProductDetailsBuilder builder = new ProductDetailsBuilder(this);
-            Intent intent = builder.setShopDomain(BuildConfig.SHOP_DOMAIN)
-                    .setApiKey(BuildConfig.API_KEY)
-                    .setChannelid(BuildConfig.CHANNEL_ID)
-                    .setApplicationName(BuildConfig.APPLICATION_ID)
-                    .setProduct(product)
-                    .setTheme(theme)
-                    .setWebReturnToUrl(getString(R.string.web_return_to_url))
-                    .setWebReturnToLabel(getString(R.string.web_return_to_label))
-                    .setShop(getSampleApplication().getShop())
-                    .build();
-            startActivity(intent);
-        } else {
-            // Start the native checkout.
-            createCheckout(product);
-        }
-    }
+    private class ProductRoutingCoordinator extends SampleRoutingCoordinator {
 
-    @Override
-    public void onProductListItemLongClick(Product product) {
-        // Nothing to do
+        @Override
+        protected void displayProduct(Product product, Context context) {
+            if (useProductDetailsActivity) {
+                super.displayProduct(product, context);
+            } else {
+                createCheckout(product);
+            }
+        }
     }
 
 }

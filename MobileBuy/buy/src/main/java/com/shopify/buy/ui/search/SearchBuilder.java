@@ -26,10 +26,8 @@ package com.shopify.buy.ui.search;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.providers.DefaultSearchProvider;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
 
@@ -37,8 +35,7 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
 
     /**
      * Create a default SearchBuilder.
-     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}} must be called.
-     *
+     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelId(String)}} must be called.
      */
     public SearchBuilder() {
         super();

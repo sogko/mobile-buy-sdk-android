@@ -43,7 +43,13 @@ import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Checkout;
+import com.shopify.buy.model.Collection;
+import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.ui.ProductDetailsActivity;
+import com.shopify.buy.ui.ProductDetailsBuilder;
+import com.shopify.buy.ui.products.ProductListActivity;
+import com.shopify.buy.ui.products.ProductListBuilder;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -71,6 +77,11 @@ public abstract class BaseFragment extends Fragment {
     protected BaseProvider provider;
     protected Handler pollingHandler;
     protected OnProviderFailedListener onProviderFailedListener;
+    protected RoutingCoordinator routingCoordinator;
+
+    public void setRoutingCoordinator(RoutingCoordinator routingCoordinator) {
+        this.routingCoordinator = routingCoordinator;
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -145,12 +156,17 @@ public abstract class BaseFragment extends Fragment {
             shop = Shop.fromJson(shopJson);
         }
 
-        // First try to get the theme from the bundle, then fallback to a default theme
+        // First try to get the ShopifyTheme and RoutingCoordinator from the bundle, then fallback to defaaults
         Bundle arguments = getArguments();
         if (arguments != null) {
             Parcelable bundleTheme = arguments.getParcelable(BaseConfig.EXTRA_THEME);
             if (bundleTheme != null && bundleTheme instanceof ShopifyTheme) {
                 theme = (ShopifyTheme) bundleTheme;
+            }
+
+            Parcelable bundleRoutingCoordinator = arguments.getParcelable(BaseConfig.EXTRA_ROUTING_COORDINATOR);
+            if (bundleRoutingCoordinator != null & bundleRoutingCoordinator instanceof RoutingCoordinator) {
+                routingCoordinator = (RoutingCoordinator) bundleRoutingCoordinator;
             }
         }
         if (theme == null) {
@@ -324,6 +340,41 @@ public abstract class BaseFragment extends Fragment {
      */
     protected void onCartDeleted() {
         // Empty
+    }
+
+    protected void launchProductListActivity(Collection collection) {
+        ProductListBuilder builder = new ProductListBuilder();
+        populateBuilder(builder);
+        builder.setCollection(collection);
+
+        Intent intent = builder.buildIntent();
+        intent.setClass(getActivity(), ProductListActivity.class);
+
+        getActivity().startActivity(intent);
+    }
+
+    protected void launchProductDetailsActivity(Product product) {
+        ProductDetailsBuilder builder = new ProductDetailsBuilder(getActivity());
+        populateBuilder(builder);
+        builder.setProduct(product);
+        builder.setShowCartButton(true);
+
+        Intent intent = builder.buildIntent();
+        intent.setClass(getActivity(), ProductDetailsActivity.class);
+
+        getActivity().startActivity(intent);
+    }
+
+    protected void populateBuilder(BaseBuilder builder) {
+        builder.setShopDomain(buyClient.getShopDomain())
+                .setApiKey(buyClient.getApiKey())
+                .setChannelId(buyClient.getChannelId())
+                .setApplicationName(buyClient.getApplicationName())
+                .setShop(shop)
+                .setTheme(theme)
+                .setUserId(userId)
+                .setWebReturnToLabel(buyClient.getWebReturnToLabel())
+                .setWebReturnToUrl(buyClient.getWebReturnToUrl());
     }
 
 }

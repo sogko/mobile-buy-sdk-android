@@ -22,36 +22,16 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.sample.activity;
+package com.shopify.buy.ui.collections;
 
-import android.os.Bundle;
-
-import com.shopify.buy.ui.collections.CollectionListBuilder;
+import com.shopify.buy.ui.common.BaseActivity;
 import com.shopify.buy.ui.common.BaseFragment;
-import com.shopify.sample.BuildConfig;
-import com.shopify.sample.R;
 
-/**
- * The first activity in the app flow. Allows the user to browse the list of collections and drill down into a list of products.
- */
-public class CollectionListActivity extends com.shopify.buy.ui.collections.CollectionListActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setTitle(R.string.choose_collection);
-    }
+public class CollectionListActivity extends BaseActivity {
 
     @Override
     protected BaseFragment createFragment() {
-        return new CollectionListBuilder()
-                .setApiKey(BuildConfig.API_KEY)
-                .setChannelId(BuildConfig.CHANNEL_ID)
-                .setShopDomain(BuildConfig.SHOP_DOMAIN)
-                .setApplicationName(getString(R.string.app_name))
-                .setRoutingCoordinator(new SampleRoutingCoordinator())
-                .buildFragment();
+        return new CollectionListFragment();
     }
-
+    
 }

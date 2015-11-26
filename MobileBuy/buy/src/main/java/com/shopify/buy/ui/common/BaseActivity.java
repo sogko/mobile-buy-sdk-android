@@ -24,27 +24,44 @@
 
 package com.shopify.buy.ui.common;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.WindowManager;
 
 import com.instabug.wrapper.support.activity.InstabugAppCompatActivity;
-import com.shopify.buy.utils.DeviceUtils;
+import com.shopify.buy.R;
 
+public abstract class BaseActivity extends InstabugAppCompatActivity {
 
-public class BaseActivity extends InstabugAppCompatActivity {
+    protected BaseFragment fragment;
+
+    protected abstract BaseFragment createFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (DeviceUtils.isTablet(getResources())) {
-            makeActivityDialog();
+        if (savedInstanceState == null) {
+            if (fragment == null) {
+                fragment = createFragment();
+            }
+
+            Intent intent = getIntent();
+            if (intent != null && intent.getExtras() != null) {
+                if (fragment.getArguments() != null) {
+                    fragment.getArguments().putAll(intent.getExtras());
+                } else {
+                    fragment.setArguments(intent.getExtras());
+                }
+            }
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.base_activity, fragment)
+                    .commit();
+        } else {
+            fragment = (BaseFragment) getSupportFragmentManager().findFragmentById(R.id.base_activity);
         }
+
+        setContentView(R.layout.base_activity);
     }
 
     @Override
@@ -61,31 +78,12 @@ public class BaseActivity extends InstabugAppCompatActivity {
         setIntent(intent);
     }
 
-    private void makeActivityDialog() {
-        // Turn on rotation for large devices
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-
-        // Get the full screen size
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels;
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-
-        // Adjust the screen size to make it a dialog
-        if (screenHeight > screenWidth) {// portrait mode
-            params.width = Math.round(screenWidth * 0.80f);
-            params.height = Math.min(Math.round(params.width * 1.25f), screenHeight);
-        } else {
-            // landscape
-            params.height = Math.round(screenHeight * 0.85f);
-            params.width = Math.min(Math.round(params.height * 0.80f), screenWidth);
+    protected void setResult(int resultCode, Bundle bundle) {
+        Intent intent = getIntent();
+        if (bundle != null) {
+            intent.putExtras(bundle);
         }
-
-        // Update the window with our new settings
-        getWindow().setAttributes(params);
+        setResult(resultCode, intent);
     }
 
 }

@@ -24,7 +24,6 @@
 
 package com.shopify.buy.ui.common;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -39,7 +38,6 @@ public abstract class BaseBuilder<T extends BaseBuilder> {
 
     /**
      * Create a default BaseBuilder.
-     *
      */
     public BaseBuilder() {
         this(null);
@@ -70,7 +68,7 @@ public abstract class BaseBuilder<T extends BaseBuilder> {
         return (T) this;
     }
 
-    public T setChannelid(String channelId) {
+    public T setChannelId(String channelId) {
         config.setChannelId(channelId);
         return (T) this;
     }
@@ -102,6 +100,11 @@ public abstract class BaseBuilder<T extends BaseBuilder> {
 
     public T setUserId(String userId) {
         config.setUserId(userId);
+        return (T) this;
+    }
+
+    public T setRoutingCoordinator(RoutingCoordinator routingCoordinator) {
+        config.setRoutingCoordinator(routingCoordinator);
         return (T) this;
     }
 

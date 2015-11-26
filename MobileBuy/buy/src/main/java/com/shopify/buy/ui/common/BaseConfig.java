@@ -42,6 +42,7 @@ public class BaseConfig {
     public static final String EXTRA_USER_ID = "com.shopify.buy.ui.USER_ID";
     public static final String EXTRA_SHOP = "com.shopify.buy.ui.SHOP";
     public static final String EXTRA_CART = "com.shopify.buy.ui.CART";
+    public static final String EXTRA_ROUTING_COORDINATOR = "com.shopify.buy.ui.ROUTING_COORDINATOR";
 
     private String shopDomain;
     private String apiKey;
@@ -53,6 +54,7 @@ public class BaseConfig {
     private String userId;
     private Shop shop;
     private Cart cart;
+    private RoutingCoordinator routingCoordinator;
 
     public Cart getCart() {
         return cart;
@@ -114,6 +116,10 @@ public class BaseConfig {
         this.shop = shop;
     }
 
+    public void setRoutingCoordinator(RoutingCoordinator routingCoordinator) {
+        this.routingCoordinator = routingCoordinator;
+    }
+
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
 
@@ -155,6 +161,10 @@ public class BaseConfig {
 
         if (cart != null) {
             bundle.putString(EXTRA_CART, cart.toJsonString());
+        }
+
+        if (routingCoordinator != null) {
+            bundle.putParcelable(EXTRA_ROUTING_COORDINATOR, routingCoordinator);
         }
 
         return bundle;

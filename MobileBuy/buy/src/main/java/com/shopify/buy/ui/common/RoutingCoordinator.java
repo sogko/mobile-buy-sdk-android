@@ -22,36 +22,15 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.sample.activity;
+package com.shopify.buy.ui.common;
 
-import android.os.Bundle;
+import android.content.Context;
+import android.os.Parcelable;
 
-import com.shopify.buy.ui.collections.CollectionListBuilder;
-import com.shopify.buy.ui.common.BaseFragment;
-import com.shopify.sample.BuildConfig;
-import com.shopify.sample.R;
+import com.shopify.buy.model.ShopifyObject;
 
-/**
- * The first activity in the app flow. Allows the user to browse the list of collections and drill down into a list of products.
- */
-public class CollectionListActivity extends com.shopify.buy.ui.collections.CollectionListActivity {
+public interface RoutingCoordinator extends Parcelable {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setTitle(R.string.choose_collection);
-    }
-
-    @Override
-    protected BaseFragment createFragment() {
-        return new CollectionListBuilder()
-                .setApiKey(BuildConfig.API_KEY)
-                .setChannelId(BuildConfig.CHANNEL_ID)
-                .setShopDomain(BuildConfig.SHOP_DOMAIN)
-                .setApplicationName(getString(R.string.app_name))
-                .setRoutingCoordinator(new SampleRoutingCoordinator())
-                .buildFragment();
-    }
+    void displayContent(ShopifyObject content, Context context);
 
 }

@@ -27,7 +27,6 @@ package com.shopify.buy.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
@@ -35,7 +34,6 @@ import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
-import com.shopify.buy.ui.common.BaseProvider;
 import com.shopify.buy.ui.common.CheckoutListener;
 
 /**
@@ -47,7 +45,7 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
 
     /**
      * Create a default ProductDetailsBuilder.
-     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelid(String)}, and {@link #setProductId(String)} must be called.
+     * If this constructor is used, {@link #setShopDomain(String)}, {@link #setApplicationName(String)}, {@link #setApiKey(String)}, {@link #setChannelId(String)}, and {@link #setProductId(String)} must be called.
      *
      * @param context context to use for starting the {@code Activity}
      */
@@ -85,7 +83,7 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
         return this;
     }
 
-    public ProductDetailsBuilder showCartButton(boolean showCartButton) {
+    public ProductDetailsBuilder setShowCartButton(boolean showCartButton) {
         ((ProductDetailsConfig) config).showCartButton(showCartButton);
         return this;
     }

@@ -25,52 +25,66 @@
 package com.shopify.buy.ui;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.WindowManager;
 
-import com.shopify.buy.R;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.ui.common.BaseActivity;
+import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.CheckoutListener;
+import com.shopify.buy.utils.DeviceUtils;
 
 /**
  * Activity that shows the details of a {@link Product}.
  */
 public class ProductDetailsActivity extends BaseActivity implements CheckoutListener {
 
-    protected ProductDetailsFragment productDetailsFragment;
+    @Override
+    protected BaseFragment createFragment() {
+        return new ProductDetailsFragment();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            productDetailsFragment = getFragment();
+        if (DeviceUtils.isTablet(getResources())) {
+            makeActivityDialog();
+        }
+    }
 
-            Intent intent = getIntent();
-            if (intent != null) {
-                productDetailsFragment.setArguments(intent.getExtras());
-            }
+    private void makeActivityDialog() {
+        // Turn on rotation for large devices
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.product_details_activity, productDetailsFragment)
-                    .commit();
+        // Get the full screen size
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+
+        // Adjust the screen size to make it a dialog
+        if (screenHeight > screenWidth) {// portrait mode
+            params.width = Math.round(screenWidth * 0.80f);
+            params.height = Math.min(Math.round(params.width * 1.25f), screenHeight);
         } else {
-            productDetailsFragment = (ProductDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.product_details_activity);
+            // landscape
+            params.height = Math.round(screenHeight * 0.85f);
+            params.width = Math.min(Math.round(params.height * 0.80f), screenWidth);
         }
 
-        setContentView(R.layout.activity_product_details);
+        // Update the window with our new settings
+        getWindow().setAttributes(params);
     }
 
-    private ProductDetailsFragment getFragment() {
-        if (productDetailsFragment == null) {
-            productDetailsFragment = new ProductDetailsFragment();
-        }
-        return productDetailsFragment;
-    }
-
-    // ProductDetailsListener Callbacks
+    // CheckoutListener Callbacks
 
     public void onSuccess(Bundle bundle) {
         setResult(Activity.RESULT_OK, bundle);
@@ -84,14 +98,6 @@ public class ProductDetailsActivity extends BaseActivity implements CheckoutList
     public void onCancel(Bundle bundle) {
         setResult(Activity.RESULT_CANCELED, bundle);
         finish();
-    }
-
-    private void setResult(int resultCode, Bundle bundle) {
-        Intent intent = getIntent();
-        if (bundle != null) {
-            intent.putExtras(bundle);
-        }
-        setResult(resultCode, intent);
     }
 
 }
