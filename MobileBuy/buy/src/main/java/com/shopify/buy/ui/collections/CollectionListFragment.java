@@ -39,7 +39,6 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.providers.BuyDataProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.ui.common.BaseFragment;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
@@ -62,18 +61,9 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
 
     private OnCollectionListItemSelectedListener collectionListItemSelectedListener;
 
-    public void setProvider(CollectionListProvider provider) {
-        this.provider = provider;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (provider == null) {
-            provider = new BuyDataProvider(getActivity());
-        }
-
         Bundle bundle = getArguments();
         parseCollections(bundle);
     }
@@ -146,7 +136,7 @@ public class CollectionListFragment extends BaseFragment implements RecyclerView
     }
 
     private void fetchCollections() {
-        ((CollectionListProvider) provider).getCollections(buyClient, new Callback<List<Collection>>() {
+        provider.getCollections(buyClient, new Callback<List<Collection>>() {
             @Override
             public void success(List<Collection> collections, Response response) {
                 CollectionListFragment.this.collections = collections;

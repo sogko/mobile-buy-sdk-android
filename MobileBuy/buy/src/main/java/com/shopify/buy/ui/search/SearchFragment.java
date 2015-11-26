@@ -40,7 +40,6 @@ import android.widget.SearchView;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.providers.BuyDataProvider;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
@@ -67,20 +66,11 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     private List<Product> products = new ArrayList<>();
 
-    public void setProvider(SearchProvider provider) {
-        this.provider = provider;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        if (provider == null) {
-            provider = new BuyDataProvider(getActivity());
-        }
-
         Bundle bundle = getArguments();
         parseExtras(bundle);
     }
@@ -206,7 +196,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
             }
         };
 
-        ((SearchProvider) provider).searchProducts(query, buyClient, callback);
+        provider.searchProducts(query, buyClient, callback);
     }
 
     @Override

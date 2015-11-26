@@ -25,14 +25,11 @@
 package com.shopify.buy.ui.cart;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.ui.common.BaseBuilder;
 import com.shopify.buy.ui.common.BaseConfig;
-import com.shopify.buy.ui.common.BaseProvider;
-import com.shopify.buy.ui.common.CheckoutListener;
 
 public class CartBuilder extends BaseBuilder<CartBuilder> {
 

@@ -40,7 +40,6 @@ import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.common.BaseProvider;
 import com.shopify.buy.ui.common.CheckoutFragment;
 import com.shopify.buy.ui.common.CheckoutListener;
 import com.shopify.buy.ui.common.FabListener;
@@ -135,9 +134,6 @@ public class ProductDetailsFragment extends CheckoutFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void setProvider(BaseProvider provider) {
-        this.provider = provider;
-    }
 
     @Override
     protected void fetchDataIfNecessary() {

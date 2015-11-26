@@ -38,7 +38,6 @@ import android.widget.Button;
 
 import com.shopify.buy.R;
 import com.shopify.buy.customTabs.CustomTabActivityHelper;
-import com.shopify.buy.dataprovider.providers.BuyDataProvider;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.utils.NetworkUtility;
@@ -57,15 +56,6 @@ public abstract class CheckoutFragment extends BaseFragment {
     protected Cart cart;
 
     private final AtomicBoolean cancelledCheckout = new AtomicBoolean(false);
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (provider == null) {
-            provider = new BuyDataProvider(getActivity());
-        }
-    }
 
     @Override
     protected void parseArguments() {
@@ -90,10 +80,6 @@ public abstract class CheckoutFragment extends BaseFragment {
         super.onResume();
         checkoutButton.setEnabled(true);
         cancelledCheckout.set(false);
-    }
-
-    public void setProvider(BaseProvider provider) {
-        this.provider = provider;
     }
 
     public void setCheckoutListener(CheckoutListener checkoutListener) {
