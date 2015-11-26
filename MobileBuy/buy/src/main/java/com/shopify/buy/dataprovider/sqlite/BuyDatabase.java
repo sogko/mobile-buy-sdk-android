@@ -73,6 +73,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
      */
 
     private static final Lock sWriteLock = new ReentrantLock();
+    private static final Lock sCartLock = new ReentrantLock();
 
     public BuyDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -378,6 +379,7 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
 
         try {
             sWriteLock.lock();
+            sCartLock.lock();
 
             SQLiteDatabase db = getWritableDatabase();
 
@@ -396,7 +398,9 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
                     db.insert(TABLE_LINE_ITEM_PROPERTIES, null, values);
                 }
             }
+
         } finally {
+            sCartLock.unlock();
             sWriteLock.unlock();
         }
     }
@@ -409,40 +413,47 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
         List<CartLineItem> lineItems = new ArrayList<>();
         Set<ProductVariant> productVariants = new HashSet<>();
 
-        String where = String.format("%s = \'%s\'", LineItemsTable.USER_ID, userId);
-        Cursor lineItemsCursor = querySimple(TABLE_LINE_ITEMS, where, null);
-        if (lineItemsCursor.moveToFirst()) {
-            do {
-                // Get the line item properties
-                String lineItemId = lineItemsCursor.getString(lineItemsCursor.getColumnIndex(LineItemsTable.LINE_ITEM_ID));
-                where = String.format("%s = \'%s\' AND %s = \'%s\'", LineItemsTable.USER_ID, userId, LineItemsTable.LINE_ITEM_ID, lineItemId);
-                Cursor propertiesCursor = querySimple(TABLE_LINE_ITEM_PROPERTIES, where, null);
-                Map<String, String> properties = QueryHelper.lineItemProperties(propertiesCursor);
+        try {
+            sCartLock.lock();
 
-                // Get the OptionValues for the ProductVariant
-                String variantId = lineItemsCursor.getString(lineItemsCursor.getColumnIndex(LineItemsTable.VARIANT_ID));
-                where = String.format("%s = \'%s\'", OptionValuesTable.VARIANT_ID, variantId);
-                Cursor optionValuesCursor = querySimple(TABLE_OPTION_VALUES, where, null);
-                List<ModelFactory.DBOptionValue> optionValues = QueryHelper.optionValues(optionValuesCursor);
+            String where = String.format("%s = \'%s\'", LineItemsTable.USER_ID, userId);
+            Cursor lineItemsCursor = querySimple(TABLE_LINE_ITEMS, where, null);
+            if (lineItemsCursor.moveToFirst()) {
+                do {
+                    // Get the line item properties
+                    String lineItemId = lineItemsCursor.getString(lineItemsCursor.getColumnIndex(LineItemsTable.LINE_ITEM_ID));
+                    where = String.format("%s = \'%s\' AND %s = \'%s\'", LineItemsTable.USER_ID, userId, LineItemsTable.LINE_ITEM_ID, lineItemId);
+                    Cursor propertiesCursor = querySimple(TABLE_LINE_ITEM_PROPERTIES, where, null);
+                    Map<String, String> properties = QueryHelper.lineItemProperties(propertiesCursor);
 
-                // Build the ProductVariant
-                where = String.format("%s = \'%s\'", ProductVariantsTable.ID, variantId);
-                Cursor variantCursor = querySimple(TABLE_PRODUCT_VARIANTS, where, null);
-                ProductVariant variant = QueryHelper.productVariant(variantCursor, optionValues);
+                    // Get the OptionValues for the ProductVariant
+                    String variantId = lineItemsCursor.getString(lineItemsCursor.getColumnIndex(LineItemsTable.VARIANT_ID));
+                    where = String.format("%s = \'%s\'", OptionValuesTable.VARIANT_ID, variantId);
+                    Cursor optionValuesCursor = querySimple(TABLE_OPTION_VALUES, where, null);
+                    List<ModelFactory.DBOptionValue> optionValues = QueryHelper.optionValues(optionValuesCursor);
 
-                // Add the LineItem and ProductVariant to the collections
-                productVariants.add(variant);
-                lineItems.add(QueryHelper.lineItem(lineItemsCursor, properties, variant));
-            } while (lineItemsCursor.moveToNext());
+                    // Build the ProductVariant
+                    where = String.format("%s = \'%s\'", ProductVariantsTable.ID, variantId);
+                    Cursor variantCursor = querySimple(TABLE_PRODUCT_VARIANTS, where, null);
+                    ProductVariant variant = QueryHelper.productVariant(variantCursor, optionValues);
+
+                    // Add the LineItem and ProductVariant to the collections
+                    productVariants.add(variant);
+                    lineItems.add(QueryHelper.lineItem(lineItemsCursor, properties, variant));
+                } while (lineItemsCursor.moveToNext());
+            }
+            lineItemsCursor.close();
+
+        } finally {
+            sCartLock.unlock();
         }
-        lineItemsCursor.close();
-
         return new ModelFactory.DBCart(lineItems, productVariants);
     }
 
     public void deleteCart(String userId) {
         try {
             sWriteLock.lock();
+            sCartLock.lock();
 
             SQLiteDatabase db = getWritableDatabase();
 
@@ -453,7 +464,9 @@ public class BuyDatabase extends SQLiteOpenHelper implements DatabaseConstants {
             // delete LineItem properties
             deleteWhere = String.format("%s = \'%s\'", LineItemPropertiesTable.USER_ID, userId);
             db.delete(TABLE_LINE_ITEM_PROPERTIES, deleteWhere, null);
+
         } finally {
+            sCartLock.unlock();
             sWriteLock.unlock();
         }
     }
