@@ -44,6 +44,7 @@ import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.ui.common.BuyBuilderConfig;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.utils.CollectionUtils;
 
@@ -96,7 +97,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         super.onSaveInstanceState(outState);
 
         if (products != null) {
-            outState.putString(ProductListConfig.EXTRA_SHOP_PRODUCTS, BuyClientFactory.createDefaultGson().toJson(products));
+            outState.putString(BuyBuilderConfig.EXTRA_SHOP_PRODUCTS, BuyClientFactory.createDefaultGson().toJson(products));
         }
 
         if (recyclerView != null && recyclerView.getLayoutManager() != null) {
@@ -126,18 +127,18 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     private void parseProducts(Bundle bundle) {
         // Retrieve the list of products if they were provided
-        if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCTS)) {
-            String productsJson = bundle.getString(ProductListConfig.EXTRA_SHOP_PRODUCTS);
+        if (bundle.containsKey(BuyBuilderConfig.EXTRA_SHOP_PRODUCTS)) {
+            String productsJson = bundle.getString(BuyBuilderConfig.EXTRA_SHOP_PRODUCTS);
 
             if (!TextUtils.isEmpty(productsJson)) {
                 products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
             }
 
-        } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS)) {
-            productIds = bundle.getStringArrayList(ProductListConfig.EXTRA_SHOP_PRODUCT_IDS);
+        } else if (bundle.containsKey(BuyBuilderConfig.EXTRA_SHOP_PRODUCT_IDS)) {
+            productIds = bundle.getStringArrayList(BuyBuilderConfig.EXTRA_SHOP_PRODUCT_IDS);
 
-        } else if (bundle.containsKey(ProductListConfig.EXTRA_SHOP_COLLECTION)) {
-            collection = Collection.fromJson(bundle.getString(ProductListConfig.EXTRA_SHOP_COLLECTION));
+        } else if (bundle.containsKey(BuyBuilderConfig.EXTRA_SHOP_COLLECTION)) {
+            collection = Collection.fromJson(bundle.getString(BuyBuilderConfig.EXTRA_SHOP_COLLECTION));
         }
     }
 

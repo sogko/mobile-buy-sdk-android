@@ -26,11 +26,18 @@ package com.shopify.buy.ui.common;
 
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
+import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.Collection;
+import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 
-public class BaseConfig {
+import java.util.ArrayList;
+import java.util.List;
+
+public class BuyBuilderConfig {
 
     public static final String EXTRA_SHOP_DOMAIN = "com.shopify.buy.ui.SHOP_DOMAIN";
     public static final String EXTRA_SHOP_API_KEY = "com.shopify.buy.ui.API_KEY";
@@ -43,6 +50,15 @@ public class BaseConfig {
     public static final String EXTRA_SHOP = "com.shopify.buy.ui.SHOP";
     public static final String EXTRA_CART = "com.shopify.buy.ui.CART";
     public static final String EXTRA_ROUTING_COORDINATOR = "com.shopify.buy.ui.ROUTING_COORDINATOR";
+    public static final String EXTRA_SHOP_PRODUCT_ID = "com.shopify.buy.ui.PRODUCT_ID";
+    public static final String EXTRA_SHOP_PRODUCT = "com.shopify.buy.ui.PRODUCT";
+    public static final String EXTRA_SHOW_CART_BUTTON = "com.shopify.buy.ui.SHOW_CART_BUTTON";
+    public static final String EXTRA_SHOP_COLLECTIONS = "com.shopify.buy.ui.COLLECTIONS";
+    public static final String EXTRA_SHOP_PRODUCTS = "com.shopify.buy.ui.PRODUCTS";
+    public static final String EXTRA_SHOP_PRODUCT_IDS = "com.shopify.buy.ui.PRODUCT_IDS";
+    public static final String EXTRA_SHOP_COLLECTION = "com.shopify.buy.ui.COLLECTION";
+    public static final String EXTRA_SEARCH_QUERY = "com.shopify.buy.ui.SEARCH_QUERY";
+    public static final String EXTRA_SEARCH_RESULTS = "com.shopify.buy.ui.SEARCH_RESULTS";
 
     private String shopDomain;
     private String apiKey;
@@ -55,6 +71,14 @@ public class BaseConfig {
     private Shop shop;
     private Cart cart;
     private RoutingCoordinator routingCoordinator;
+    private String productId;
+    private Product product;
+    private boolean showCartButton;
+    private List<Collection> collections;
+    private List<Product> products;
+    private List<String> productIds;
+    private Collection collection;
+    private String query;
 
     public Cart getCart() {
         return cart;
@@ -120,6 +144,70 @@ public class BaseConfig {
         this.routingCoordinator = routingCoordinator;
     }
 
+    public String getProductId() {
+        return productId;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public boolean shouldShowCartButton() {
+        return showCartButton;
+    }
+
+    public void setShowCartButton(boolean showCartButton) {
+        this.showCartButton = showCartButton;
+    }
+
+    public List<Collection> getCollections() {
+        return collections;
+    }
+
+    public void setCollections(List<Collection> collections) {
+        this.collections = collections;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public List<String> getProductIds() {
+        return productIds;
+    }
+
+    public Collection getCollection() {
+        return collection;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public void setProductIds(List<String> productIds) {
+        this.productIds = productIds;
+    }
+
+    public void setCollection(Collection collection) {
+        this.collection = collection;
+    }
+
+    public String getSearchQuery() {
+        return query;
+    }
+
+    public void setSearchQuery(String query) {
+        this.query = query;
+    }
+
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
 
@@ -166,7 +254,39 @@ public class BaseConfig {
         if (routingCoordinator != null) {
             bundle.putParcelable(EXTRA_ROUTING_COORDINATOR, routingCoordinator);
         }
+        if (productId != null) {
+            bundle.putString(EXTRA_SHOP_PRODUCT_ID, productId);
+        }
+
+        if (product != null) {
+            bundle.putString(EXTRA_SHOP_PRODUCT, product.toJsonString());
+        }
+
+        bundle.putBoolean(EXTRA_SHOW_CART_BUTTON, showCartButton);
+
+        if (collections != null) {
+            String productsJson = BuyClientFactory.createDefaultGson().toJson(collections);
+            bundle.putString(EXTRA_SHOP_COLLECTIONS, productsJson);
+        }
+
+        if (products != null) {
+            String productsJson = BuyClientFactory.createDefaultGson().toJson(products);
+            bundle.putString(EXTRA_SHOP_PRODUCTS, productsJson);
+        }
+
+        if (productIds != null) {
+            bundle.putStringArrayList(EXTRA_SHOP_PRODUCT_IDS, new ArrayList<>(productIds));
+        }
+
+        if (collection != null) {
+            bundle.putString(EXTRA_SHOP_COLLECTION, collection.toJsonString());
+        }
+
+        if (!TextUtils.isEmpty(query)) {
+            bundle.putString(EXTRA_SEARCH_QUERY, query);
+        }
 
         return bundle;
     }
+
 }

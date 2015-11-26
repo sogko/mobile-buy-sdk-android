@@ -44,6 +44,7 @@ import com.shopify.buy.dataprovider.providers.DefaultSearchProvider;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.ui.common.BaseFragment;
+import com.shopify.buy.ui.common.BuyBuilderConfig;
 import com.shopify.buy.ui.common.RecyclerViewHolder;
 import com.shopify.buy.utils.CollectionUtils;
 
@@ -93,12 +94,12 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
 
     private void parseExtras(Bundle bundle) {
         // Retrieve the search query if it was provided
-        if (bundle.containsKey(SearchConfig.EXTRA_SEARCH_QUERY)) {
-            query = bundle.getString(SearchConfig.EXTRA_SEARCH_QUERY);
+        if (bundle.containsKey(BuyBuilderConfig.EXTRA_SEARCH_QUERY)) {
+            query = bundle.getString(BuyBuilderConfig.EXTRA_SEARCH_QUERY);
         }
 
         // Retrieve the current search results to display if there is one
-        String productsJson = bundle.getString(SearchConfig.EXTRA_SEARCH_RESULTS);
+        String productsJson = bundle.getString(BuyBuilderConfig.EXTRA_SEARCH_RESULTS);
         if (!TextUtils.isEmpty(productsJson)) {
             products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {
             }.getType());
@@ -153,7 +154,7 @@ public class SearchFragment extends BaseFragment implements RecyclerViewHolder.C
         super.onSaveInstanceState(outState);
 
         if (products != null) {
-            outState.putString(SearchConfig.EXTRA_SEARCH_RESULTS, BuyClientFactory.createDefaultGson().toJson(products));
+            outState.putString(BuyBuilderConfig.EXTRA_SEARCH_RESULTS, BuyClientFactory.createDefaultGson().toJson(products));
         }
     }
 

@@ -32,9 +32,9 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Shop;
 
 @SuppressWarnings("unchecked")
-public abstract class BaseBuilder<T extends BaseBuilder> {
+public class BaseBuilder<T extends BaseBuilder> {
 
-    protected BaseConfig config;
+    protected BuyBuilderConfig config;
 
     /**
      * Create a default BaseBuilder.
@@ -44,7 +44,7 @@ public abstract class BaseBuilder<T extends BaseBuilder> {
     }
 
     public BaseBuilder(BuyClient client) {
-        config = getConfig();
+        config = new BuyBuilderConfig();
 
         if (client != null) {
             config.setShopDomain(client.getShopDomain());
@@ -55,8 +55,6 @@ public abstract class BaseBuilder<T extends BaseBuilder> {
             config.setWebReturnToLabel(client.getWebReturnToLabel());
         }
     }
-
-    protected abstract BaseConfig getConfig();
 
     public T setShopDomain(String shopDomain) {
         config.setShopDomain(shopDomain);

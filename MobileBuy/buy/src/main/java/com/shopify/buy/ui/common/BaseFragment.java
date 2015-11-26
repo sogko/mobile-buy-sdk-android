@@ -124,18 +124,18 @@ public abstract class BaseFragment extends Fragment {
         Bundle bundle = getArguments();
 
         // Retrieve all the items required to create a BuyClient
-        String apiKey = bundle.getString(BaseConfig.EXTRA_SHOP_API_KEY);
-        String shopDomain = bundle.getString(BaseConfig.EXTRA_SHOP_DOMAIN);
-        String channelId = bundle.getString(BaseConfig.EXTRA_SHOP_CHANNEL_ID);
-        String applicationName = bundle.getString(BaseConfig.EXTRA_SHOP_APPLICATION_NAME);
+        String apiKey = bundle.getString(BuyBuilderConfig.EXTRA_SHOP_API_KEY);
+        String shopDomain = bundle.getString(BuyBuilderConfig.EXTRA_SHOP_DOMAIN);
+        String channelId = bundle.getString(BuyBuilderConfig.EXTRA_SHOP_CHANNEL_ID);
+        String applicationName = bundle.getString(BuyBuilderConfig.EXTRA_SHOP_APPLICATION_NAME);
 
         // Retrieve the optional settings
-        String webReturnToUrl = bundle.getString(BaseConfig.EXTRA_WEB_RETURN_TO_URL);
-        String webReturnToLabel = bundle.getString(BaseConfig.EXTRA_WEB_RETURN_TO_LABEL);
-        String shopJson = bundle.getString(BaseConfig.EXTRA_SHOP);
+        String webReturnToUrl = bundle.getString(BuyBuilderConfig.EXTRA_WEB_RETURN_TO_URL);
+        String webReturnToLabel = bundle.getString(BuyBuilderConfig.EXTRA_WEB_RETURN_TO_LABEL);
+        String shopJson = bundle.getString(BuyBuilderConfig.EXTRA_SHOP);
 
         // We require a user id for reading and writing carts to the DB
-        userId = bundle.getString(BaseConfig.EXTRA_USER_ID);
+        userId = bundle.getString(BuyBuilderConfig.EXTRA_USER_ID);
         if (TextUtils.isEmpty(userId)) {
             userId = getString(R.string.default_user_id);
         }
@@ -159,12 +159,12 @@ public abstract class BaseFragment extends Fragment {
         // First try to get the ShopifyTheme and RoutingCoordinator from the bundle, then fallback to defaaults
         Bundle arguments = getArguments();
         if (arguments != null) {
-            Parcelable bundleTheme = arguments.getParcelable(BaseConfig.EXTRA_THEME);
+            Parcelable bundleTheme = arguments.getParcelable(BuyBuilderConfig.EXTRA_THEME);
             if (bundleTheme != null && bundleTheme instanceof ShopifyTheme) {
                 theme = (ShopifyTheme) bundleTheme;
             }
 
-            Parcelable bundleRoutingCoordinator = arguments.getParcelable(BaseConfig.EXTRA_ROUTING_COORDINATOR);
+            Parcelable bundleRoutingCoordinator = arguments.getParcelable(BuyBuilderConfig.EXTRA_ROUTING_COORDINATOR);
             if (bundleRoutingCoordinator != null & bundleRoutingCoordinator instanceof RoutingCoordinator) {
                 routingCoordinator = (RoutingCoordinator) bundleRoutingCoordinator;
             }
