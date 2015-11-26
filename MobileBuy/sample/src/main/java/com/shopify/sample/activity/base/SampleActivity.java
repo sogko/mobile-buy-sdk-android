@@ -24,24 +24,24 @@
 
 package com.shopify.sample.activity.base;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shopify.sample.R;
+import com.shopify.sample.application.SampleApplication;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Discount;
 import com.shopify.buy.model.GiftCard;
-import com.shopify.sample.R;
-import com.shopify.sample.application.SampleApplication;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ import retrofit.client.Response;
 /**
  * Base class for all activities in the app. Manages the ProgressDialog that is displayed while network activity is occurring.
  */
-public class SampleActivity extends AppCompatActivity {
+public class SampleActivity extends Activity {
 
     private static final String LOG_TAG = SampleActivity.class.getSimpleName();
 
@@ -160,7 +160,9 @@ public class SampleActivity extends AppCompatActivity {
 
     /**
      * When we encounter an error with one of our network calls, we abort and return to the previous activity.
-     * In a production app, you'll want to handle these types of errors more gracefully.*
+     * In a production app, you'll want to handle these types of errors more gracefully.
+     *
+     * @param errorMessage
      */
     protected void onError(String errorMessage) {
         progressDialog.dismiss();
@@ -192,16 +194,11 @@ public class SampleActivity extends AppCompatActivity {
                 }
             }
         }
-
         ((TextView) findViewById(R.id.gift_card_value)).setText("-$" + Double.toString(totalGiftCards));
+
+        ((TextView) findViewById(R.id.shipping_value)).setText('$' + checkout.getShippingRate().getPrice());
         ((TextView) findViewById(R.id.taxes_value)).setText('$' + checkout.getTotalTax());
         ((TextView) findViewById(R.id.total_value)).setText('$' + checkout.getPaymentDue());
-
-        if (checkout.getShippingRate() != null) {
-            ((TextView) findViewById(R.id.shipping_value)).setText('$' + checkout.getShippingRate().getPrice());
-        } else {
-            ((TextView) findViewById(R.id.shipping_value)).setText("N/A");
-        }
     }
 
     /**

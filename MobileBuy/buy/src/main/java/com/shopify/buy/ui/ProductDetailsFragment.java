@@ -25,29 +25,40 @@
 package com.shopify.buy.ui;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.Button;
 
 import com.shopify.buy.R;
+import com.shopify.buy.customTabs.CustomTabActivityHelper;
+import com.shopify.buy.customTabs.CustomTabsHelper;
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.common.CheckoutFragment;
-import com.shopify.buy.ui.common.CheckoutListener;
-import com.shopify.buy.ui.common.FabListener;
-import com.shopify.buy.ui.common.ShareListener;
 import com.shopify.buy.utils.CurrencyFormatter;
 
+import java.net.HttpURLConnection;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -56,38 +67,25 @@ import retrofit.client.Response;
 /**
  * The fragment that controls the presentation of the {@link Product} details.
  */
-public class ProductDetailsFragment extends CheckoutFragment {
+public class ProductDetailsFragment extends Fragment {
+
+    private ProductDetailsListener productDetailsListener;
 
     private ProductDetailsFragmentView view;
-
-    private ShareListener shareListener;
-    private FabListener fabListener;
+    private ProgressDialog progressDialog;
 
     private Product product;
     private ProductVariant variant;
     private String productId;
+    private BuyClient buyClient;
+    private Shop shop;
 
-    private boolean showCartButton;
+    private ProductDetailsTheme theme;
+    private Button checkoutButton;
 
-    public void setShareListener(ShareListener shareListener) {
-        this.shareListener = shareListener;
-    }
+    private boolean viewCreated;
 
-    public void setFabListener(FabListener fabListener) {
-        this.fabListener = fabListener;
-    }
-
-    void onSharePressed() {
-        if (shareListener != null) {
-            shareListener.onProductShared(product);
-        }
-    }
-
-    void onFabPressed() {
-        if (fabListener != null) {
-            fabListener.onFabSelected();
-        }
-    }
+    private final AtomicBoolean cancelledCheckout = new AtomicBoolean(false);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -98,16 +96,115 @@ public class ProductDetailsFragment extends CheckoutFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.view.setTheme(theme);
+        viewCreated = true;
+
+        initTheme();
+        configureCheckoutButton();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        initializeBuyClient();
+        initializeProgressDialog();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            if (view.isImageAreaExpanded()) {
+                view.setImageAreaSize(false);
+            } else {
+                productDetailsListener.onCancel(null);
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // fetch the Shop and Product data if we don't have them already
+        if (product == null && !TextUtils.isEmpty(productId)) {
+            fetchProduct(productId);
+        }
+        if (shop == null) {
+            fetchShop();
+        }
+
+        showProductIfReady();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkoutButton.setEnabled(true);
+        cancelledCheckout.set(false);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            productDetailsListener = (ProductDetailsListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnProductDetailsCompletedListener");
+        }
+    }
+
+    private void initTheme() {
+        // First try to get the theme from the bundle, then fallback to a default theme
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            Parcelable bundleTheme = arguments.getParcelable(ProductDetailsConfig.EXTRA_THEME);
+            if (bundleTheme != null && bundleTheme instanceof ProductDetailsTheme) {
+                theme = (ProductDetailsTheme) bundleTheme;
+            }
+        }
+        if (theme == null) {
+            theme = new ProductDetailsTheme(getResources());
+        }
+        view.setTheme(theme);
+    }
+
+    private void configureCheckoutButton() {
+        checkoutButton = (Button)view.findViewById(R.id.checkout_button);
+
+        checkoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                view.setVariant(variant);
+                checkoutButton.setEnabled(false);
+                cancelledCheckout.set(false);
+                createWebCheckout();
+
+                showProgressDialog(getString(R.string.loading), getString(R.string.loading_checkout_page), new Runnable() {
+                    @Override
+                    public void run() {
+                        checkoutButton.setEnabled(true);
+                        cancelledCheckout.set(true);
+                    }
+                });
+            }
+        });
+    }
+
+    private void initializeBuyClient() {
 
         Bundle bundle = getArguments();
 
-        showCartButton = bundle.getBoolean(ProductDetailsConfig.EXTRA_SHOW_CART_BUTTON);
+        // Retrieve all the items required to create a BuyClient
+        String apiKey = bundle.getString(ProductDetailsConfig.EXTRA_SHOP_API_KEY);
+        String shopDomain = bundle.getString(ProductDetailsConfig.EXTRA_SHOP_DOMAIN);
+        String channelId = bundle.getString(ProductDetailsConfig.EXTRA_SHOP_CHANNEL_ID);
+        String applicationName = bundle.getString(ProductDetailsConfig.EXTRA_SHOP_APPLICATION_NAME);
 
         // Retrieve the id of the Product we are going to display
         productId = bundle.getString(ProductDetailsConfig.EXTRA_SHOP_PRODUCT_ID);
@@ -118,110 +215,73 @@ public class ProductDetailsFragment extends CheckoutFragment {
             variant = product.getVariants().get(0);
         }
 
+        // If we have a full shop object in the bundle, we don't need to fetch it
+        if (bundle.containsKey(ProductDetailsConfig.EXTRA_SHOP_SHOP)) {
+            shop = Shop.fromJson(bundle.getString(ProductDetailsConfig.EXTRA_SHOP_SHOP));
+        }
+
+        // Retrieve the optional settings
+        String webReturnToUrl = bundle.getString(ProductDetailsConfig.EXTRA_WEB_RETURN_TO_URL);
+        String webReturnToLabel = bundle.getString(ProductDetailsConfig.EXTRA_WEB_RETURN_TO_LABEL);
+
+        // Create the BuyClient
+        buyClient = BuyClientFactory.getBuyClient(shopDomain, apiKey, channelId, applicationName);
+
+        // Set the optional web return to values
+        if (!TextUtils.isEmpty(webReturnToUrl)) {
+            buyClient.setWebReturnToUrl(webReturnToUrl);
+        }
+
+        if (!TextUtils.isEmpty(webReturnToLabel)) {
+            buyClient.setWebReturnToLabel(webReturnToLabel);
+        }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            if (view.isImageAreaExpanded()) {
-                view.setImageAreaSize(false);
-            } else {
-                checkoutListener.onCancel(null);
+    private void initializeProgressDialog() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
+    }
+
+    private void showProgressDialog(final String title, final String message, final Runnable onCancel) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+
+                progressDialog.setCanceledOnTouchOutside(false);
+                progressDialog.setTitle(title);
+                progressDialog.setMessage(message);
+                progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        onCancel.run();
+                    }
+                });
+                progressDialog.show();
             }
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        });
     }
 
-
-    @Override
-    protected void fetchDataIfNecessary() {
-
-        // fetch the Shop and Product data if we don't have them already
-        if (product == null && !TextUtils.isEmpty(productId)) {
-            fetchProduct(productId);
-        }
-
-        if (shop == null) {
-            provider.getShop(buyClient, new Callback<Shop>() {
-                @Override
-                public void success(Shop shop, Response response) {
-                    ProductDetailsFragment.this.shop = shop;
-                    showViewIfReady();
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_SHOP_FAILED, BuyClient.getErrorBody(error)));
-                }
-            });
-        }
-
-        if (cart == null) {
-            provider.getCart(buyClient, userId, new Callback<Cart>() {
-                        @Override
-                        public void success(Cart cart, Response response) {
-                            ProductDetailsFragment.this.cart = cart;
-                            showViewIfReady();
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/589
-                        }
-                    }
-            );
-        }
+    void dismissProgressDialog() {
+        progressDialog.dismiss();
     }
 
-    @Override
-    protected void createWebCheckout() {
-        cart.addVariant(variant);
-        view.setVariant(variant);
-        super.createWebCheckout();
-    }
+    private void fetchShop() {
+        buyClient.getShop(new Callback<Shop>() {
+            @Override
+            public void success(Shop shop, Response response) {
+                ProductDetailsFragment.this.shop = shop;
+                showProductIfReady();
+            }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        if (checkoutListener != null) {
-            return;
-        }
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            checkoutListener = (CheckoutListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement CheckoutListener");
-        }
-    }
-
-    @Override
-    protected void configureCheckoutButton() {
-        super.configureCheckoutButton();
-
-        // Override the button if we should show the cart instead of the checkout button
-        if (showCartButton) {
-            checkoutButton.setText(R.string.add_to_cart);
-            checkoutButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isCartLocked.get()) {
-                        // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/636
-                        Toast.makeText(getActivity(), getString(R.string.cart_locked), Toast.LENGTH_LONG).show();
-                    } else {
-                        cart.addVariant(variant);
-                        provider.saveCart(cart, null, buyClient, userId);
-
-                        // TODO https://github.com/Shopify/mobile-buy-sdk-android-private/issues/594
-                        Toast.makeText(getActivity(), getString(R.string.added_to_cart, variant.getProductTitle()), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
+            @Override
+            public void failure(RetrofitError error) {
+                productDetailsListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_SHOP_FAILED, BuyClient.getErrorBody(error)));
+            }
+        });
     }
 
     private void fetchProduct(final String productId) {
@@ -233,35 +293,35 @@ public class ProductDetailsFragment extends CheckoutFragment {
                     ProductVariant variant = product.getVariants().get(0);
                     ProductDetailsFragment.this.product = product;
                     ProductDetailsFragment.this.variant = variant;
-                    showViewIfReady();
+                    showProductIfReady();
                 } else {
-                    checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, "Product id not found: " + productId));
+                    productDetailsListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, "Product id not found: " + productId));
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                checkoutListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, BuyClient.getErrorBody(error)));
+                productDetailsListener.onFailure(createErrorBundle(ProductDetailsConstants.ERROR_GET_PRODUCT_FAILED, BuyClient.getErrorBody(error)));
             }
         });
     }
 
-    @Override
-    protected void showViewIfReady() {
-        final Activity activity = safelyGetActivity();
+    private Bundle createErrorBundle(int errorCode, String errorMessage) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ProductDetailsConstants.EXTRA_ERROR_CODE, errorCode);
+        bundle.putString(ProductDetailsConstants.EXTRA_ERROR_MESSAGE, errorMessage);
+        return bundle;
+    }
 
-        if (activity == null) {
-            return;
-        }
-
+    private void showProductIfReady() {
         // Check for the prerequisites before populating the views
-        if (!viewCreated || product == null || shop == null || cart == null) {
+        if (!viewCreated || product == null || shop == null) {
             // we're still loading, make sure we show the progress dialog
             if (!progressDialog.isShowing()) {
                 showProgressDialog(getString(R.string.loading), getString(R.string.loading_product_details), new Runnable() {
                     @Override
                     public void run() {
-                        activity.finish();
+                        getActivity().finish();
                     }
                 });
             }
@@ -275,9 +335,8 @@ public class ProductDetailsFragment extends CheckoutFragment {
         variantSelectionController.setListener(onVariantSelectedListener);
 
         // Tell the view that it can populate the product details components now
-        // Only show the share button if the ShareListener has been set
         view.setCurrencyFormat(currencyFormat);
-        view.onProductAvailable(ProductDetailsFragment.this, product, variant, shareListener != null, fabListener != null);
+        view.onProductAvailable(ProductDetailsFragment.this, product, variant);
 
         // Disable the checkout button if the selected product variant is sold out
         checkoutButton.setEnabled(variant.isAvailable());
@@ -293,5 +352,124 @@ public class ProductDetailsFragment extends CheckoutFragment {
             checkoutButton.setEnabled(variant.isAvailable());
         }
     };
+
+    /**
+     * Creates a checkout for use with the web checkout flow
+     */
+    private void createWebCheckout() {
+        // Build a Cart with the selected ProductVariant
+        Cart cart = new Cart();
+        cart.addVariant(variant);
+
+        // Create the checkout using our Cart
+        buyClient.createCheckout(new Checkout(cart), new Callback<Checkout>() {
+            @Override
+            public void success(Checkout checkout, Response response) {
+                if (response.getStatus() == HttpURLConnection.HTTP_CREATED) {
+                    // Start the web checkout
+                    launchWebCheckout(checkout);
+                } else {
+                    onCheckoutFailure();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                onCheckoutFailure();
+            }
+        });
+
+    }
+
+    /**
+     * Show the error message in a {@link Snackbar}
+     */
+    private void onCheckoutFailure() {
+        dismissProgressDialog();
+
+        CoordinatorLayout snackbarLayout = (CoordinatorLayout) view.findViewById(R.id.snackbar_location);
+
+        Snackbar snackbar = Snackbar.make(snackbarLayout, R.string.default_checkout_error, Snackbar.LENGTH_SHORT);
+        View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(getResources().getColor(R.color.error_background));
+
+        snackbar.setCallback(new Snackbar.Callback() {
+            @Override
+            public void onShown(Snackbar snackbar) {
+                super.onShown(snackbar);
+                checkoutButton.setEnabled(false);
+            }
+
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                super.onDismissed(snackbar, event);
+                checkoutButton.setEnabled(true);
+            }
+        });
+
+        snackbar.show();
+    }
+
+    /**
+     * Launch Chrome, and open the correct url for our {@code Checkout}
+     *
+     * @param checkout
+     */
+    private void launchWebCheckout(Checkout checkout) {
+        // if the user dismissed the progress dialog before we got here, abort
+        if (cancelledCheckout.getAndSet(false)) {
+            return;
+        }
+
+        dismissProgressDialog();
+
+        String uri = checkout.getWebUrl();
+
+        CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                .setToolbarColor(theme.getAppBarBackgroundColor(getResources()))
+                .setShowTitle(true)
+                .build();
+        CustomTabActivityHelper.openCustomTab(
+                getActivity(), customTabsIntent, Uri.parse(uri), new BrowserFallback());
+
+
+        // The checkout was successfully started, let the listener know.
+        Bundle bundle = new Bundle();
+        bundle.putString(ProductDetailsConstants.EXTRA_CHECKOUT, checkout.toJsonString());
+        productDetailsListener.onSuccess(bundle);
+    }
+
+
+    /**
+     * A Fallback that opens any available Browser when Custom Tabs is not available
+     */
+    private class BrowserFallback implements CustomTabActivityHelper.CustomTabFallback {
+
+        @Override
+        public void openUri(Activity activity, Uri uri) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setData(uri);
+
+            try {
+                intent.setPackage("com.android.chrome");
+                startActivity(intent);
+
+            } catch (Exception launchChromeException) {
+                try {
+                    // Chrome could not be opened, attempt to us other launcher
+                    intent.setPackage(null);
+                    startActivity(intent);
+
+                } catch (Exception launchOtherException) {
+                    onCheckoutFailure();
+                    return;
+                }
+            }
+
+        }
+    }
+
+
 
 }

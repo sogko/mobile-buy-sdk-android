@@ -44,7 +44,6 @@ import com.shopify.buy.model.Option;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
-import com.shopify.buy.ui.common.ShopifyTheme;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -65,7 +64,7 @@ class VariantSelectionController {
 
     private final Activity activity;
     private final Product product;
-    private final ShopifyTheme theme;
+    private final ProductDetailsTheme theme;
     private final NumberFormat currencyFormat;
     private final SparseArray<String> checkmarkValues;
     private final ArrayList<ProductVariant> possibleVariants = new ArrayList<>();
@@ -73,7 +72,7 @@ class VariantSelectionController {
     private ProductVariant variant;
     private OnVariantSelectedListener listener;
 
-    public VariantSelectionController(Activity activity, ViewGroup rootView, final Product product, final ProductVariant variant, ShopifyTheme theme, NumberFormat currencyFormat) {
+    public VariantSelectionController(Activity activity, ViewGroup rootView, final Product product, final ProductVariant variant, ProductDetailsTheme theme, NumberFormat currencyFormat) {
         this.activity = activity;
         this.product = product;
         this.variant = variant;
@@ -309,7 +308,7 @@ class VariantSelectionController {
     }
 
     private Drawable getDialogTitleButtonDrawable(int optionIndex) {
-        if (theme.getStyle() == ShopifyTheme.Style.DARK) {
+        if (theme.getStyle() == ProductDetailsTheme.Style.DARK) {
             return activity.getResources().getDrawable(optionIndex == 0 ? R.drawable.ic_close_black_24dp : R.drawable.ic_arrow_back_black_24dp);
         } else {
             return activity.getResources().getDrawable(optionIndex == 0 ? R.drawable.ic_close_white_24dp : R.drawable.ic_arrow_back_white_24dp);

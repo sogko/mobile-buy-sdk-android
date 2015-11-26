@@ -32,7 +32,6 @@ import android.widget.TextView;
 import com.shopify.buy.R;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.common.ShopifyTheme;
 
 /**
  * Displays the options available for the {@link Product}.
@@ -46,7 +45,7 @@ class ProductDetailsVariantOptionView {
     private TextView name;
     private TextView value;
 
-    public ProductDetailsVariantOptionView(View rootView, int index, Resources resources, ShopifyTheme theme) {
+    public ProductDetailsVariantOptionView(View rootView, int index, Resources resources, ProductDetailsTheme theme) {
         this.resources = resources;
         this.index = index;
         this.parentTable = (TableLayout) rootView.findViewById(R.id.product_variant_selection_container);
@@ -69,7 +68,7 @@ class ProductDetailsVariantOptionView {
         }
     }
 
-    public void setTheme(ShopifyTheme theme) {
+    public void setTheme(ProductDetailsTheme theme) {
         if (name == null || value == null) return;
 
         name.setTextColor(theme.getVariantOptionNameColor(resources));

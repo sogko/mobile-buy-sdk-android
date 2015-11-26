@@ -22,19 +22,32 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.ui;
-
+package com.shopify.sample.activity.base;
 
 import android.os.Bundle;
+import android.widget.ListView;
+
+import com.shopify.sample.R;
 
 /**
- * Listener for passing state back to the {@link ProductDetailsActivity}
+ * Base class for activities with list views in the app.
  */
-interface ProductDetailsListener {
+public class SampleListActivity extends SampleActivity {
 
-    void onSuccess(Bundle bundle);
+    protected ListView listView;
+    protected boolean isFetching;
 
-    void onFailure(Bundle bundle);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        onCreate(savedInstanceState, R.layout.list_activity);
+    }
 
-    void onCancel(Bundle bundle);
+    protected void onCreate(Bundle savedInstanceState, int layoutId) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(layoutId);
+        listView = (ListView) findViewById(R.id.list_view);
+        isFetching = false;
+    }
+
 }
