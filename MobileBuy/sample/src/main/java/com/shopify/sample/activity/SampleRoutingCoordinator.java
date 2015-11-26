@@ -32,7 +32,6 @@ import android.os.Parcelable;
 
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.model.ShopifyObject;
 import com.shopify.buy.ui.ProductDetailsActivity;
 import com.shopify.buy.ui.ProductDetailsBuilder;
 import com.shopify.buy.ui.common.RoutingCoordinator;
@@ -46,7 +45,7 @@ public class SampleRoutingCoordinator implements RoutingCoordinator {
     }
 
     @Override
-    public void displayContent(ShopifyObject content, Context context) {
+    public void displayContent(Object content, Context context) {
         if (content == null || context == null) {
             throw new IllegalArgumentException("content or context is NULL");
         }

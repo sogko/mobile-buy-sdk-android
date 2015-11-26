@@ -27,10 +27,8 @@ package com.shopify.buy.ui.common;
 import android.content.Context;
 import android.os.Parcelable;
 
-import com.shopify.buy.model.ShopifyObject;
-
 public interface RoutingCoordinator extends Parcelable {
 
-    void displayContent(ShopifyObject content, Context context);
+    void displayContent(Object content, Context context);
 
 }
