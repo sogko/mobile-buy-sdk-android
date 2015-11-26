@@ -29,7 +29,6 @@ import android.content.Context;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BaseConfig;
 
 public class CartBuilder extends BaseBuilder<CartBuilder> {
 
@@ -39,14 +38,6 @@ public class CartBuilder extends BaseBuilder<CartBuilder> {
 
     public CartBuilder(Context context, BuyClient client) {
         super(client);
-    }
-
-    @Override
-    protected BaseConfig getConfig() {
-        if (config == null) {
-            config = new BaseConfig();
-        }
-        return config;
     }
 
     public CartBuilder setCart(Cart cart) {

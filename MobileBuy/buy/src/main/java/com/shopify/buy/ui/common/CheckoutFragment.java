@@ -63,7 +63,7 @@ public abstract class CheckoutFragment extends BaseFragment {
 
         Bundle bundle = getArguments();
 
-        String cartJson = bundle.getString(BaseConfig.EXTRA_CART);
+        String cartJson = bundle.getString(BuyBuilderConfig.EXTRA_CART);
         if (!TextUtils.isEmpty(cartJson)) {
             cart = Cart.fromJson(cartJson);
         }

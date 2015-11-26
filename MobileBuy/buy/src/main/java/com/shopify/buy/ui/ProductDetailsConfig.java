@@ -24,63 +24,11 @@
 
 package com.shopify.buy.ui;
 
-import android.os.Bundle;
-
-import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.common.BaseConfig;
+import com.shopify.buy.ui.common.BuyBuilderConfig;
 
 /***
  * Used to serialize data for the {@link ProductDetailsActivity}.
  */
-class ProductDetailsConfig extends BaseConfig {
+@Deprecated
+class ProductDetailsConfig extends BuyBuilderConfig {}
 
-    public static final String EXTRA_SHOP_PRODUCT_ID = "com.shopify.buy.ui.PRODUCT_ID";
-    public static final String EXTRA_SHOP_PRODUCT = "com.shopify.buy.ui.PRODUCT";
-    public static final String EXTRA_SHOW_CART_BUTTON = "com.shopify.buy.ui.SHOW_CART_BUTTON";
-
-    private String productId;
-    private Product product;
-    private boolean showCartButton;
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public boolean shouldShowCartButton() {
-        return showCartButton;
-    }
-
-    public void showCartButton(boolean showCartButton) {
-        this.showCartButton = showCartButton;
-    }
-
-    public Bundle toBundle() {
-        Bundle bundle = super.toBundle();
-
-        if (productId != null) {
-            bundle.putString(EXTRA_SHOP_PRODUCT_ID, productId);
-        }
-
-        if (product != null) {
-            bundle.putString(EXTRA_SHOP_PRODUCT, product.toJsonString());
-        }
-
-        bundle.putBoolean(EXTRA_SHOW_CART_BUTTON, showCartButton);
-
-        return bundle;
-    }
-
-
-}

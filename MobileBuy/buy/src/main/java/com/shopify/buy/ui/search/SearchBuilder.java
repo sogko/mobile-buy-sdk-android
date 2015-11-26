@@ -29,7 +29,6 @@ import android.os.Bundle;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.BaseConfig;
 
 public class SearchBuilder extends BaseBuilder<SearchBuilder> {
 
@@ -52,26 +51,11 @@ public class SearchBuilder extends BaseBuilder<SearchBuilder> {
         super(client);
     }
 
-    @Override
-    protected BaseConfig getConfig() {
-        if (config == null) {
-            config = new SearchConfig();
-        }
-        return config;
-    }
-
     public SearchBuilder setSearchQuery(String query) {
-        ((SearchConfig) config).setSearchQuery(query);
+        config.setSearchQuery(query);
         return this;
     }
 
-    public Bundle buildBundle() {
-        SearchConfig searchConfig = (SearchConfig) config;
-
-        Bundle bundle = super.buildBundle();
-        bundle.putAll(searchConfig.toBundle());
-        return bundle;
-    }
 
     /**
      * Returns a new {@link SearchFragment} based on the params that have already been passed to the builder.
