@@ -39,7 +39,7 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.providers.DefaultProvider;
+import com.shopify.buy.dataprovider.providers.BuyDataProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
@@ -77,7 +77,7 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         super.onCreate(savedInstanceState);
 
         if (provider == null) {
-            provider = new DefaultProvider(safelyGetActivity());
+            provider = new BuyDataProvider(safelyGetActivity());
         }
 
         Bundle bundle = getArguments();

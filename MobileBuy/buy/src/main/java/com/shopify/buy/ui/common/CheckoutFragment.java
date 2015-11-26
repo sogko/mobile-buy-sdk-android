@@ -38,7 +38,7 @@ import android.widget.Button;
 
 import com.shopify.buy.R;
 import com.shopify.buy.customTabs.CustomTabActivityHelper;
-import com.shopify.buy.dataprovider.providers.DefaultProvider;
+import com.shopify.buy.dataprovider.providers.BuyDataProvider;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.utils.NetworkUtility;
@@ -63,7 +63,7 @@ public abstract class CheckoutFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         if (provider == null) {
-            provider = new DefaultProvider(getActivity());
+            provider = new BuyDataProvider(getActivity());
         }
     }
 

@@ -56,7 +56,7 @@ import retrofit.Callback;
 import java.util.List;
 
 
-public class DefaultProvider implements BaseProvider, CollectionListProvider, ProductListProvider, SearchProvider, CartProvider {
+public class BuyDataProvider implements BaseProvider, CollectionListProvider, ProductListProvider, SearchProvider, CartProvider {
 
     protected static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
@@ -66,7 +66,7 @@ public class DefaultProvider implements BaseProvider, CollectionListProvider, Pr
 
     private SearchProductsTask searchProductsTask;
 
-    public DefaultProvider(Context context) {
+    public BuyDataProvider(Context context) {
         if (buyDatabase == null) {
             buyDatabase = new BuyDatabase(context);
         }
