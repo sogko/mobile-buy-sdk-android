@@ -42,6 +42,7 @@ import android.widget.TextView;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
+import com.shopify.buy.dataprovider.providers.BuyDataProvider;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Shop;
 
@@ -68,7 +69,7 @@ public abstract class BaseFragment extends Fragment {
     protected Shop shop;
     protected ShopifyTheme theme;
     protected String userId;
-    protected BaseProvider provider;
+    protected BuyDataProvider provider;
     protected Handler pollingHandler;
     protected OnProviderFailedListener onProviderFailedListener;
 
@@ -101,11 +102,10 @@ public abstract class BaseFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         pollingHandler = new Handler();
+        provider = new BuyDataProvider(getActivity());
 
         setHasOptionsMenu(true);
-
         parseArguments();
-
         initializeProgressDialog();
     }
 
