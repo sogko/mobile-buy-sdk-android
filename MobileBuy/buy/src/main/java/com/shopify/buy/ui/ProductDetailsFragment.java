@@ -117,6 +117,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
             product = Product.fromJson(bundle.getString(ProductDetailsConfig.EXTRA_SHOP_PRODUCT));
             variant = product.getVariants().get(0);
         }
+
     }
 
     @Override
@@ -132,6 +133,7 @@ public class ProductDetailsFragment extends CheckoutFragment {
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     protected void fetchDataIfNecessary() {

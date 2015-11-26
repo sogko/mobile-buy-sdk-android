@@ -39,7 +39,6 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.R;
 import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.dataprovider.providers.DefaultProductListProvider;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
@@ -67,18 +66,9 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
 
     RecyclerView recyclerView;
 
-    public void setProvider(ProductListProvider provider) {
-        this.provider = provider;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (provider == null) {
-            provider = new DefaultProductListProvider(safelyGetActivity());
-        }
-
         Bundle bundle = getArguments();
         parseProducts(bundle);
     }
@@ -131,7 +121,8 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
             String productsJson = bundle.getString(BuyBuilderConfig.EXTRA_SHOP_PRODUCTS);
 
             if (!TextUtils.isEmpty(productsJson)) {
-                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {}.getType());
+                products = BuyClientFactory.createDefaultGson().fromJson(productsJson, new TypeToken<List<Product>>() {
+                }.getType());
             }
 
         } else if (bundle.containsKey(BuyBuilderConfig.EXTRA_SHOP_PRODUCT_IDS)) {
@@ -184,11 +175,11 @@ public class ProductListFragment extends BaseFragment implements RecyclerViewHol
         };
 
         if (!CollectionUtils.isEmpty(productIds)) {
-            ((ProductListProvider) provider).getProducts(productIds, buyClient, callback);
+            provider.getProducts(productIds, buyClient, callback);
         } else if (collection != null) {
-            ((ProductListProvider) provider).getProducts(collection.getCollectionId(), buyClient, callback);
+            provider.getProducts(collection.getCollectionId(), buyClient, callback);
         } else {
-            ((ProductListProvider) provider).getAllProducts(buyClient, callback);
+            provider.getAllProducts(buyClient, callback);
         }
     }
 

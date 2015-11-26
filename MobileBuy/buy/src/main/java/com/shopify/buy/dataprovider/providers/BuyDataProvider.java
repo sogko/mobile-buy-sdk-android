@@ -33,18 +33,25 @@ import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
 import com.shopify.buy.dataprovider.tasks.DeleteCheckoutTask;
 import com.shopify.buy.dataprovider.tasks.GetCartTask;
 import com.shopify.buy.dataprovider.tasks.GetCheckoutTokenTask;
+import com.shopify.buy.dataprovider.tasks.GetCollectionsTask;
+import com.shopify.buy.dataprovider.tasks.GetProductsTask;
 import com.shopify.buy.dataprovider.tasks.GetShopTask;
 import com.shopify.buy.dataprovider.tasks.SaveCartTask;
+import com.shopify.buy.dataprovider.tasks.SearchProductsTask;
 import com.shopify.buy.model.Cart;
+import com.shopify.buy.model.Collection;
+import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.ui.common.BaseProvider;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import retrofit.Callback;
 
-public class DefaultBaseProvider implements BaseProvider {
+import java.util.List;
+
+
+public class BuyDataProvider {
 
     protected static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
@@ -52,41 +59,66 @@ public class DefaultBaseProvider implements BaseProvider {
 
     protected final Handler handler;
 
-    public DefaultBaseProvider(Context context) {
+    private SearchProductsTask searchProductsTask;
+
+    public BuyDataProvider(Context context) {
         if (buyDatabase == null) {
             buyDatabase = new BuyDatabase(context);
         }
         this.handler = new Handler(context.getMainLooper());
     }
 
-    @Override
-    public void getShop(BuyClient buyClient, Callback<Shop> callback) {
-        GetShopTask task = new GetShopTask(buyDatabase, buyClient, callback, handler, executorService);
-        executorService.execute(task);
-    }
-
-    @Override
-    public void getCart(final BuyClient buyClient, final String userId, final Callback<Cart> callback) {
-        GetCartTask task = new GetCartTask(userId, buyDatabase, buyClient, callback, handler, executorService);
-        executorService.execute(task);
-    }
-
-    @Override
-    public void saveCart(Cart cart, @Nullable String checkoutToken, BuyClient buyClient, String userId) {
-        SaveCartTask task = new SaveCartTask(cart, checkoutToken, userId, buyDatabase, buyClient, handler, executorService);
-        executorService.execute(task);
-    }
-
-    @Override
     public void getCheckoutToken(BuyClient buyClient, String userId, Callback<String> callback) {
         GetCheckoutTokenTask task = new GetCheckoutTokenTask(userId, buyDatabase, buyClient, callback, handler, executorService);
         executorService.execute(task);
     }
 
-    @Override
     public void deleteCheckout(BuyClient buyClient, String userId, boolean alsoDeleteCart) {
         DeleteCheckoutTask task = new DeleteCheckoutTask(userId, alsoDeleteCart, buyDatabase, buyClient, handler, executorService);
         executorService.execute(task);
     }
 
+    public void getShop(BuyClient buyClient, Callback<Shop> callback) {
+        GetShopTask task = new GetShopTask(buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
+
+    public void getCart(final BuyClient buyClient, final String userId, final Callback<Cart> callback) {
+        GetCartTask task = new GetCartTask(userId, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
+
+    public void saveCart(Cart cart, @Nullable String checkoutToken, BuyClient buyClient, String userId) {
+        SaveCartTask task = new SaveCartTask(cart, checkoutToken, userId, buyDatabase, buyClient, handler, executorService);
+        executorService.execute(task);
+    }
+
+    public void searchProducts(String query, BuyClient buyClient, Callback<List<Product>> callback) {
+        if (searchProductsTask != null) {
+            searchProductsTask.cancel();
+        }
+        searchProductsTask = new SearchProductsTask(query, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(searchProductsTask);
+    }
+
+    public void getAllProducts(BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
+
+    public void getProducts(String collectionId, BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(collectionId, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
+
+    public void getProducts(List<String> productIds, BuyClient buyClient, Callback<List<Product>> callback) {
+        GetProductsTask task = new GetProductsTask(productIds, buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
+
+    public void getCollections(final BuyClient buyClient, final Callback<List<Collection>> callback) {
+        GetCollectionsTask task = new GetCollectionsTask(buyDatabase, buyClient, callback, handler, executorService);
+        executorService.execute(task);
+    }
 }
+
