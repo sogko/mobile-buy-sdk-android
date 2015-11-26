@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <com.shopify.buy.ui.common.FixedAspectImageView
+    <com.shopify.merchantapp.ui.common.FixedAspectImageView
         android:id="@+id/collection_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
