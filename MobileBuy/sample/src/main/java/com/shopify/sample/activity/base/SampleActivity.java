@@ -36,12 +36,12 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shopify.sample.R;
-import com.shopify.sample.application.SampleApplication;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Discount;
 import com.shopify.buy.model.GiftCard;
+import com.shopify.sample.R;
+import com.shopify.sample.application.SampleApplication;
 
 import java.util.List;
 
@@ -195,10 +195,14 @@ public class SampleActivity extends Activity {
             }
         }
         ((TextView) findViewById(R.id.gift_card_value)).setText("-$" + Double.toString(totalGiftCards));
-
-        ((TextView) findViewById(R.id.shipping_value)).setText('$' + checkout.getShippingRate().getPrice());
         ((TextView) findViewById(R.id.taxes_value)).setText('$' + checkout.getTotalTax());
         ((TextView) findViewById(R.id.total_value)).setText('$' + checkout.getPaymentDue());
+
+        if (checkout.getShippingRate() != null) {
+            ((TextView) findViewById(R.id.shipping_value)).setText('$' + checkout.getShippingRate().getPrice());
+        } else {
+            ((TextView) findViewById(R.id.shipping_value)).setText("N/A");
+        }
     }
 
     /**
