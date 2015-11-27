@@ -24,23 +24,23 @@
 
 package com.shopify.sample.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.ToggleButton;
+import android.widget.Switch;
 
-import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.sample.R;
+import com.shopify.sample.activity.base.SampleListActivity;
+import com.shopify.sample.dialog.HSVColorPickerDialog;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.common.OnProviderFailedListener;
-import com.shopify.buy.ui.common.ShopifyTheme;
-import com.shopify.buy.ui.products.ProductListFragment;
-import com.shopify.sample.R;
-import com.shopify.sample.activity.base.SampleActivity;
-import com.shopify.sample.dialog.HSVColorPickerDialog;
+import com.shopify.buy.ui.ProductDetailsTheme;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -49,54 +49,34 @@ import retrofit.client.Response;
 /**
  * This activity allows the user to select a product to purchase from a list of all products in a collection.
  */
-public class ProductListActivity extends SampleActivity {
+public class ProductListActivity extends SampleListActivity {
 
-    private static final String LOG_TAG = ProductListActivity.class.getSimpleName();
+    static final String EXTRA_COLLECTION_ID = "ProductListActivity.EXTRA_COLLECTION_ID";
 
-    private ShopifyTheme theme;
+    private String collectionId;
+    private ProductDetailsTheme theme;
     private boolean useProductDetailsActivity;
     private View accentColorView;
     private View productViewOptionsContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState, R.layout.product_list_activity);
 
         setTitle(R.string.choose_product);
-        setContentView(R.layout.product_list_activity);
 
         useProductDetailsActivity = false;
-        theme = new ShopifyTheme(getResources());
+        theme = new ProductDetailsTheme(getResources());
 
         Intent intent = getIntent();
-
-        Bundle bundle = null;
-        if (intent != null) {
-            bundle = intent.getExtras();
+        if (intent.hasExtra(EXTRA_COLLECTION_ID)) {
+            collectionId = intent.getStringExtra(EXTRA_COLLECTION_ID);
         }
-
-        ProductListFragment productListFragment = new ProductListFragment();
-        if (bundle != null) {
-            productListFragment.setArguments(bundle);
-        }
-
-        productListFragment.setRoutingCoordinator(new ProductRoutingCoordinator());
-
-        productListFragment.setOnProviderFailedListener(new OnProviderFailedListener() {
-            @Override
-            public void onProviderFailed(RetrofitError retrofitError) {
-                Log.e(LOG_TAG, BuyClient.getErrorBody(retrofitError));
-            }
-        });
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, productListFragment)
-                .commit();
 
         productViewOptionsContainer = findViewById(R.id.product_view_options_container);
         productViewOptionsContainer.setVisibility(View.GONE);
 
-        ((ToggleButton) findViewById(R.id.product_details_activity_toggle)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((Switch) findViewById(R.id.product_details_activity_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 useProductDetailsActivity = isChecked;
@@ -104,14 +84,14 @@ public class ProductListActivity extends SampleActivity {
             }
         });
 
-        ((ToggleButton) findViewById(R.id.theme_style_toggle)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((Switch) findViewById(R.id.theme_style_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                theme.setStyle(isChecked ? ShopifyTheme.Style.LIGHT : ShopifyTheme.Style.DARK);
+                theme.setStyle(isChecked ? ProductDetailsTheme.Style.LIGHT : ProductDetailsTheme.Style.DARK);
             }
         });
 
-        ((ToggleButton) findViewById(R.id.product_image_bg_toggle)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((Switch) findViewById(R.id.product_image_bg_switch)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 theme.setShowProductImageBackground(isChecked);
@@ -128,6 +108,38 @@ public class ProductListActivity extends SampleActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // If we haven't already loaded the products from the store, do it now
+        if (listView.getAdapter() == null && !isFetching) {
+            isFetching = true;
+            showLoadingDialog(R.string.loading_data);
+
+            Callback<List<Product>> callback = new Callback<List<Product>>() {
+                @Override
+                public void success(List<Product> products, Response response) {
+                    isFetching = false;
+                    dismissLoadingDialog();
+                    onFetchedProducts(products);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    isFetching = false;
+                    onError(error);
+                }
+            };
+
+            if (collectionId != null) {
+                getSampleApplication().getProducts(collectionId, callback);
+            } else {
+                getSampleApplication().getAllProducts(callback);
+            }
+        }
+    }
+
     private void chooseAccentColor() {
         HSVColorPickerDialog cpd = new HSVColorPickerDialog(this, theme.getAccentColor(), new HSVColorPickerDialog.OnColorSelectedListener() {
             @Override
@@ -141,9 +153,42 @@ public class ProductListActivity extends SampleActivity {
     }
 
     /**
+     * Once the products are fetched from the server, set our listView adapter so that the products appear on screen.
+     *
+     * @param products
+     */
+    private void onFetchedProducts(final List<Product> products) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                List<String> productTitles = new ArrayList<String>();
+                for (Product product : products) {
+                    productTitles.add(product.getTitle());
+                }
+
+                listView.setAdapter(new ArrayAdapter<>(ProductListActivity.this, R.layout.simple_list_item, productTitles));
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        if (useProductDetailsActivity) {
+                            launchProductDetailsActivity(products.get(position));
+                        } else {
+                            createCheckout(products.get(position));
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void launchProductDetailsActivity(Product product) {
+        getSampleApplication().launchProductDetailsActivity(this, product, theme);
+    }
+
+    /**
      * When the user selects a product, create a new checkout for that product.
      *
-     * @param product The {@link Product} to create the checkout for
+     * @param product
      */
     private void createCheckout(final Product product) {
         showLoadingDialog(R.string.syncing_data);
@@ -166,7 +211,7 @@ public class ProductListActivity extends SampleActivity {
      * If the selected product requires shipping, show the list of shipping rates so the user can pick one.
      * Otherwise, skip to the discounts activity (gift card codes and discount codes).
      *
-     * @param checkout The current {@link Checkout}.
+     * @param checkout
      */
     private void onCheckoutCreated(Checkout checkout) {
         if (checkout.isRequiresShipping()) {
@@ -175,18 +220,6 @@ public class ProductListActivity extends SampleActivity {
             startActivity(new Intent(ProductListActivity.this, DiscountActivity.class));
         }
 
-    }
-
-    private class ProductRoutingCoordinator extends SampleRoutingCoordinator {
-
-        @Override
-        protected void displayProduct(Product product, Context context) {
-            if (useProductDetailsActivity) {
-                super.displayProduct(product, context);
-            } else {
-                createCheckout(product);
-            }
-        }
     }
 
 }

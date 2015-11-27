@@ -26,35 +26,102 @@ package com.shopify.buy.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Window;
 import android.view.WindowManager;
 
+import com.shopify.buy.R;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.common.BaseActivity;
-import com.shopify.buy.ui.common.BaseFragment;
-import com.shopify.buy.ui.common.CheckoutListener;
 import com.shopify.buy.utils.DeviceUtils;
 
 /**
  * Activity that shows the details of a {@link Product}.
  */
-public class ProductDetailsActivity extends BaseActivity implements CheckoutListener {
+public class ProductDetailsActivity extends AppCompatActivity implements ProductDetailsListener {
 
-    @Override
-    protected BaseFragment createFragment() {
-        return new ProductDetailsFragment();
-    }
+    protected ProductDetailsFragment productDetailsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
         if (DeviceUtils.isTablet(getResources())) {
             makeActivityDialog();
+
         }
+        
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            productDetailsFragment = getFragment();
+
+            Intent intent = getIntent();
+            if (intent != null) {
+                productDetailsFragment.setArguments(intent.getExtras());
+            }
+
+            getFragmentManager().beginTransaction()
+                    .add(R.id.product_details_activity, productDetailsFragment)
+                    .commit();
+        } else {
+            productDetailsFragment = (ProductDetailsFragment) getFragmentManager().findFragmentById(R.id.product_details_activity);
+        }
+
+        initContentView();
+    }
+
+    private ProductDetailsFragment getFragment() {
+        if (productDetailsFragment == null) {
+            productDetailsFragment = new ProductDetailsFragment();
+        }
+        return productDetailsFragment;
+    }
+
+    private void initContentView() {
+        setContentView(R.layout.activity_product_details);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            onNewIntent(getIntent());
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    // ProductDetailsListener Callbacks
+
+    public void onSuccess(Bundle bundle) {
+        setResult(Activity.RESULT_OK, bundle);
+    }
+
+    public void onFailure(Bundle bundle) {
+        setResult(Activity.RESULT_CANCELED, bundle);
+        finish();
+    }
+
+    public void onCancel(Bundle bundle) {
+        setResult(Activity.RESULT_CANCELED, bundle);
+        finish();
+    }
+
+    private void setResult(int resultCode, Bundle bundle) {
+        Intent intent = getIntent();
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        setResult(resultCode, intent);
     }
 
     private void makeActivityDialog() {
@@ -83,21 +150,4 @@ public class ProductDetailsActivity extends BaseActivity implements CheckoutList
         // Update the window with our new settings
         getWindow().setAttributes(params);
     }
-
-    // CheckoutListener Callbacks
-
-    public void onSuccess(Bundle bundle) {
-        setResult(Activity.RESULT_OK, bundle);
-    }
-
-    public void onFailure(Bundle bundle) {
-        setResult(Activity.RESULT_CANCELED, bundle);
-        finish();
-    }
-
-    public void onCancel(Bundle bundle) {
-        setResult(Activity.RESULT_CANCELED, bundle);
-        finish();
-    }
-
 }

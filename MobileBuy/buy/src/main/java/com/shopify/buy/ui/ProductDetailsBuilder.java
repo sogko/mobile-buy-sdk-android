@@ -26,21 +26,20 @@ package com.shopify.buy.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Product;
-import com.shopify.buy.ui.common.BaseBuilder;
-import com.shopify.buy.ui.common.CheckoutListener;
+import com.shopify.buy.model.Shop;
 
 /**
  * Builds an {@link Intent} that can be used to start a {@link ProductDetailsActivity}
  */
-public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
+public class ProductDetailsBuilder {
 
-    Context context;
+    private final Context context;
+
+    private final ProductDetailsConfig productDetailsConfig = new ProductDetailsConfig();
 
     /**
      * Create a default ProductDetailsBuilder.
@@ -49,75 +48,108 @@ public class ProductDetailsBuilder extends BaseBuilder<ProductDetailsBuilder> {
      * @param context context to use for starting the {@code Activity}
      */
     public ProductDetailsBuilder(Context context) {
-        this(context, null);
+        this.context = context;
     }
 
     /**
      * Constructor that will use an existing {@link BuyClient} to configure the {@link ProductDetailsActivity}.
-     * If this constructor is used, {@link #setProductId(String)} must be called.
+     * If this constructor is user, {@link #setProductId(String)} must be called.
      *
      * @param context context to use for launching the {@code Activity}
      * @param client  the {@link BuyClient} to use to configure the ProductDetailsActivity
      */
     public ProductDetailsBuilder(Context context, BuyClient client) {
-        super(client);
         this.context = context;
+
+        productDetailsConfig.setShopDomain(client.getShopDomain());
+        productDetailsConfig.setApiKey(client.getApiKey());
+        productDetailsConfig.setApplicationName(client.getApplicationName());
+        productDetailsConfig.setChannelId(client.getChannelId());
+        productDetailsConfig.setWebReturnToUrl(client.getWebReturnToUrl());
+        productDetailsConfig.setWebReturnToLabel(client.getWebReturnToLabel());
+    }
+
+    public ProductDetailsBuilder setShopDomain(String shopDomain) {
+        productDetailsConfig.setShopDomain(shopDomain);
+        return this;
+    }
+
+    public ProductDetailsBuilder setApiKey(String apiKey) {
+        productDetailsConfig.setApiKey(apiKey);
+        return this;
+    }
+
+    @Deprecated
+    public ProductDetailsBuilder setChannelid(String channelId) {
+        productDetailsConfig.setChannelId(channelId);
+        return this;
+    }
+
+    public ProductDetailsBuilder setChannelId(String channelId) {
+        productDetailsConfig.setChannelId(channelId);
+        return this;
+    }
+
+    public ProductDetailsBuilder setApplicationName(String applicationName) {
+        productDetailsConfig.setApplicationName(applicationName);
+        return this;
     }
 
     public ProductDetailsBuilder setProductId(String productId) {
-        config.setProductId(productId);
+        productDetailsConfig.setProductId(productId);
         return this;
     }
 
     public ProductDetailsBuilder setProduct(Product product) {
-        config.setProduct(product);
+        productDetailsConfig.setProduct(product);
         return this;
     }
 
-    public ProductDetailsBuilder setShowCartButton(boolean showCartButton) {
-        config.setShowCartButton(showCartButton);
+    public ProductDetailsBuilder setWebReturnToUrl(String webReturnToUrl) {
+        productDetailsConfig.setWebReturnToUrl(webReturnToUrl);
         return this;
     }
 
-    public ProductDetailsBuilder setCart(Cart cart) {
-        config.setCart(cart);
+    public ProductDetailsBuilder setWebReturnToLabel(String webReturnToLabel) {
+        productDetailsConfig.setWebReturnToLabel(webReturnToLabel);
+        return this;
+    }
+
+    public ProductDetailsBuilder setShop(Shop shop) {
+        productDetailsConfig.setShop(shop);
+        return this;
+    }
+
+    public ProductDetailsBuilder setTheme(ProductDetailsTheme theme) {
+        productDetailsConfig.setTheme(theme);
         return this;
     }
 
     public Intent build() {
-        Intent intent = super.buildIntent();
-        intent.setClass(context, ProductDetailsActivity.class);
-        return intent;
-    }
 
-    @Override
-    public Bundle buildBundle() {
-        if (TextUtils.isEmpty(config.getProductId()) && config.getProduct() == null) {
+        if (TextUtils.isEmpty(productDetailsConfig.getShopShopDomain())) {
+            throw new IllegalArgumentException("shopDomain must be provided, and cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(productDetailsConfig.getApiKey())) {
+            throw new IllegalArgumentException("apiKey must be provided, and cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(productDetailsConfig.getApplicationName())) {
+            throw new IllegalArgumentException("applicationName must be provided, and cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(productDetailsConfig.getChannelId())) {
+            throw new IllegalArgumentException("channelId must be provided, and cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(productDetailsConfig.getProductId()) && productDetailsConfig.getProduct() == null) {
             throw new IllegalArgumentException("One of productId or product must be provided, and cannot be empty");
         }
-        return super.buildBundle();
-    }
 
-    /**
-     * Returns a new {@link ProductDetailsFragment} based on the params that have already been passed to the builder.
-     *
-     * @return A new {@link ProductDetailsFragment}.
-     */
-    public ProductDetailsFragment buildFragment() {
-        ProductDetailsFragment fragment = new ProductDetailsFragment();
-        fragment.setArguments(buildBundle());
-        return fragment;
-    }
+        Intent intent = new Intent(context, ProductDetailsActivity.class);
+        intent.putExtras(productDetailsConfig.toBundle());
 
-    /**
-     * Deprecated. Use {@link #buildFragment()}.
-     */
-    @Deprecated
-    public ProductDetailsFragment buildFragment(CheckoutListener listener) {
-        ProductDetailsFragment fragment = new ProductDetailsFragment();
-        fragment.setCheckoutListener(listener);
-        fragment.setArguments(buildBundle());
-        return fragment;
+        return intent;
     }
-
 }

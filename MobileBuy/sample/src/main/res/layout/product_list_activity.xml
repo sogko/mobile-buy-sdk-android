@@ -12,9 +12,9 @@
             style="@style/ProductOptionsTextView"
             android:text="@string/demo_product_details_activity"/>
 
-        <ToggleButton
-            android:id="@+id/product_details_activity_toggle"
-            style="@style/Toggle"
+        <Switch
+            android:id="@+id/product_details_activity_switch"
+            style="@style/Switch"
             android:textOff="@string/no"
             android:textOn="@string/yes"/>
 
@@ -35,9 +35,9 @@
                 style="@style/ProductOptionsTextView"
                 android:text="@string/theme_style"/>
 
-            <ToggleButton
-                android:id="@+id/theme_style_toggle"
-                style="@style/Toggle"
+            <Switch
+                android:id="@+id/theme_style_switch"
+                style="@style/Switch"
                 android:checked="true"
                 android:textOff="@string/dark"
                 android:textOn="@string/light"/>
@@ -53,9 +53,9 @@
                 style="@style/ProductOptionsTextView"
                 android:text="@string/shows_product_image_bg"/>
 
-            <ToggleButton
-                android:id="@+id/product_image_bg_toggle"
-                style="@style/Toggle"
+            <Switch
+                android:id="@+id/product_image_bg_switch"
+                style="@style/Switch"
                 android:checked="true"
                 android:textOff="@string/no"
                 android:textOn="@string/yes"/>
@@ -92,8 +92,8 @@
         android:layout_marginTop="16dp"
         android:background="@android:color/black"/>
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <ListView
+        android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

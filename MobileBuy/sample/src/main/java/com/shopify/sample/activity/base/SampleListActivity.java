@@ -22,36 +22,32 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.dataprovider.tasks;
+package com.shopify.sample.activity.base;
 
-import android.os.Handler;
-import android.util.Log;
+import android.os.Bundle;
+import android.widget.ListView;
 
-import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.dataprovider.sqlite.BuyDatabase;
+import com.shopify.sample.R;
 
-import java.util.concurrent.ExecutorService;
+/**
+ * Base class for activities with list views in the app.
+ */
+public class SampleListActivity extends SampleActivity {
 
-import retrofit.Callback;
-
-public class GetCheckoutTokenTask extends BaseTask<String> {
-
-    private static final String LOG_TAG = GetCheckoutTokenTask.class.getSimpleName();
-
-    private final String userId;
-
-    public GetCheckoutTokenTask(String userId, BuyDatabase buyDatabase, BuyClient buyClient, Callback<String> callback, Handler handler, ExecutorService executorService) {
-        super(buyDatabase, buyClient, callback, handler, executorService);
-        this.userId = userId;
-    }
+    protected ListView listView;
+    protected boolean isFetching;
 
     @Override
-    public void run() {
-        try {
-            onSuccess(buyDatabase.getCheckoutToken(userId), null);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Could not get checkout token from database.", e);
-            onFailure(e);
-        }
+    protected void onCreate(Bundle savedInstanceState) {
+        onCreate(savedInstanceState, R.layout.list_activity);
     }
+
+    protected void onCreate(Bundle savedInstanceState, int layoutId) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(layoutId);
+        listView = (ListView) findViewById(R.id.list_view);
+        isFetching = false;
+    }
+
 }

@@ -29,6 +29,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -37,9 +38,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.util.LongSparseArray;
@@ -59,7 +60,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -68,8 +68,7 @@ import com.shopify.buy.model.Image;
 import com.shopify.buy.model.OptionValue;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ProductVariant;
-import com.shopify.buy.ui.common.ShopifyTheme;
-import com.shopify.buy.ui.common.ShopifyTheme.Style;
+import com.shopify.buy.ui.ProductDetailsTheme.Style;
 import com.shopify.buy.utils.ColorBlender;
 import com.shopify.buy.utils.DeviceUtils;
 
@@ -98,9 +97,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     private ViewGroup imageAreaWrapper;
     private Drawable imageOverlayBackgroundDrawable;
 
-    // variables for the 'add to cart' and checkout button
-    private View bottomButtonsContainer;
-    private ViewGroup addToCartButtonContainer;
+    // variables for the checkout button
     private ViewGroup checkoutButtonContainer;
 
     // variables for the image pager
@@ -129,18 +126,13 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
     private boolean dropShadowIsShowing;
     private TextView toolbarTitle;
     private int homeDrawable;
-    private ImageView shareButton;
-    private boolean showShareButton;
-
-    private FloatingActionButton fab;
-    private boolean showFab;
 
     private AppBarLayout appBarLayout;
 
     // models used by the view
     private Product product;
     private ProductVariant variant;
-    private ShopifyTheme theme;
+    private ProductDetailsTheme theme;
 
     public ProductDetailsFragmentView(Context context) {
         super(context);
@@ -174,35 +166,18 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
      * Sets the models and fills in the subviews with data
      *
      * @param fragment the fragment that owns this view
-     * @param product  the product to display
-     * @param variant  the variant to display
+     * @param product the product to display
+     * @param variant the variant to display
      */
-    @Deprecated
     public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant) {
-        onProductAvailable(fragment, product, variant, false, false);
-    }
-
-    /**
-     * Sets the models and fills in the subviews with data
-     *
-     * @param fragment        the fragment that owns this view
-     * @param product         the product to display
-     * @param variant         the variant to display
-     * @param showShareButton pass true if you want to display the share button in the action bar
-     * @param showFab         pass true if you want to display the fab button
-     */
-    public void onProductAvailable(ProductDetailsFragment fragment, Product product, ProductVariant variant, boolean showShareButton, boolean showFab) {
         this.fragment = fragment;
         this.product = product;
         this.variant = variant;
-        this.showShareButton = showShareButton;
-        this.showFab = showFab;
         doViewConfiguration();
     }
 
     /**
      * Updates the product details and image for the currently selected variant
-     *
      * @param variant the {@link ProductVariant} to display
      */
     public void setVariant(ProductVariant variant) {
@@ -286,14 +261,13 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         initializeImageArea();
         initializeActionBar();
         initializeImageOverlay();
-        initializeBottomButtons();
+        initializeCheckoutButton();
         populateSubviews();
         fragment.dismissProgressDialog();
     }
 
     /**
      * Get the display size.
-     *
      * @return display size in {@link Point}.
      */
     private Point getDisplaySize() {
@@ -314,7 +288,6 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
 
     /**
      * Get the Action Bar height.
-     *
      * @return the action bar height in pixels.
      */
     private int getActionBarHeightPixels() {
@@ -379,9 +352,9 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
 
         // hide or show the checkout button
         if (grow && !imageAreaIsExpanded) {
-            hideBottomButtons(IMAGE_AREA_FEATURES_ANIMATION_DURATION);
+            hideCheckoutButton(IMAGE_AREA_FEATURES_ANIMATION_DURATION);
         } else if (!grow && imageAreaIsExpanded) {
-            showBottomButtons(IMAGE_AREA_FEATURES_ANIMATION_DURATION);
+            showCheckoutButton(IMAGE_AREA_FEATURES_ANIMATION_DURATION);
         }
 
         // Animate the image changing size
@@ -419,28 +392,12 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         anim.start();
     }
 
-    @Deprecated
     public void hideCheckoutButton(long duration) {
-        hideBottomButtons(duration);
+        checkoutButtonContainer.animate().setDuration(duration).y(getHeight()).start();
     }
 
-    @Deprecated
     public void showCheckoutButton(long duration) {
-        showBottomButtons(duration);
-    }
-
-    public void hideBottomButtons(long duration) {
-        bottomButtonsContainer.animate().setDuration(duration).y(getHeight()).start();
-        if (fab != null) {
-            fab.hide();
-        }
-    }
-
-    public void showBottomButtons(long duration) {
-        bottomButtonsContainer.animate().setDuration(duration).y(getHeight() - checkoutButtonContainer.getHeight()).start();
-        if (fab != null) {
-            fab.show();
-        }
+        checkoutButtonContainer.animate().setDuration(duration).y(getHeight() - checkoutButtonContainer.getHeight()).start();
     }
 
     /**
@@ -478,31 +435,6 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         toolbarTitle.setTextColor(theme.getProductTitleColor(res));
 
-        shareButton = (ImageView) findViewById(R.id.share_button);
-        if (showShareButton) {
-            shareButton.setVisibility(View.VISIBLE);
-            shareButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    fragment.onSharePressed();
-                }
-            });
-        }
-
-        if (showFab) {
-            fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setImageDrawable(theme.getCartIcon(getResources()));
-            fab.setBackgroundTintList(ColorStateList.valueOf(theme.getAccentColor()));
-            fab.setVisibility(View.VISIBLE);
-
-            fab.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    fragment.onFabPressed();
-                }
-            });
-        }
-
         // Add a custom behavior to the appBarLayout.  We want it to pass touches to its children instead of scrolling.
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
@@ -516,7 +448,6 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         activity.setSupportActionBar(toolbar);
         actionBar = activity.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setElevation(8);
 
         // If we are restoring the view we may need to manually adjust the icon
@@ -532,7 +463,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
      * Changes the appearance of the image area and {@link AppBarLayout} as the {@code AppBarLayout} collapses.
      *
      * @param appBarLayout the layout that is being offset
-     * @param offset       the current offset
+     * @param offset the current offset
      */
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
@@ -547,19 +478,11 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
                 if (homeDrawable != R.drawable.ic_close_white_24dp) {
                     homeDrawable = R.drawable.ic_close_white_24dp;
                     actionBar.setHomeAsUpIndicator(homeDrawable);
-
-                    if (showShareButton) {
-                        shareButton.setImageResource(R.drawable.ic_share_white_24dp);
-                    }
                 }
             } else {
                 if (homeDrawable != R.drawable.ic_close_black_24dp) {
                     homeDrawable = R.drawable.ic_close_black_24dp;
                     actionBar.setHomeAsUpIndicator(homeDrawable);
-
-                    if (showShareButton) {
-                        shareButton.setImageResource(R.drawable.ic_share_black_24dp);
-                    }
                 }
             }
         }
@@ -578,7 +501,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
                 imagePager.beginFakeDrag();
             }
         } else {
-            if (imagePager.isFakeDragging()) {
+            if(imagePager.isFakeDragging()) {
                 imagePager.endFakeDrag();
             }
         }
@@ -624,15 +547,14 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         imageOverlay.setBackgroundDrawable(imageOverlayBackgroundDrawable);
     }
 
-    private void initializeBottomButtons() {
-        bottomButtonsContainer = findViewById(R.id.buttons_container);
-
-        int disabledTextAlpha = getResources().getInteger(R.integer.disabled_text_alpha);
-
+    private void initializeCheckoutButton() {
         checkoutButtonContainer = (ViewGroup) findViewById(R.id.checkout_button_container);
         checkoutButtonContainer.setBackgroundColor(theme.getAccentColor());
 
-        ((Button) findViewById(R.id.checkout_button)).setTextColor(new ColorStateList(
+        Button checkoutButton = (Button) findViewById(R.id.checkout_button);
+
+        int disabledTextAlpha = 64; // 0.25 * 255
+        checkoutButton.setTextColor(new ColorStateList(
                 new int[][]{
                         new int[]{-android.R.attr.state_enabled},
                         new int[]{android.R.attr.state_enabled}
@@ -663,7 +585,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         textViewPrice.setTextColor(theme.getAccentColor());
 
         // Product "compare at" price (appears below the actual price with a strikethrough style)
-        TextView textViewCompareAtPrice = (TextView) findViewById(R.id.product_compare_at_price);
+        TextView textViewCompareAtPrice = (TextView)findViewById(R.id.product_compare_at_price);
         if (!variant.isAvailable()) {
             textViewCompareAtPrice.setVisibility(View.VISIBLE);
             textViewCompareAtPrice.setText(getResources().getString(R.string.sold_out));
@@ -776,7 +698,7 @@ public class ProductDetailsFragmentView extends RelativeLayout implements Produc
         }
     }
 
-    public void setTheme(ShopifyTheme theme) {
+    public void setTheme(ProductDetailsTheme theme) {
         this.theme = theme;
         setBackgroundColor(theme.getBackgroundColor(getResources()));
     }
