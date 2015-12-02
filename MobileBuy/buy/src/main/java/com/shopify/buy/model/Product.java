@@ -33,6 +33,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
+import com.shopify.buy.utils.CollectionUtils;
 import com.shopify.buy.utils.DateUtility;
 import com.shopify.buy.utils.DateUtility.DateDeserializer;
 
@@ -298,8 +299,10 @@ public class Product extends ShopifyObject {
         }
 
         prices = new HashSet<>();
-        for (ProductVariant variant : variants) {
-            prices.add(variant.getPrice());
+        if (!CollectionUtils.isEmpty(variants)) {
+            for (ProductVariant variant : variants) {
+                prices.add(variant.getPrice());
+            }
         }
 
         return prices;
