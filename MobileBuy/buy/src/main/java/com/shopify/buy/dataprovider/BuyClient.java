@@ -32,12 +32,14 @@ import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
+import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
 import com.shopify.buy.model.internal.PaymentSessionCheckout;
@@ -640,6 +642,59 @@ public class BuyClient {
             }
         });
     }
+
+    void createCustomer(String email, String password, final Callback<Customer> callback) {
+        loginCustomer(email, password, callback);
+    }
+
+
+    void loginCustomer(String email, String password, final Callback<Customer> callback) {
+        if (TextUtils.isEmpty(email)) {
+            throw new IllegalArgumentException("email cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            throw new IllegalArgumentException(("password cannot be empty"));
+        }
+
+        Customer customer = new Customer();
+        customer.setEmail(email);
+        customer.setPassword(password);
+
+        retrofitService.loginCustomer(new CustomerWrapper(customer, customer.getToken()), new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                Customer customer = customerWrapper.getCustomer();
+                customer.setToken(customerWrapper.getToken());
+                callback.success(customer, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+
+    void getCustomer(String token, final Callback<Customer> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        retrofitService.getCustomer(token, new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
 
     /**
      * Convenience method to release all product inventory reservations by setting the `reservationTime` of the checkout `0` and calling {@link #updateCheckout(Checkout, Callback) updateCheckout(Checkout, Callback)}.

@@ -24,9 +24,13 @@
 
 package com.shopify.buy.dataprovider;
 
+import android.telecom.Call;
+
+import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;
@@ -38,6 +42,7 @@ import retrofit.ResponseCallback;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -95,6 +100,17 @@ interface BuyRetrofitService {
 
     @DELETE("/anywhere/checkouts/{token}/gift_cards/{identifier}.json")
     void removeGiftCard(@Path("identifier") String giftCardIdentifier, @Path("token") String token, Callback<GiftCardWrapper> callback);
+
+    /*
+     * Customer API
+     */
+
+    // This endpoint is used for login as well as creation of new users
+    @POST("/anywhere/customers.json")
+    void loginCustomer(CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
+
+    @GET("/anywhere/customers.json")
+    void getCustomer(@Header("X-Shopify-Access-Token:{token}") String token, Callback<CustomerWrapper> callback);
 
     /*
      * Testing Integration
