@@ -236,7 +236,16 @@ public class Product extends ShopifyObject {
      * For internal use only.
      */
     public boolean hasDefaultVariant() {
-        return variants != null && variants.size() == 1 && variants.get(0).getTitle().equals("Default Title");
+        if (CollectionUtils.isEmpty(variants) || variants.size() != 1) {
+            return false;
+        }
+
+        ProductVariant firstVariant = variants.get(0);
+        List<OptionValue> optionValues = firstVariant.getOptionValues();
+
+        return firstVariant.getTitle().equals("Default Title")
+                && !CollectionUtils.isEmpty(optionValues)
+                && (optionValues.get(0).getValue().equals("Default Title") || optionValues.get(0).getValue().equals("Default"));
     }
 
     /**
