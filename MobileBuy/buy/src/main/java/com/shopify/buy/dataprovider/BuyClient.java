@@ -643,30 +643,15 @@ public class BuyClient {
         });
     }
 
-    void createCustomer(String email, String password, final Callback<Customer> callback) {
-        loginCustomer(email, password, callback);
-    }
-
-
-    void loginCustomer(String email, String password, final Callback<Customer> callback) {
-        if (TextUtils.isEmpty(email)) {
-            throw new IllegalArgumentException("email cannot be empty");
+    public void createCustomer(final Customer customer, final Callback<Customer> callback) {
+        if (customer == null) {
+            throw new IllegalArgumentException("customer cannot be empty");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException(("password cannot be empty"));
-        }
-
-        Customer customer = new Customer();
-        customer.setEmail(email);
-        customer.setPassword(password);
-
-        retrofitService.loginCustomer(new CustomerWrapper(customer, customer.getToken()), new Callback<CustomerWrapper>() {
+        retrofitService.createCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                Customer customer = customerWrapper.getCustomer();
-                customer.setToken(customerWrapper.getToken());
-                callback.success(customer, response);
+                callback.success(customerWrapper.getCustomer(), response);
             }
 
             @Override
@@ -677,14 +662,52 @@ public class BuyClient {
     }
 
 
-    void getCustomer(String token, final Callback<Customer> callback) {
+    public void loginCustomer(final Customer customer, final Callback<Customer> callback) {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
+        retrofitService.loginCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void updateCustomer(final Customer customer, final Callback<Customer> callback) {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
+        retrofitService.updateCustomer(customer.getToken(), new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void getCustomer(final String token, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
         }
 
-        retrofitService.getCustomer(token, new Callback<CustomerWrapper>() {
+        retrofitService.getCustomer(/*Base64.encodeToString(token.getBytes(), Base64.NO_WRAP)*/ token, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
+                Customer customer = customerWrapper.getCustomer();
+                customer.setToken(token);
                 callback.success(customerWrapper.getCustomer(), response);
             }
 

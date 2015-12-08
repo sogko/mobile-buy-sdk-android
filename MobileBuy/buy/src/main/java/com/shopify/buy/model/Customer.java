@@ -35,6 +35,9 @@ public class Customer extends ShopifyObject {
 
     private String password;
 
+    @SerializedName("password_confirmation")
+    private String passwordConfirmation;
+
     private String token;
 
     @SerializedName("accepts_marketing")
@@ -66,7 +69,7 @@ public class Customer extends ShopifyObject {
     private boolean verifiedEmail;
 
     @SerializedName("multipass_identifier")
-    private String multipassIdenfier;
+    private String multipassIdentifier;
 
     @SerializedName("tax_exempt")
     private boolean taxExempt;
@@ -172,7 +175,7 @@ public class Customer extends ShopifyObject {
      * @return The customer's identifier used with Multipass login.
      */
     public String getMultipassIdenfier() {
-        return multipassIdenfier;
+        return multipassIdentifier;
     }
 
     /**
@@ -223,9 +226,18 @@ public class Customer extends ShopifyObject {
 
     public void setPassword(String password) {
         this.password = password;
+        this.passwordConfirmation = password;
     }
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

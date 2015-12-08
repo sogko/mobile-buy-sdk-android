@@ -10,6 +10,7 @@ import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.CreditCard;
+import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Discount;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.LineItem;
@@ -33,6 +34,8 @@ import retrofit.client.Response;
 public class BuyTest extends ShopifyAndroidTestCase {
 
     private Checkout checkout;
+    private Customer customer;
+
     private List<ShippingRate> shippingRates;
 
     public void testApplyingGiftCardToCheckout() throws InterruptedException {
@@ -752,4 +755,91 @@ public class BuyTest extends ShopifyAndroidTestCase {
         latch.await();
     }
 
+    public void testCustomerCreation() throws InterruptedException {
+        // TODO regenerate mock responses.  This will always fail ofter the first call because the email will already have been used
+        if (USE_MOCK_RESPONSES) {
+            return;
+        }
+
+        Customer customer = getCustomer();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.createCustomer(customer, new Callback<Customer>() {
+            @Override
+            public void success(Customer customer, Response response) {
+                assertNotNull(customer);
+                assertNotNull(customer.getToken());
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
+    public void testCustomerLogin() throws InterruptedException {
+        // TODO regenerate mock responses.  This test has a dependency on testCustomerCreation()
+        if (USE_MOCK_RESPONSES) {
+            return;
+        }
+
+        customer = getCustomer();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.loginCustomer(customer, new Callback<Customer>() {
+            @Override
+            public void success(Customer customer, Response response) {
+                assertNotNull(customer);
+                assertNotNull(customer.getToken());
+                BuyTest.this.customer = customer;
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
+    public void testGetCustomer() throws InterruptedException {
+        if (USE_MOCK_RESPONSES) {
+            return;
+        }
+
+        testCustomerLogin();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.getCustomer(customer.getToken(), new Callback<Customer>() {
+            @Override
+            public void success(Customer customer, Response response) {
+                assertNotNull(customer);
+                assertNotNull(customer.getToken());
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
+    private Customer getCustomer() {
+        Customer customer = new Customer();
+        customer.setEmail("fake@example.com");
+        customer.setPassword("password");
+        customer.setFirstName("Dinosaur2");
+        customer.setLastName("Banana");
+
+        return customer;
+    }
 }

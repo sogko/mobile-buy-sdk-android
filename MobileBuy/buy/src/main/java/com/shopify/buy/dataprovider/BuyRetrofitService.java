@@ -45,6 +45,7 @@ import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.RestAdapter;
@@ -105,12 +106,19 @@ interface BuyRetrofitService {
      * Customer API
      */
 
-    // This endpoint is used for login as well as creation of new users
+    public static final String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
+
     @POST("/anywhere/customers.json")
-    void loginCustomer(CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
+    void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
+
+    @POST("/anywhere/customers/login.json")
+    void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
 
     @GET("/anywhere/customers.json")
-    void getCustomer(@Header("X-Shopify-Access-Token:{token}") String token, Callback<CustomerWrapper> callback);
+    void getCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<CustomerWrapper> callback);
+
+    @PUT("/anywhere/customers.json")
+    void updateCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, CustomerWrapper customer, Callback<CustomerWrapper> callback);
 
     /*
      * Testing Integration
