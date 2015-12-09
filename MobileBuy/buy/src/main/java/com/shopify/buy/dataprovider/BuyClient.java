@@ -703,7 +703,7 @@ public class BuyClient {
             throw new IllegalArgumentException("token cannot be empty");
         }
 
-        retrofitService.getCustomer(/*Base64.encodeToString(token.getBytes(), Base64.NO_WRAP)*/ token, new Callback<CustomerWrapper>() {
+        retrofitService.getCustomer(token, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
