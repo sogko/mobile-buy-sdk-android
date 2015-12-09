@@ -118,7 +118,7 @@ interface BuyRetrofitService {
     void getCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<CustomerWrapper> callback);
 
     @PUT("/anywhere/customers.json")
-    void updateCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, CustomerWrapper customer, Callback<CustomerWrapper> callback);
+    void updateCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
 
     /*
      * Testing Integration

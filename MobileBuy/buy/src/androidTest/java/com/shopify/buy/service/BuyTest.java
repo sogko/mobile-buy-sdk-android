@@ -808,6 +808,35 @@ public class BuyTest extends ShopifyAndroidTestCase {
         latch.await();
     }
 
+    public void testCustomerUpdate() throws InterruptedException {
+        // TODO regenerate mock responses.  This test has a dependency on testCustomerCreation()
+        if (USE_MOCK_RESPONSES) {
+            return;
+        }
+
+        testCustomerLogin();
+
+        //customer.setLastName("Foo");
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.updateCustomer(customer, new Callback<Customer>() {
+            @Override
+            public void success(Customer customer, Response response) {
+                assertNotNull(customer);
+                assertNotNull(customer.getToken());
+                assertEquals("Foo", customer.getLastName());
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
     public void testGetCustomer() throws InterruptedException {
         if (USE_MOCK_RESPONSES) {
             return;
@@ -837,7 +866,7 @@ public class BuyTest extends ShopifyAndroidTestCase {
         Customer customer = new Customer();
         customer.setEmail("fake@example.com");
         customer.setPassword("password");
-        customer.setFirstName("Dinosaur2");
+        customer.setFirstName("Dinosaur");
         customer.setLastName("Banana");
 
         return customer;
