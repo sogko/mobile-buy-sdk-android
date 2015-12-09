@@ -197,7 +197,9 @@ public class Product extends ShopifyObject {
     /**
      * @return A list of additional categorizations that a product can be tagged with, commonly used for filtering and searching. Each tag has a character limit of 255.
      */
-    public Set<String> getTags() { return tagSet; }
+    public Set<String> getTags() {
+        return tagSet;
+    }
 
     /**
      * @return A list {@link ProductVariant} objects, each one representing a different version of this product.
@@ -211,6 +213,19 @@ public class Product extends ShopifyObject {
      */
     public List<Image> getImages() {
         return images;
+    }
+
+    /**
+     * @return The first image URL from this Product's list of images.
+     */
+    public String getFirstImageUrl() {
+        if (hasImage()) {
+            Image image = images.get(0);
+            if (image != null) {
+                return image.getSrc();
+            }
+        }
+        return null;
     }
 
     /**
@@ -230,7 +245,9 @@ public class Product extends ShopifyObject {
     /**
      * @return {@code true} if this product is in stock and available for purchase, {@code false} otherwise.
      */
-    public boolean isAvailable() { return available; }
+    public boolean isAvailable() {
+        return available;
+    }
 
     /**
      * For internal use only.
