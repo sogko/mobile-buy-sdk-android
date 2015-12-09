@@ -55,7 +55,12 @@ public class ImageUtility {
      * @param numberToLoad     The number of images to pre-load.
      */
     public static void preLoadImages(final Picasso imageLoader, final List<? extends ShopifyObject> objects, final int lastVisibleIndex, final int numberToLoad, int parentWidth, int parentHeight, final boolean crop) {
+        if (CollectionUtils.isEmpty(objects)) {
+            return;
+        }
+
         List<String> imageUrls = new ArrayList<>();
+
         for (int i = lastVisibleIndex + 1; i < (lastVisibleIndex + 1 + numberToLoad) && i < objects.size(); i++) {
             ShopifyObject object = objects.get(i);
             if (object instanceof Collection) {
@@ -64,6 +69,7 @@ public class ImageUtility {
                 imageUrls.add(stripQueryFromUrl(((Product) object).getFirstImageUrl()));
             }
         }
+
         for (String imageUrl : imageUrls) {
             imageUrl = getSizedImageUrl(imageUrl, parentWidth, parentHeight);
             RequestCreator c = imageLoader.load(imageUrl).resize(parentWidth, parentHeight);
