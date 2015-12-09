@@ -246,6 +246,11 @@ public class Customer extends ShopifyObject {
         this.note = note;
     }
 
+    public void setTags(Set<String> tags) {
+        tagSet = tags;
+        this.tags = TextUtils.join(",", tags);
+    }
+
     public static class CustomerDeserializer implements JsonDeserializer<Customer> {
         @Override
         public Customer deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
