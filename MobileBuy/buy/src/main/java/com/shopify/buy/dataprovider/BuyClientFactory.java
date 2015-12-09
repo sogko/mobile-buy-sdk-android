@@ -64,8 +64,14 @@ public class BuyClientFactory {
      * @return a {@link BuyClient}
      */
     public static BuyClient getBuyClient(final String shopDomain, final String apiKey, final String channelId, final String applicationName) throws IllegalArgumentException {
-        if (TextUtils.isEmpty(shopDomain) || shopDomain.contains(":") || shopDomain.contains("/") || !shopDomain.contains(".myshopify.com")) {
-            throw new IllegalArgumentException("shopDomain must be of the form 'shopname.myshopify.com' and cannot start with 'http://'");
+        if (BuildConfig.DEBUG) {
+            if (TextUtils.isEmpty(shopDomain) || shopDomain.contains(":") || shopDomain.contains("/")) {
+                throw new IllegalArgumentException("shopDomain must be of the form 'shopname.myshopify.com' and cannot start with 'http://'");
+            }
+        } else {
+            if (TextUtils.isEmpty(shopDomain) || shopDomain.contains(":") || shopDomain.contains("/") || !shopDomain.contains(".myshopify.com")) {
+                throw new IllegalArgumentException("shopDomain must be of the form 'shopname.myshopify.com' and cannot start with 'http://'");
+            }
         }
 
         if (TextUtils.isEmpty(apiKey)) {
