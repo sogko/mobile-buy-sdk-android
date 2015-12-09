@@ -27,6 +27,7 @@ package com.shopify.buy.dataprovider;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;
@@ -38,8 +39,10 @@ import retrofit.ResponseCallback;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.RestAdapter;
@@ -95,6 +98,24 @@ interface BuyRetrofitService {
 
     @DELETE("/anywhere/checkouts/{token}/gift_cards/{identifier}.json")
     void removeGiftCard(@Path("identifier") String giftCardIdentifier, @Path("token") String token, Callback<GiftCardWrapper> callback);
+
+    /*
+     * Customer API
+     */
+
+    public static final String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
+
+    @POST("/anywhere/customers.json")
+    void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
+
+    @POST("/anywhere/customers/login.json")
+    void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
+
+    @GET("/anywhere/customers.json")
+    void getCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<CustomerWrapper> callback);
+
+    @PUT("/anywhere/customers.json")
+    void updateCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
 
     /*
      * Testing Integration

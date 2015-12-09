@@ -32,12 +32,14 @@ import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
+import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
 import com.shopify.buy.model.internal.PaymentSessionCheckout;
@@ -632,6 +634,79 @@ public class BuyClient {
                 checkout.removeGiftCard(updatedGiftCard);
                 checkout.setPaymentDue(updatedGiftCard.getCheckout().getPaymentDue());
                 callback.success(checkout, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void createCustomer(final Customer customer, final Callback<CustomerWrapper> callback) {
+        if (customer == null) {
+            throw new IllegalArgumentException("customer cannot be empty");
+        }
+
+        retrofitService.createCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                callback.success(customerWrapper, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+
+    public void loginCustomer(final Customer customer, final Callback<CustomerWrapper> callback) {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
+        retrofitService.loginCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                callback.success(customerWrapper, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void updateCustomer(String token, final Customer customer, final Callback<Customer> callback) {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
+        retrofitService.updateCustomer(token, new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void getCustomer(final String token, final Callback<Customer> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        retrofitService.getCustomer(token, new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                callback.success(customerWrapper.getCustomer(), response);
             }
 
             @Override

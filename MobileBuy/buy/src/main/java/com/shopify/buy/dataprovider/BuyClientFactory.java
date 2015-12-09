@@ -31,6 +31,8 @@ import android.util.Base64;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shopify.buy.BuildConfig;
+import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.Customer.CustomerDeserializer;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Product.ProductDeserializer;
 import com.shopify.buy.utils.DateUtility;
@@ -62,8 +64,14 @@ public class BuyClientFactory {
      * @return a {@link BuyClient}
      */
     public static BuyClient getBuyClient(final String shopDomain, final String apiKey, final String channelId, final String applicationName) throws IllegalArgumentException {
-        if (TextUtils.isEmpty(shopDomain) || shopDomain.contains(":") || shopDomain.contains("/") || !shopDomain.contains(".myshopify.com")) {
-            throw new IllegalArgumentException("shopDomain must be of the form 'shopname.myshopify.com' and cannot start with 'http://'");
+        if (BuildConfig.DEBUG) {
+            if (TextUtils.isEmpty(shopDomain) || shopDomain.contains(":") || shopDomain.contains("/")) {
+                throw new IllegalArgumentException("shopDomain must be of the form 'shopname.myshopify.com' and cannot start with 'http://'");
+            }
+        } else {
+            if (TextUtils.isEmpty(shopDomain) || shopDomain.contains(":") || shopDomain.contains("/") || !shopDomain.contains(".myshopify.com")) {
+                throw new IllegalArgumentException("shopDomain must be of the form 'shopname.myshopify.com' and cannot start with 'http://'");
+            }
         }
 
         if (TextUtils.isEmpty(apiKey)) {
@@ -109,6 +117,7 @@ public class BuyClientFactory {
         return new GsonBuilder().setDateFormat(DateUtility.DEFAULT_DATE_PATTERN)
                 .registerTypeAdapter(Product.class, new ProductDeserializer())
                 .registerTypeAdapter(Date.class, new DateDeserializer())
+                .registerTypeAdapter(Customer.class, new CustomerDeserializer())
                 .create();
     }
 
