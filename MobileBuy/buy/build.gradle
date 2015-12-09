@@ -4,7 +4,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
-def VERSION_NAME = '1.2.1'
+def VERSION_NAME = '1.2.2'
 
 // Params for bintrayUpload
 ext {
@@ -30,7 +30,7 @@ ext {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "23.0.1"
     com.android.ddmlib.DdmPreferences.setTimeOut(60000) // https://code.google.com/p/android/issues/detail?id=104305
 
     defaultConfig {
@@ -119,7 +119,7 @@ dependencies {
     compile 'com.android.support:palette-v7:23.1.1'
     compile 'com.android.support:customtabs:23.1.1'
 
-    compile 'com.instabug.library:instabugsupport:1+'
+    compile 'com.instabug.library:instabugsupport:1.7.3'
 
     androidTestCompile 'org.mockito:mockito-core:1.9.5'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.1'
