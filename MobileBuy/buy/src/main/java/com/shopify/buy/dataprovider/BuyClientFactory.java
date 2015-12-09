@@ -31,6 +31,8 @@ import android.util.Base64;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shopify.buy.BuildConfig;
+import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.Customer.CustomerDeserializer;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Product.ProductDeserializer;
 import com.shopify.buy.utils.DateUtility;
@@ -109,7 +111,7 @@ public class BuyClientFactory {
         return new GsonBuilder().setDateFormat(DateUtility.DEFAULT_DATE_PATTERN)
                 .registerTypeAdapter(Product.class, new ProductDeserializer())
                 .registerTypeAdapter(Date.class, new DateDeserializer())
-                .registerTypeAdapter(CustomerWrapper.class, new CustomerWrapperDeserializer())
+                .registerTypeAdapter(Customer.class, new CustomerDeserializer())
                 .create();
     }
 

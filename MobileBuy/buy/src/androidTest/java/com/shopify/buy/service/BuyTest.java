@@ -830,7 +830,6 @@ public class BuyTest extends ShopifyAndroidTestCase {
             @Override
             public void success(Customer customer, Response response) {
                 assertNotNull(customer);
-                assertNotNull(customer.getToken());
                 assertEquals("Foo", customer.getLastName());
                 latch.countDown();
             }

@@ -24,10 +24,23 @@
 
 package com.shopify.buy.model;
 
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 
+import com.shopify.buy.utils.DateUtility;
+
+import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Customer extends ShopifyObject {
 
@@ -73,6 +86,7 @@ public class Customer extends ShopifyObject {
     private boolean taxExempt;
 
     private String tags;
+    private Set<String> tagSet;
 
     @SerializedName("last_order_id")
     private String lastOrderId;
@@ -177,10 +191,10 @@ public class Customer extends ShopifyObject {
     }
 
     /**
-     * @return A comma seperated list of tags which have been added to this customer.
+     * @return A list of additional categorizations that a customer can be tagged with.
      */
-    public String getTags() {
-        return tags;
+    public Set<String> getTags() {
+        return tagSet;
     }
 
     /**
@@ -226,5 +240,40 @@ public class Customer extends ShopifyObject {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public static class CustomerDeserializer implements JsonDeserializer<Customer> {
+        @Override
+        public Customer deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return fromJson(json.toString());
+        }
+    }
+
+    /**
+     * A Customer object created using the values in the JSON string.
+     */
+    public static Customer fromJson(String json) {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new DateUtility.DateDeserializer())
+                .create();
+
+        Customer customer = gson.fromJson(json, Customer.class);
+
+        // Create the tagSet.
+        customer.tagSet = new HashSet<>();
+
+        // Populate the tagSet from the comma separated list.
+        if (!TextUtils.isEmpty(customer.tags)) {
+            for (String tag : customer.tags.split(",")) {
+                String myTag = tag.trim();
+                customer.tagSet.add(myTag);
+            }
+        }
+
+        return customer;
     }
 }
