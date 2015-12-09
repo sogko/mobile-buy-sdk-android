@@ -33,8 +33,6 @@ import com.google.gson.GsonBuilder;
 import com.shopify.buy.BuildConfig;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Product.ProductDeserializer;
-import com.shopify.buy.model.internal.CustomerWrapper;
-import com.shopify.buy.model.internal.CustomerWrapper.CustomerWrapperDeserializer;
 import com.shopify.buy.utils.DateUtility;
 import com.shopify.buy.utils.DateUtility.DateDeserializer;
 import com.squareup.okhttp.OkHttpClient;

@@ -39,7 +39,7 @@ import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
-import com.shopify.buy.model.internal.CustomerWrapper;
+import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
 import com.shopify.buy.model.internal.PaymentSessionCheckout;
@@ -643,7 +643,7 @@ public class BuyClient {
         });
     }
 
-    public void createCustomer(final Customer customer, final Callback<Customer> callback) {
+    public void createCustomer(final Customer customer, final Callback<CustomerWrapper> callback) {
         if (customer == null) {
             throw new IllegalArgumentException("customer cannot be empty");
         }
@@ -651,7 +651,7 @@ public class BuyClient {
         retrofitService.createCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                callback.success(customerWrapper.getCustomer(), response);
+                callback.success(customerWrapper, response);
             }
 
             @Override
@@ -662,7 +662,7 @@ public class BuyClient {
     }
 
 
-    public void loginCustomer(final Customer customer, final Callback<Customer> callback) {
+    public void loginCustomer(final Customer customer, final Callback<CustomerWrapper> callback) {
         if (customer == null) {
             throw new NullPointerException("customer cannot be null");
         }
@@ -670,7 +670,7 @@ public class BuyClient {
         retrofitService.loginCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                callback.success(customerWrapper.getCustomer(), response);
+                callback.success(customerWrapper, response);
             }
 
             @Override
@@ -680,12 +680,12 @@ public class BuyClient {
         });
     }
 
-    public void updateCustomer(final Customer customer, final Callback<Customer> callback) {
+    public void updateCustomer(String token, final Customer customer, final Callback<Customer> callback) {
         if (customer == null) {
             throw new NullPointerException("customer cannot be null");
         }
 
-        retrofitService.updateCustomer(customer.getToken(), new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+        retrofitService.updateCustomer(token, new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -706,8 +706,6 @@ public class BuyClient {
         retrofitService.getCustomer(/*Base64.encodeToString(token.getBytes(), Base64.NO_WRAP)*/ token, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                Customer customer = customerWrapper.getCustomer();
-                customer.setToken(token);
                 callback.success(customerWrapper.getCustomer(), response);
             }
 
@@ -717,7 +715,6 @@ public class BuyClient {
             }
         });
     }
-
 
     /**
      * Convenience method to release all product inventory reservations by setting the `reservationTime` of the checkout `0` and calling {@link #updateCheckout(Checkout, Callback) updateCheckout(Checkout, Callback)}.

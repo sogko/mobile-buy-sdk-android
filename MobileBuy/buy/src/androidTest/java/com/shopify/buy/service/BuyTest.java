@@ -16,6 +16,7 @@ import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
+import com.shopify.buy.model.CustomerWrapper;
 
 import org.apache.http.HttpStatus;
 
@@ -35,6 +36,7 @@ public class BuyTest extends ShopifyAndroidTestCase {
 
     private Checkout checkout;
     private Customer customer;
+    private String token;
 
     private List<ShippingRate> shippingRates;
 
@@ -761,15 +763,15 @@ public class BuyTest extends ShopifyAndroidTestCase {
             return;
         }
 
-        Customer customer = getCustomer();
-
         final CountDownLatch latch = new CountDownLatch(1);
+        final Customer customer = getCustomer();
 
-        buyClient.createCustomer(customer, new Callback<Customer>() {
+        buyClient.createCustomer(customer, new Callback<CustomerWrapper>() {
             @Override
-            public void success(Customer customer, Response response) {
-                assertNotNull(customer);
-                assertNotNull(customer.getToken());
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                assertNotNull(customerWrapper);
+                assertNotNull(customerWrapper.getCustomer());
+                assertEquals(false, customerWrapper.getToken().isEmpty());
                 latch.countDown();
             }
 
@@ -791,12 +793,16 @@ public class BuyTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.loginCustomer(customer, new Callback<Customer>() {
+        buyClient.loginCustomer(customer, new Callback<CustomerWrapper>() {
             @Override
-            public void success(Customer customer, Response response) {
-                assertNotNull(customer);
-                assertNotNull(customer.getToken());
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                assertNotNull(customerWrapper);
+                assertNotNull(customerWrapper.getCustomer());
+                assertEquals(false, customerWrapper.getToken().isEmpty());
+
                 BuyTest.this.customer = customer;
+                BuyTest.this.token = customerWrapper.getToken();
+
                 latch.countDown();
             }
 
@@ -816,11 +822,11 @@ public class BuyTest extends ShopifyAndroidTestCase {
 
         testCustomerLogin();
 
-        //customer.setLastName("Foo");
+        customer.setLastName("Foo");
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.updateCustomer(customer, new Callback<Customer>() {
+        buyClient.updateCustomer(token, customer, new Callback<Customer>() {
             @Override
             public void success(Customer customer, Response response) {
                 assertNotNull(customer);
@@ -846,11 +852,10 @@ public class BuyTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.getCustomer(customer.getToken(), new Callback<Customer>() {
+        buyClient.getCustomer(token, new Callback<Customer>() {
             @Override
             public void success(Customer customer, Response response) {
                 assertNotNull(customer);
-                assertNotNull(customer.getToken());
                 latch.countDown();
             }
 

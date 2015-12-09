@@ -22,21 +22,9 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.model.internal;
+package com.shopify.buy.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
-
-import com.shopify.buy.model.Customer;
-import com.shopify.buy.utils.DateUtility;
-
-import java.lang.reflect.Type;
-import java.util.Date;
 
 public class CustomerWrapper {
 
@@ -51,34 +39,20 @@ public class CustomerWrapper {
 
     public CustomerWrapper(Customer customer) {
         this.customer = customer;
-        this.token = customer.getToken();
     }
 
+    /**
+     * @return The up to date customer.
+     */
     public Customer getCustomer() {
         return customer;
     }
 
+    /**
+     * @return The access token to use for subsequent customer api calls.
+     */
     public String getToken() {
         return token;
     }
 
-
-    public static class CustomerWrapperDeserializer implements JsonDeserializer<CustomerWrapper> {
-
-        @Override
-        public com.shopify.buy.model.internal.CustomerWrapper deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return fromJson(json.toString());
-        }
-
-    }
-
-    public static CustomerWrapper fromJson(String json) {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new DateUtility.DateDeserializer())
-                .create();
-
-        CustomerWrapper wrapper = gson.fromJson(json, CustomerWrapper.class);
-        wrapper.customer.setToken(wrapper.getToken());
-        return wrapper;
-    }
 }

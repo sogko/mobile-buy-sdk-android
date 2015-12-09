@@ -24,13 +24,10 @@
 
 package com.shopify.buy.dataprovider;
 
-import android.telecom.Call;
-
-import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
-import com.shopify.buy.model.internal.CustomerWrapper;
+import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;

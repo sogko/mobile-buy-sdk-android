@@ -38,8 +38,6 @@ public class Customer extends ShopifyObject {
     @SerializedName("password_confirmation")
     private String passwordConfirmation;
 
-    private String token;
-
     @SerializedName("accepts_marketing")
     private boolean acceptsMarketing;
 
@@ -86,13 +84,6 @@ public class Customer extends ShopifyObject {
 
     @SerializedName("default_address")
     private Address defaultAddress;
-
-    /**
-     * @return The access token for this Customer.
-     */
-    public String getToken() {
-        return token;
-    }
 
     /**
      * @return The email for this customer.
@@ -227,10 +218,6 @@ public class Customer extends ShopifyObject {
     public void setPassword(String password) {
         this.password = password;
         this.passwordConfirmation = password;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public void setFirstName(String firstName) {
