@@ -46,11 +46,6 @@ public class Customer extends ShopifyObject {
 
     private String email;
 
-    private String password;
-
-    @SerializedName("password_confirmation")
-    private String passwordConfirmation;
-
     @SerializedName("accepts_marketing")
     private boolean acceptsMarketing;
 
@@ -227,11 +222,6 @@ public class Customer extends ShopifyObject {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-        this.passwordConfirmation = password;
     }
 
     public void setFirstName(String firstName) {
