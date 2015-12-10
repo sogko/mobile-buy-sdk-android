@@ -11,12 +11,12 @@ import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.CreditCard;
 import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.Discount;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
-import com.shopify.buy.model.CustomerWrapper;
 
 import org.apache.http.HttpStatus;
 
@@ -766,7 +766,7 @@ public class BuyTest extends ShopifyAndroidTestCase {
 //        final CountDownLatch latch = new CountDownLatch(1);
 //        final Customer customer = getCustomer();
 //
-//        buyClient.createCustomer(customer, new Callback<CustomerWrapper>() {
+//        buyClient.createCustomer(customer, "password", new Callback<CustomerWrapper>() {
 //            @Override
 //            public void success(CustomerWrapper customerWrapper, Response response) {
 //                assertNotNull(customerWrapper);
@@ -789,18 +789,18 @@ public class BuyTest extends ShopifyAndroidTestCase {
 //            return;
 //        }
 //
-//        customer = getCustomer();
+//        final Customer customer = getCustomer();
 //
 //        final CountDownLatch latch = new CountDownLatch(1);
 //
-//        buyClient.loginCustomer(customer, new Callback<CustomerWrapper>() {
+//        buyClient.loginCustomer(customer, "password", new Callback<CustomerWrapper>() {
 //            @Override
 //            public void success(CustomerWrapper customerWrapper, Response response) {
 //                assertNotNull(customerWrapper);
 //                assertNotNull(customerWrapper.getCustomer());
 //                assertEquals(false, customerWrapper.getToken().isEmpty());
 //
-//                BuyTest.this.customer = customer;
+//                BuyTest.this.customer = customerWrapper.getCustomer();
 //                BuyTest.this.token = customerWrapper.getToken();
 //
 //                latch.countDown();
@@ -869,7 +869,6 @@ public class BuyTest extends ShopifyAndroidTestCase {
 //    private Customer getCustomer() {
 //        Customer customer = new Customer();
 //        customer.setEmail("fake@example.com");
-//        customer.setPassword("password");
 //        customer.setFirstName("Dinosaur");
 //        customer.setLastName("Banana");
 //
