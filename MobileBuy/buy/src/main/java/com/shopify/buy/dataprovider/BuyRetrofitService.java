@@ -29,6 +29,7 @@ import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
 import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
+import com.shopify.buy.model.internal.OrdersWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;
 
@@ -103,7 +104,7 @@ interface BuyRetrofitService {
      * Customer API
      */
 
-    public static final String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
+    String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
 
     @POST("/anywhere/customers.json")
     void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
@@ -116,6 +117,9 @@ interface BuyRetrofitService {
 
     @PUT("/anywhere/customers.json")
     void updateCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
+
+    @GET("/anywhere/customers/orders.json")
+    void getOrders(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<OrdersWrapper> callback);
 
     /*
      * Testing Integration

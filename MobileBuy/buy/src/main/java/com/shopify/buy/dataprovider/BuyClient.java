@@ -34,6 +34,7 @@ import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
 import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.GiftCard;
+import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
@@ -42,6 +43,7 @@ import com.shopify.buy.model.internal.CollectionPublication;
 import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
+import com.shopify.buy.model.internal.OrdersWrapper;
 import com.shopify.buy.model.internal.PaymentSessionCheckout;
 import com.shopify.buy.model.internal.PaymentSessionCheckoutWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
@@ -712,6 +714,24 @@ public class BuyClient {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void getOrders(final String token, final Callback<List<Order>> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        retrofitService.getOrders(token, new Callback<OrdersWrapper>() {
+            @Override
+            public void success(OrdersWrapper ordersWrapper, Response response) {
+                callback.success(ordersWrapper.getOrders(), response);
             }
 
             @Override
