@@ -24,21 +24,16 @@
 
 package com.shopify.buy.model;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
-import com.shopify.buy.dataprovider.BuyClientFactory;
-
-import java.lang.reflect.Type;
 
 public class CustomerWrapper {
 
     private Customer customer;
 
     private String password;
+
+    @SerializedName("confirmation_password")
+    private String confirmationPassword;
 
     @SerializedName("access_token")
     private String token;
@@ -56,7 +51,7 @@ public class CustomerWrapper {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = this.confirmationPassword = password;
     }
 
     /**
@@ -72,28 +67,4 @@ public class CustomerWrapper {
     public String getToken() {
         return token;
     }
-
-    /**
-     * Custom serializer that add the password to the outgoing Customer json.
-     */
-    public static class CustomerWrapperSerializer implements JsonSerializer<CustomerWrapper> {
-
-        @Override
-        public JsonElement serialize(final CustomerWrapper customerWrapper, final Type typeOfSrc, final JsonSerializationContext context) {
-            Gson gson = BuyClientFactory.createDefaultGson();
-
-            Customer customer = customerWrapper.getCustomer();
-            String password = customerWrapper.getPassword();
-
-            JsonObject customerJsonObject = gson.toJsonTree(customer).getAsJsonObject();
-            customerJsonObject.addProperty("password", password);
-            customerJsonObject.addProperty("confirmation_password", password);
-
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add("customer", customerJsonObject);
-
-            return jsonObject;
-        }
-    }
-
 }
