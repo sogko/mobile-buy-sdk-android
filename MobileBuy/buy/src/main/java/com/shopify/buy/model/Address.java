@@ -32,16 +32,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class Address {
 
-	private String address1;
+    private String address1;
 
-	private String address2;
+    private String address2;
 
-	private String city;
+    private String city;
 
-	private String company;
+    private String company;
 
     @SerializedName("first_name")
-	private String firstName;
+    private String firstName;
 
     @SerializedName("last_name")
     private String lastName;
@@ -191,4 +191,35 @@ public class Address {
     public void setZip(String zip) {
         this.zip = zip;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Address)) return false;
+
+        Address address = (Address) o;
+
+        if (address1 != null ? !address1.equals(address.address1) : address.address1 != null)
+            return false;
+        if (address2 != null ? !address2.equals(address.address2) : address.address2 != null)
+            return false;
+        if (city != null ? !city.equals(address.city) : address.city != null) return false;
+        if (company != null ? !company.equals(address.company) : address.company != null)
+            return false;
+        if (firstName != null ? !firstName.equals(address.firstName) : address.firstName != null)
+            return false;
+        if (lastName != null ? !lastName.equals(address.lastName) : address.lastName != null)
+            return false;
+        if (phone != null ? !phone.equals(address.phone) : address.phone != null) return false;
+        if (country != null ? !country.equals(address.country) : address.country != null)
+            return false;
+        if (countryCode != null ? !countryCode.equals(address.countryCode) : address.countryCode != null)
+            return false;
+        if (province != null ? !province.equals(address.province) : address.province != null)
+            return false;
+        if (provinceCode != null ? !provinceCode.equals(address.provinceCode) : address.provinceCode != null)
+            return false;
+        return !(zip != null ? !zip.equals(address.zip) : address.zip != null);
+    }
+
 }
