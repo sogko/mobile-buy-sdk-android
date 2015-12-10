@@ -643,12 +643,12 @@ public class BuyClient {
         });
     }
 
-    public void createCustomer(final Customer customer, String password, final Callback<CustomerWrapper> callback) {
+    public void createCustomer(final Customer customer, final String password, final Callback<CustomerWrapper> callback) {
         if (customer == null) {
             throw new IllegalArgumentException("customer cannot be empty");
         }
 
-        CustomerWrapper customerWrapper = new CustomerWrapper(customer);
+        final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
         customerWrapper.setPassword(password);
 
         retrofitService.createCustomer(customerWrapper, new Callback<CustomerWrapper>() {
@@ -664,12 +664,12 @@ public class BuyClient {
         });
     }
 
-    public void loginCustomer(final Customer customer, String password, final Callback<CustomerWrapper> callback) {
+    public void loginCustomer(final Customer customer, final String password, final Callback<CustomerWrapper> callback) {
         if (customer == null) {
             throw new NullPointerException("customer cannot be null");
         }
 
-        CustomerWrapper customerWrapper = new CustomerWrapper(customer);
+        final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
         customerWrapper.setPassword(password);
 
         retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {

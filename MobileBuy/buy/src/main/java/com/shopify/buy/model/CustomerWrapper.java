@@ -73,6 +73,9 @@ public class CustomerWrapper {
         return token;
     }
 
+    /**
+     * Custom serializer that add the password to the outgoing Customer json.
+     */
     public static class CustomerWrapperSerializer implements JsonSerializer<CustomerWrapper> {
 
         @Override
