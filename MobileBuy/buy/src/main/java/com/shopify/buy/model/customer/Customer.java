@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.model;
+package com.shopify.buy.model.customer;
 
 import android.text.TextUtils;
 
@@ -34,6 +34,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 
+import com.shopify.buy.model.Address;
+import com.shopify.buy.model.ShopifyObject;
 import com.shopify.buy.utils.DateUtility;
 
 import java.lang.reflect.Type;
@@ -200,7 +202,7 @@ public class Customer extends ShopifyObject {
     }
 
     /**
-     * @return The name of the customer's last order. This is directly related to the Order's name field.
+     * @return The name of the customer's last order. This is directly related to the CustomerOrder's name field.
      */
     public String getLastOrderName() {
         return lastOrderName;
@@ -271,4 +273,5 @@ public class Customer extends ShopifyObject {
 
         return customer;
     }
+
 }

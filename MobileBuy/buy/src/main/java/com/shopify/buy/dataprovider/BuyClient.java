@@ -32,15 +32,15 @@ import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
-import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.customer.Customer;
 import com.shopify.buy.model.GiftCard;
-import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.customer.CustomerOrder;
+import com.shopify.buy.model.customer.CustomerWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
-import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
 import com.shopify.buy.model.internal.OrdersWrapper;
@@ -723,7 +723,7 @@ public class BuyClient {
         });
     }
 
-    public void getOrders(final String token, final Callback<List<Order>> callback) {
+    public void getOrders(final String token, final Callback<List<CustomerOrder>> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
         }

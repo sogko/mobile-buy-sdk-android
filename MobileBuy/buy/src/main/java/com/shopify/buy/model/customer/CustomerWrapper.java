@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.model;
+package com.shopify.buy.model.customer;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -38,9 +38,7 @@ public class CustomerWrapper {
     @SerializedName("access_token")
     private String token;
 
-    public CustomerWrapper() {
-        //empty constructor
-    }
+    CustomerWrapper() {}
 
     public CustomerWrapper(Customer customer) {
         this.customer = customer;

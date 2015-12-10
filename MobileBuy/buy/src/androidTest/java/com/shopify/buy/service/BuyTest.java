@@ -10,14 +10,15 @@ import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.CreditCard;
-import com.shopify.buy.model.Customer;
-import com.shopify.buy.model.CustomerWrapper;
+import com.shopify.buy.model.customer.Customer;
 import com.shopify.buy.model.Discount;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.LineItem;
 import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
+import com.shopify.buy.model.customer.CustomerOrder;
+import com.shopify.buy.model.customer.CustomerWrapper;
 
 import org.apache.http.HttpStatus;
 
@@ -849,9 +850,9 @@ public class BuyTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.getOrders(token, new Callback<List<Order>>() {
+        buyClient.getOrders(token, new Callback<List<CustomerOrder>>() {
             @Override
-            public void success(List<Order> orders, Response response) {
+            public void success(List<CustomerOrder> orders, Response response) {
                 assertNotNull(orders);
                 assertEquals(true, orders.size() > 0);
                 latch.countDown();
@@ -891,9 +892,9 @@ public class BuyTest extends ShopifyAndroidTestCase {
 
     private Customer getCustomer() {
         Customer customer = new Customer();
-        customer.setEmail("fake@example.com");
-        customer.setFirstName("Dinosaur");
-        customer.setLastName("Banana");
+        customer.setEmail("krisorr@gmail.com");
+        customer.setFirstName("Kris");
+        customer.setLastName("Orr");
 
         return customer;
     }
