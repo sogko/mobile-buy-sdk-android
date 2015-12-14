@@ -172,7 +172,6 @@ public class ProductVariant extends ShopifyObject {
     @Deprecated
     public String getUpdatedAt() {
         return updatedAtDate == null ? null : DateUtility.createDefaultDateFormat().format(updatedAtDate);
-
     }
 
     /**

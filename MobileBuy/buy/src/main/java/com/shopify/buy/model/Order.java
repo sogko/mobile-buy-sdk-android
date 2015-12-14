@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
+import com.shopify.buy.dataprovider.BuyClient;
+
+import retrofit.Callback;
 
 public class Order extends ShopifyObject {
 
@@ -974,7 +977,7 @@ public class Order extends ShopifyObject {
 
 
     /**
-     * @return URL for the website showing the order status.
+     * @return URL for the website showing the order status. This is only available for orders that are part of a complete {@link Checkout} returned using {@link BuyClient#getCheckout(String, Callback)}
      */
     public String getStatusUrl() {
         return statusUrl;

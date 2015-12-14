@@ -25,10 +25,13 @@
 package com.shopify.buy.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.shopify.buy.dataprovider.BuyClient;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import retrofit.Callback;
 
 /**
  * Represents a Line Item, containing a {@link ProductVariant} and an associated quantity
@@ -115,14 +118,14 @@ public class LineItem {
     public String getName() { return name; }
 
     /**
-     * @return The line price of the item (price * quantity).
+     * @return The line price of the item (price * quantity). This is only available for line items returned using {@link BuyClient#getCheckout(String, Callback)}
      */
     public String getLinePrice() {
         return linePrice;
     }
 
     /**
-     * @return The competitor's price for the same item. You need to set this value on the {@link Product} in your shop admin portal.
+     * @return The competitor's price for the same item. You need to set this value on the {@link Product} in your shop admin portal. This is only available for line items returned using {@link BuyClient#getCheckout(String, Callback)}
      */
     public String getCompareAtPrice() {
         return compareAtPrice;
@@ -165,10 +168,14 @@ public class LineItem {
 
     /**
      *
-     * @return The amount available to fulfill.
+     * @return The amount available to fulfill.  This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}
      */
     public Long getFulfillableQuantity() { return fulfillableQuantity; }
 
+    /**
+     * @return How far along an order is in terms line items fulfilled. Valid values are: fulfilled, null or partial. This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}
+     */
+    public String getFulfillmentStatus() { return fulfillmentStatus; }
 
     /**
      * @return Custom properties set on this line item.
@@ -221,12 +228,14 @@ public class LineItem {
     public String getVendor() { return vendor; }
 
     /**
-     * * @return How far along an order is in terms line items fulfilled. Valid values are: fulfilled, null or partial.
+     * @return The total discount applied to this line item. This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}.
      */
-    public String getFulfillmentStatus() { return fulfillmentStatus; }
+    public String getTotalDiscount() {
+        return totalDiscount;
+    }
 
     /**
-     * @return A list of tax_line objects, each of which details the taxes applicable to this line item.
+     * @return A list of tax_line objects, each of which details the taxes applicable to this line item. This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}
      */
     public List<TaxLine> getTaxLines() { return taxLines; }
 
