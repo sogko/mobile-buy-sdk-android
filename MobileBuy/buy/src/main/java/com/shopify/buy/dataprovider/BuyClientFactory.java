@@ -33,6 +33,8 @@ import com.google.gson.GsonBuilder;
 import com.shopify.buy.BuildConfig;
 import com.shopify.buy.model.customer.Customer;
 import com.shopify.buy.model.customer.Customer.CustomerDeserializer;
+import com.shopify.buy.model.customer.CustomerWrapper;
+import com.shopify.buy.model.customer.CustomerWrapper.CustomerWrapperSerializer;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Product.ProductDeserializer;
 import com.shopify.buy.utils.DateUtility;
@@ -118,6 +120,7 @@ public class BuyClientFactory {
                 .registerTypeAdapter(Product.class, new ProductDeserializer())
                 .registerTypeAdapter(Date.class, new DateDeserializer())
                 .registerTypeAdapter(Customer.class, new CustomerDeserializer())
+                .registerTypeAdapter(CustomerWrapper.class, new CustomerWrapperSerializer())
                 .create();
     }
 
