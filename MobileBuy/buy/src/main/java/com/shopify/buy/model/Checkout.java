@@ -244,7 +244,7 @@ public class Checkout extends ShopifyObject {
     }
 
     /**
-     * @return A partial order object, containing the {@link Order#name}, {@link Order#id}, and {@link Order#statusUrl}
+     * @return This value is null until the checkout is complete. Once it is completed, it will containin the {@link Order#name}, {@link Order#id}, and {@link Order#statusUrl}
      */
     public Order getOrder() {
         return order;
