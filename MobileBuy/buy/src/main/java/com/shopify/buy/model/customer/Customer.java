@@ -222,6 +222,26 @@ public class Customer extends ShopifyObject {
         return defaultAddress;
     }
 
+    public void setAcceptsMarketing(boolean acceptsMarketing) {
+        this.acceptsMarketing = acceptsMarketing;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public void setTaxExempt(boolean taxExempt) {
+        this.taxExempt = taxExempt;
+    }
+
+    public void setMultipassIdentifier(String multipassIdentifier) {
+        this.multipassIdentifier = multipassIdentifier;
+    }
+
+    public void setDefaultAddress (Address defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
