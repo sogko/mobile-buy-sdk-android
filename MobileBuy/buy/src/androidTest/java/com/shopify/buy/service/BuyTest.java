@@ -849,9 +849,9 @@ public class BuyTest extends ShopifyAndroidTestCase {
 //
 //        final CountDownLatch latch = new CountDownLatch(1);
 //
-//        buyClient.getOrders(token, new Callback<List<CustomerOrder>>() {
+//        buyClient.getOrders(token, new Callback<List<Order>>() {
 //            @Override
-//            public void success(List<CustomerOrder> orders, Response response) {
+//            public void success(List<Order> orders, Response response) {
 //                assertNotNull(orders);
 //                assertEquals(true, orders.size() > 0);
 //                latch.countDown();
@@ -863,6 +863,7 @@ public class BuyTest extends ShopifyAndroidTestCase {
 //            }
 //
 //        });
+//        latch.await();
 //    }
 //
 //    public void testGetCustomer() throws InterruptedException {
