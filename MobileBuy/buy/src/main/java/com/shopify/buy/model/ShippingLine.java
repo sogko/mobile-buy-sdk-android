@@ -1,5 +1,5 @@
 
-package com.shopify.buy.model.customer;
+package com.shopify.buy.model;
 
 import java.util.ArrayList;
 import java.util.List;

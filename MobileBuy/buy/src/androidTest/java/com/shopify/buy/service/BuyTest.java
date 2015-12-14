@@ -10,15 +10,14 @@ import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Cart;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.CreditCard;
-import com.shopify.buy.model.customer.Customer;
+import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Discount;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.LineItem;
-import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
-import com.shopify.buy.model.customer.CustomerOrder;
-import com.shopify.buy.model.customer.CustomerWrapper;
+import com.shopify.buy.model.Order;
+import com.shopify.buy.model.CustomerWrapper;
 
 import org.apache.http.HttpStatus;
 

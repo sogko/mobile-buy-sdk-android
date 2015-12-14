@@ -26,14 +26,14 @@ package com.shopify.buy.model.internal;
 
 
 import com.google.gson.annotations.SerializedName;
-import com.shopify.buy.model.customer.CustomerOrder;
+import com.shopify.buy.model.Order;
 
 import java.util.List;
 
 public class OrdersWrapper {
 
     @SerializedName("orders")
-    private List<CustomerOrder> orders;
+    private List<Order> orders;
 
     /**
      * No args constructor for use in serialization.
@@ -41,7 +41,7 @@ public class OrdersWrapper {
     public OrdersWrapper() {
     }
 
-    public List<CustomerOrder> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 }

@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.model.customer;
+package com.shopify.buy.model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

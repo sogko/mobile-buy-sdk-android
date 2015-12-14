@@ -1,5 +1,5 @@
 
-package com.shopify.buy.model.customer;
+package com.shopify.buy.model;
 
 import com.google.gson.annotations.SerializedName;
 

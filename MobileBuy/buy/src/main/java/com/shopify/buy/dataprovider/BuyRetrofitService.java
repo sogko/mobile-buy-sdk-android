@@ -25,7 +25,7 @@
 package com.shopify.buy.dataprovider;
 
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.model.customer.CustomerWrapper;
+import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
 import com.shopify.buy.model.internal.GiftCardWrapper;
