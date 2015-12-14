@@ -33,7 +33,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
-
 import com.shopify.buy.utils.DateUtility;
 
 import java.lang.reflect.Type;
@@ -240,6 +239,10 @@ public class Customer extends ShopifyObject {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setDefaultAddress(Address address) {
+        this.defaultAddress = address;
     }
 
     public void setNote(String note) {
