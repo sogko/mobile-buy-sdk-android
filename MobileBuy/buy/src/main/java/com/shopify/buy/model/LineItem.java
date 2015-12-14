@@ -27,6 +27,7 @@ package com.shopify.buy.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,7 +70,26 @@ public class LineItem {
     @SerializedName("fulfillment_service")
     protected String fulfillmentService;
 
+    @SerializedName("fulfillment_status")
+    protected String fulfillmentStatus;
+
+    @SerializedName("fulfillable_quantity")
+    protected Long fulfillableQuantity;
+
     protected Map<String, String> properties;
+
+    protected String vendor;
+
+    @SerializedName("gift_card")
+    protected boolean giftCard;
+
+    protected String name;
+
+    @SerializedName("total_discount")
+    protected String totalDiscount;
+
+    @SerializedName("tax_lines")
+    protected List<TaxLine> taxLines;
 
     protected LineItem() {
     }
@@ -88,6 +108,11 @@ public class LineItem {
     public String getVariantTitle() {
         return variantTitle;
     }
+
+    /**
+     * @return The name for the {@link ProductVariant} on this line item.
+     */
+    public String getName() { return name; }
 
     /**
      * @return The line price of the item (price * quantity).
@@ -139,6 +164,13 @@ public class LineItem {
     }
 
     /**
+     *
+     * @return The amount available to fulfill.
+     */
+    public Long getFulfillableQuantity() { return fulfillableQuantity; }
+
+
+    /**
      * @return Custom properties set on this line item.
      */
     public Map<String, String> getProperties() {
@@ -182,6 +214,26 @@ public class LineItem {
     public String getId() {
         return id;
     }
+
+    /**
+     * @return The vendor supplying the product.
+     */
+    public String getVendor() { return vendor; }
+
+    /**
+     * * @return How far along an order is in terms line items fulfilled. Valid values are: fulfilled, null or partial.
+     */
+    public String getFulfillmentStatus() { return fulfillmentStatus; }
+
+    /**
+     * @return A list of tax_line objects, each of which details the taxes applicable to this line item.
+     */
+    public List<TaxLine> getTaxLines() { return taxLines; }
+
+    /**
+     * @return  States whether or not the line_item is a gift card. If so, the item is not taxed or considered for shipping charges.
+     */
+    public boolean isGiftCard() { return giftCard; }
 
     /**
      * @param quantity The quantity of the {@link ProductVariant} being purchased in this line item.
