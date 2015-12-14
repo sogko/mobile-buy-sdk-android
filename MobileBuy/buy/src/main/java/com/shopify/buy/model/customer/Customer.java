@@ -49,7 +49,7 @@ public class Customer extends ShopifyObject {
     private String email;
 
     @SerializedName("accepts_marketing")
-    private boolean acceptsMarketing;
+    private Boolean acceptsMarketing;
 
     @SerializedName("created_at")
     private Date createdAtDate;
@@ -64,7 +64,7 @@ public class Customer extends ShopifyObject {
     private String lastName;
 
     @SerializedName("orders_count")
-    private int ordersCount;
+    private Long ordersCount;
 
     private String state;
 
@@ -74,13 +74,13 @@ public class Customer extends ShopifyObject {
     private String note;
 
     @SerializedName("verified_email")
-    private boolean verifiedEmail;
+    private Boolean verifiedEmail;
 
     @SerializedName("multipass_identifier")
     private String multipassIdentifier;
 
     @SerializedName("tax_exempt")
-    private boolean taxExempt;
+    private Boolean taxExempt;
 
     private String tags;
     private Set<String> tagSet;
@@ -141,7 +141,7 @@ public class Customer extends ShopifyObject {
     /**
      * @return The number of orders this customer has.
      */
-    public int getOrdersCount() {
+    public long getOrdersCount() {
         return ordersCount;
     }
 
