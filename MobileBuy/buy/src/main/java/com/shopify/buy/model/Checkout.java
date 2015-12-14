@@ -243,10 +243,12 @@ public class Checkout extends ShopifyObject {
         return orderId;
     }
 
+    /**
+     * @return A partial order object, containing the {@link Order#name}, {@link Order#id}, and {@link Order#statusUrl}
+     */
     public Order getOrder() {
         return order;
     }
-
 
     /**
      * @return {@code true} if checkout has been completed and there's an order with an id, {@code false} otherwise.
