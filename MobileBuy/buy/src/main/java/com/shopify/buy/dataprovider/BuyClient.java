@@ -32,16 +32,18 @@ import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
+import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
-import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
+import com.shopify.buy.model.internal.OrdersWrapper;
 import com.shopify.buy.model.internal.PaymentSessionCheckout;
 import com.shopify.buy.model.internal.PaymentSessionCheckoutWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
@@ -643,12 +645,15 @@ public class BuyClient {
         });
     }
 
-    public void createCustomer(final Customer customer, final Callback<CustomerWrapper> callback) {
+    public void createCustomer(final Customer customer, final String password, final Callback<CustomerWrapper> callback) {
         if (customer == null) {
             throw new IllegalArgumentException("customer cannot be empty");
         }
 
-        retrofitService.createCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+        final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
+        customerWrapper.setPassword(password);
+
+        retrofitService.createCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper, response);
@@ -661,13 +666,15 @@ public class BuyClient {
         });
     }
 
-
-    public void loginCustomer(final Customer customer, final Callback<CustomerWrapper> callback) {
+    public void loginCustomer(final Customer customer, final String password, final Callback<CustomerWrapper> callback) {
         if (customer == null) {
             throw new NullPointerException("customer cannot be null");
         }
 
-        retrofitService.loginCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+        final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
+        customerWrapper.setPassword(password);
+
+        retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper, response);
@@ -707,6 +714,24 @@ public class BuyClient {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void getOrders(final String token, final Callback<List<Order>> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        retrofitService.getOrders(token, new Callback<OrdersWrapper>() {
+            @Override
+            public void success(OrdersWrapper ordersWrapper, Response response) {
+                callback.success(ordersWrapper.getOrders(), response);
             }
 
             @Override

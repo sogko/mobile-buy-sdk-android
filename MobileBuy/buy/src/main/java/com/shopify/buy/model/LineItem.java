@@ -25,9 +25,13 @@
 package com.shopify.buy.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.shopify.buy.dataprovider.BuyClient;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import retrofit.Callback;
 
 /**
  * Represents a Line Item, containing a {@link ProductVariant} and an associated quantity
@@ -69,7 +73,26 @@ public class LineItem {
     @SerializedName("fulfillment_service")
     protected String fulfillmentService;
 
+    @SerializedName("fulfillment_status")
+    protected String fulfillmentStatus;
+
+    @SerializedName("fulfillable_quantity")
+    protected Long fulfillableQuantity;
+
     protected Map<String, String> properties;
+
+    protected String vendor;
+
+    @SerializedName("gift_card")
+    protected boolean giftCard;
+
+    protected String name;
+
+    @SerializedName("total_discount")
+    protected String totalDiscount;
+
+    @SerializedName("tax_lines")
+    protected List<TaxLine> taxLines;
 
     protected LineItem() {
     }
@@ -90,14 +113,19 @@ public class LineItem {
     }
 
     /**
-     * @return The line price of the item (price * quantity).
+     * @return The name for the {@link ProductVariant} on this line item.
+     */
+    public String getName() { return name; }
+
+    /**
+     * @return The line price of the item (price * quantity). This is only available for line items returned using {@link BuyClient#getCheckout(String, Callback)}
      */
     public String getLinePrice() {
         return linePrice;
     }
 
     /**
-     * @return The competitor's price for the same item. You need to set this value on the {@link Product} in your shop admin portal.
+     * @return The competitor's price for the same item. You need to set this value on the {@link Product} in your shop admin portal. This is only available for line items returned using {@link BuyClient#getCheckout(String, Callback)}
      */
     public String getCompareAtPrice() {
         return compareAtPrice;
@@ -137,6 +165,17 @@ public class LineItem {
     public String getFulfillmentService() {
         return fulfillmentService;
     }
+
+    /**
+     *
+     * @return The amount available to fulfill.  This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}
+     */
+    public Long getFulfillableQuantity() { return fulfillableQuantity; }
+
+    /**
+     * @return How far along an order is in terms line items fulfilled. Valid values are: fulfilled, null or partial. This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}
+     */
+    public String getFulfillmentStatus() { return fulfillmentStatus; }
 
     /**
      * @return Custom properties set on this line item.
@@ -182,6 +221,28 @@ public class LineItem {
     public String getId() {
         return id;
     }
+
+    /**
+     * @return The vendor supplying the product.
+     */
+    public String getVendor() { return vendor; }
+
+    /**
+     * @return The total discount applied to this line item. This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}.
+     */
+    public String getTotalDiscount() {
+        return totalDiscount;
+    }
+
+    /**
+     * @return A list of tax_line objects, each of which details the taxes applicable to this line item. This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}
+     */
+    public List<TaxLine> getTaxLines() { return taxLines; }
+
+    /**
+     * @return  States whether or not the line_item is a gift card. If so, the item is not taxed or considered for shipping charges.
+     */
+    public boolean isGiftCard() { return giftCard; }
 
     /**
      * @param quantity The quantity of the {@link ProductVariant} being purchased in this line item.

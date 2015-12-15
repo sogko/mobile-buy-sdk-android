@@ -45,13 +45,8 @@ public class Customer extends ShopifyObject {
 
     private String email;
 
-    private String password;
-
-    @SerializedName("password_confirmation")
-    private String passwordConfirmation;
-
     @SerializedName("accepts_marketing")
-    private boolean acceptsMarketing;
+    private Boolean acceptsMarketing;
 
     @SerializedName("created_at")
     private Date createdAtDate;
@@ -66,7 +61,7 @@ public class Customer extends ShopifyObject {
     private String lastName;
 
     @SerializedName("orders_count")
-    private int ordersCount;
+    private Long ordersCount;
 
     private String state;
 
@@ -76,13 +71,13 @@ public class Customer extends ShopifyObject {
     private String note;
 
     @SerializedName("verified_email")
-    private boolean verifiedEmail;
+    private Boolean verifiedEmail;
 
     @SerializedName("multipass_identifier")
     private String multipassIdentifier;
 
     @SerializedName("tax_exempt")
-    private boolean taxExempt;
+    private Boolean taxExempt;
 
     private String tags;
     private Set<String> tagSet;
@@ -143,7 +138,7 @@ public class Customer extends ShopifyObject {
     /**
      * @return The number of orders this customer has.
      */
-    public int getOrdersCount() {
+    public long getOrdersCount() {
         return ordersCount;
     }
 
@@ -224,13 +219,28 @@ public class Customer extends ShopifyObject {
         return defaultAddress;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAcceptsMarketing(boolean acceptsMarketing) {
+        this.acceptsMarketing = acceptsMarketing;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-        this.passwordConfirmation = password;
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public void setTaxExempt(boolean taxExempt) {
+        this.taxExempt = taxExempt;
+    }
+
+    public void setMultipassIdentifier(String multipassIdentifier) {
+        this.multipassIdentifier = multipassIdentifier;
+    }
+
+    public void setDefaultAddress (Address defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setFirstName(String firstName) {
@@ -284,4 +294,5 @@ public class Customer extends ShopifyObject {
 
         return customer;
     }
+
 }
