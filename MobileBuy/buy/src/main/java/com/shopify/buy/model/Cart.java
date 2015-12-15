@@ -25,6 +25,7 @@
 package com.shopify.buy.model;
 
 import com.shopify.buy.dataprovider.BuyClientFactory;
+import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -175,4 +176,20 @@ public class Cart {
         }
         return subtotal;
     }
+
+    /**
+     * @return The total number of product variants in the cart (the sum of quantities across all line items).
+     */
+    public Object getTotalQuantity() {
+        if (CollectionUtils.isEmpty(lineItems)) {
+            return 0;
+        }
+
+        int quantity = 0;
+        for (LineItem lineItem : lineItems) {
+            quantity += lineItem.getQuantity();
+        }
+        return quantity;
+    }
+
 }
