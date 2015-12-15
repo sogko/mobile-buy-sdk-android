@@ -1,3 +1,26 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Shopify Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 package com.shopify.buy.model;
 
@@ -26,15 +49,11 @@ public class Order extends ShopifyObject {
     @SerializedName("updated_at")
     private String updatedAt;
 
-    private Integer number;
+    private Long number;
 
     private String note;
 
     private String token;
-
-    private String gateway;
-
-    private Boolean test;
 
     @SerializedName("total_price")
     private String totalPrice;
@@ -42,8 +61,11 @@ public class Order extends ShopifyObject {
     @SerializedName("subtotal_price")
     private String subtotalPrice;
 
+    @SerializedName("total_discount")
+    private String totalDiscounts;
+
     @SerializedName("total_weight")
-    private Integer totalWeight;
+    private Long totalWeight;
 
     @SerializedName("total_tax")
     private String totalTax;
@@ -55,11 +77,6 @@ public class Order extends ShopifyObject {
 
     @SerializedName("financial_status")
     private String financialStatus;
-
-    private Boolean confirmed;
-
-    @SerializedName("total_discounts")
-    private String totalDiscounts;
 
     @SerializedName("total_line_items_price")
     private String totalLineItemsPrice;
@@ -84,44 +101,24 @@ public class Order extends ShopifyObject {
     @SerializedName("cancel_reason")
     private String cancelReason;
 
-    @SerializedName("total_price_usd")
-    private String totalPriceUsd;
-
     @SerializedName("checkout_token")
     private String checkoutToken;
 
-    @SerializedName("user_id")
-    private Object userId;
-
-    @SerializedName("location_id")
-    private Object locationId;
-
-    @SerializedName("source_identifier")
-    private Object sourceIdentifier;
-
-    @SerializedName("source_url")
-    private String sourceUrl;
-
     @SerializedName("processed_at")
-    private String processedAt;
-
-    @SerializedName("device_id")
-    private Object deviceId;
+    private Date processedAt;
 
     @SerializedName("browser_ip")
     private String browserIp;
 
-    @SerializedName("landing_site_ref")
-    private Object landingSiteRef;
-
     @SerializedName("order_number")
-    private Integer orderNumber;
+    private Long orderNumber;
 
     @SerializedName("discount_codes")
-    private List<Discount> discountCodes = new ArrayList<>();
+    private List<String> discountCodes = new ArrayList<>();
 
+    // TODO test this to make sure they deserialize properly
     @SerializedName("note_attributes")
-    private List<Object> noteAttributes = new ArrayList<Object>();
+    private List<Attribute> noteAttributes = new ArrayList<>();
 
     @SerializedName("payment_gateway_names")
     private List<String> paymentGatewayNames = new ArrayList<String>();
@@ -130,7 +127,7 @@ public class Order extends ShopifyObject {
     private String processingMethod;
 
     @SerializedName("checkout_id")
-    private Integer checkoutId;
+    private Long checkoutId;
 
     @SerializedName("source_name")
     private String sourceName;
@@ -158,16 +155,6 @@ public class Order extends ShopifyObject {
     @SerializedName("shipping_address")
     private Address shippingAddress;
 
-    private List<Object> fulfillments = new ArrayList<Object>();
-
-    @SerializedName("client_details")
-    private ClientDetails clientDetails;
-
-    private List<Object> refunds = new ArrayList<Object>();
-
-    @SerializedName("payment_details")
-    private PaymentDetails paymentDetails;
-
     private Customer customer;
 
     /**
@@ -177,140 +164,119 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return The email
+     * @return The customer's email address. Is required when a billing address is present.
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     * @return The closedAt
+     * @return The date and time when the order was closed. {@code null} if the order is not closed.
      */
-    public Object getClosedAt() {
+    public Date getClosedAt() {
         return closedAt;
     }
 
     /**
-     * @return The createdAt
+     * @return The date and time when the order was created.
      */
     public String getCreatedAt() {
         return createdAt;
     }
 
     /**
-     * @return The updatedAt
+     * @return The date and time when the order was last modified.
      */
     public String getUpdatedAt() {
         return updatedAt;
     }
 
     /**
-     * @return The number
+     * @return Numerical identifier unique to the shop.
      */
-    public Integer getNumber() {
+    public Long getNumber() {
         return number;
     }
 
     /**
-     * @return The note
+     * @return The text of an optional note that a shop owner can attach to the order.
      */
-    public Object getNote() {
+    public String getNote() {
         return note;
     }
 
     /**
-     * @return The token
+     * @return Unique identifier for a particular order.
      */
     public String getToken() {
         return token;
     }
 
     /**
-     * @return The gateway
-     */
-    public String getGateway() {
-        return gateway;
-    }
-
-    /**
-     * @return The test
-     */
-    public Boolean getTest() {
-        return test;
-    }
-
-    /**
-     * @return The totalPrice
+     * @return The sum of all the prices of all the items in the order, taxes and discounts included (must be positive).
      */
     public String getTotalPrice() {
         return totalPrice;
     }
 
     /**
-     * @return The subtotalPrice
+     * @return Price of the order before shipping and taxes.
      */
     public String getSubtotalPrice() {
         return subtotalPrice;
     }
 
     /**
-     * @return The totalWeight
+     * @return The sum of all the weights of the line items in the order, in grams.
      */
-    public Integer getTotalWeight() {
+    public Long getTotalWeight() {
         return totalWeight;
     }
 
     /**
-     * @return The totalTax
+     * @return The sum of all the taxes applied to the order (must be positive).
      */
     public String getTotalTax() {
         return totalTax;
     }
 
     /**
-     * @return The taxesIncluded
+     * @return States whether or not taxes are included in the order subtotal.
      */
     public Boolean getTaxesIncluded() {
         return taxesIncluded;
     }
 
     /**
-     * @return The currency
+     * @return The three letter code (ISO 4217) for the currency used for the payment.
      */
     public String getCurrency() {
         return currency;
     }
 
     /**
-     * @return The financialStatus
+     * @return The financialStatus of the order.
      */
     public String getFinancialStatus() {
         return financialStatus;
     }
 
     /**
-     * @return The confirmed
-     */
-    public Boolean getConfirmed() {
-        return confirmed;
-    }
-
-    /**
-     * @return The totalDiscounts
+     * @return The total amount of the discounts to be applied to the price of the order.
      */
     public String getTotalDiscounts() {
         return totalDiscounts;
     }
 
     /**
-     * @return The totalLineItemsPrice
+     * @return The sum of all the prices of all the items in the order.
      */
     public String getTotalLineItemsPrice() {
         return totalLineItemsPrice;
     }
 
     /**
-     * @return The cartToken
+     * @return Unique identifier for a particular {@link Cart} that is attached to this order.
      */
     public String getCartToken() {
         return cartToken;
@@ -324,21 +290,21 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return The name
+     * @return The customer's order name as represented by a number.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return The referringSite
+     * @return The website that the customer clicked on to come to the shop.
      */
     public String getReferringSite() {
         return referringSite;
     }
 
     /**
-     * @return The landingSite
+     * @return The URL for the page where the buyer landed when entering the shop.
      */
     public String getLandingSite() {
         return landingSite;
@@ -347,78 +313,29 @@ public class Order extends ShopifyObject {
     /**
      * @return The date and time when the order was cancelled.
      */
-    public Object getCancelledAt() {
+    public Date getCancelledAt() {
         return cancelledAt;
     }
 
     /**
      * @return The reason why the order was cancelled. If the order was not cancelled, this value is null.
      */
-    public Object getCancelReason() {
+    public String getCancelReason() {
         return cancelReason;
     }
 
     /**
-     * @return The totalPriceUsd
-     */
-    public String getTotalPriceUsd() {
-        return totalPriceUsd;
-    }
-
-    /**
-     * @return The checkoutToken
+     * @return The checkoutToken associated with this order.
      */
     public String getCheckoutToken() {
         return checkoutToken;
     }
 
     /**
-     * @return The reference
+     * @return The date and time when the order was imported.
      */
-    public Object getReference() {
-        return reference;
-    }
-
-    /**
-     * @return The userId
-     */
-    public Object getUserId() {
-        return userId;
-    }
-
-    /**
-     * @return The locationId
-     */
-    public Object getLocationId() {
-        return locationId;
-    }
-
-    /**
-     * @return The sourceIdentifier
-     */
-    public Object getSourceIdentifier() {
-        return sourceIdentifier;
-    }
-
-    /**
-     * @return The sourceUrl
-     */
-    public Object getSourceUrl() {
-        return sourceUrl;
-    }
-
-    /**
-     * @return The processedAt
-     */
-    public String getProcessedAt() {
+    public Date getProcessedAt() {
         return processedAt;
-    }
-
-    /**
-     * @return The deviceId
-     */
-    public Object getDeviceId() {
-        return deviceId;
     }
 
     /**
@@ -429,98 +346,84 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return The landingSiteRef
+     * @return A unique numeric identifier for the order.
      */
-    public Object getLandingSiteRef() {
-        return landingSiteRef;
-    }
-
-    /**
-     * @return The orderNumber
-     */
-    public Integer getOrderNumber() {
+    public Long getOrderNumber() {
         return orderNumber;
     }
 
     /**
-     * @return The discountCodes
+     * @return Extra information that was added to the order. Each array entry contains a hash with "name" and "value" keys.
      */
-    public List<Object> getDiscountCodes() {
-        return discountCodes;
-    }
-
-    /**
-     * @return The noteAttributes
-     */
-    public List<Object> getNoteAttributes() {
+    public List<Attribute> getNoteAttributes() {
         return noteAttributes;
     }
 
     /**
-     * @return The paymentGatewayNames
+     * @return The list of all payment gateways used for the order.
      */
     public List<String> getPaymentGatewayNames() {
         return paymentGatewayNames;
     }
 
     /**
-     * @return The processingMethod
+     * @return States the type of payment processing method. Valid values are: checkout, direct, manual, offsite or express.
      */
     public String getProcessingMethod() {
         return processingMethod;
     }
 
     /**
-     * @return The checkoutId
+     * @return The checkoutId associated with this order.
      */
-    public Integer getCheckoutId() {
+    public Long getCheckoutId() {
         return checkoutId;
     }
 
     /**
-     * @return The sourceName
+     * @return Where the order originated.
      */
     public String getSourceName() {
         return sourceName;
     }
 
     /**
-     * @return The fulfillmentStatus
+     * @return The fulfillment status of the order. Will be one of fulfilled, partial, or null.
      */
-    public Object getFulfillmentStatus() {
+    public String getFulfillmentStatus() {
         return fulfillmentStatus;
     }
 
     /**
-     * @return The taxLines
+     * @return An list of tax_line objects, each of which details the total taxes applicable to the order.
      */
     public List<TaxLine> getTaxLines() {
         return taxLines;
     }
 
     /**
-     * @return The tags
+     * @return The tags associated with this order.
      */
     public String getTags() {
         return tags;
     }
 
     /**
-     * @return The contactEmail
+     * @return The contact email for the merchant.
      */
     public String getContactEmail() {
         return contactEmail;
     }
 
     /**
-     * @return The lineItems
+     * @return A list of {@link LineItem}, each one containing information about an item in the order.
      */
     public List<LineItem> getLineItems() {
         return lineItems;
     }
 
     /**
-     * @return The shippingLines
+     * @return A list of {@link ShippingLine} objects, each of which details the shipping methods used.
      */
     public List<ShippingLine> getShippingLines() {
         return shippingLines;
@@ -534,45 +437,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return The shippingAddress
+     * @return The mailing address to where the order will be shipped. This address is optional and will not be available on orders that do not require one.
      */
     public Address getShippingAddress() {
         return shippingAddress;
-    }
-
-    /**
-     * @return The fulfillments
-     */
-    public List<Object> getFulfillments() {
-        return fulfillments;
-    }
-
-    /**
-     * @return The clientDetails
-     */
-    public ClientDetails getClientDetails() {
-        return clientDetails;
-    }
-
-    /**
-     * @return The refunds
-     */
-    public List<Object> getRefunds() {
-        return refunds;
-    }
-
-    /**
-     * @return The paymentDetails
-     */
-    public PaymentDetails getPaymentDetails() {
-        return paymentDetails;
-    }
-
-    /**
-     * @return The customer
-     */
-    public Customer getCustomer() {
-        return customer;
     }
 
     /**
