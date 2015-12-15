@@ -16,8 +16,6 @@ public class ShippingLine {
 
     private String source;
 
-    private Object phone;
-
     @SerializedName("tax_lines")
     private List<TaxLine> taxLines = new ArrayList<>();
 
@@ -28,54 +26,35 @@ public class ShippingLine {
     }
 
     /**
-     * 
-     * @return
-     *     The title
+     * @return The title of the shipping method.
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * 
-     * @return
-     *     The price
+     * @return The price of this shipping method.
      */
     public String getPrice() {
         return price;
     }
 
     /**
-     * 
-     * @return
-     *     The code
+     * @return A reference to the shipping method.
      */
     public String getCode() {
         return code;
     }
 
     /**
-     * 
-     * @return
-     *     The source
+     * @return The source of the shipping method.
      */
     public String getSource() {
         return source;
     }
 
     /**
-     * 
-     * @return
-     *     The phone
-     */
-    public Object getPhone() {
-        return phone;
-    }
-
-    /**
-     * 
-     * @return
-     *     The taxLines
+     * @return A list of {@link TaxLine}, each of which details the taxes applicable to this shipping_line.
      */
     public List<TaxLine> getTaxLines() {
         return taxLines;

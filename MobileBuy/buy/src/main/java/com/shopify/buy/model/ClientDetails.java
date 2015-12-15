@@ -53,14 +53,13 @@ public class ClientDetails {
     }
 
     /**
-     * @return The browserIp.
+     * @return The browser IP address.
      */
     public String getBrowserIp() {
         return browserIp;
     }
 
     /**
-     * 
      * @return The acceptLanguage.
      */
     public String getAcceptLanguage() {
@@ -68,27 +67,22 @@ public class ClientDetails {
     }
 
     /**
-     * 
-     * @return
-     *     The userAgent
+     * @return  The userAgent.
      */
     public String getUserAgent() {
         return userAgent;
     }
 
     /**
-     * 
-     * @return
-     *     The sessionHash
+     * @return The sessionHash.
      */
     public String getSessionHash() {
         return sessionHash;
     }
 
     /**
-     * 
-     * @return
-     *     The browserWidth
+     * @return The browser screen width in pixels, if available.
+     *
      */
     public Integer getBrowserWidth() {
         return browserWidth;
@@ -96,8 +90,8 @@ public class ClientDetails {
 
     /**
      * 
-     * @return
-     *     The browserHeight
+     * @return The browser screen height in pixels, if available.
+     *
      */
     public Integer getBrowserHeight() {
         return browserHeight;

@@ -2,6 +2,7 @@
 package com.shopify.buy.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -17,7 +18,7 @@ public class Order extends ShopifyObject {
     private String statusUrl;
 
     @SerializedName("closed_at")
-    private Object closedAt;
+    private Date closedAt;
 
     @SerializedName("created_at")
     private String createdAt;
@@ -27,7 +28,7 @@ public class Order extends ShopifyObject {
 
     private Integer number;
 
-    private Object note;
+    private String note;
 
     private String token;
 
@@ -78,18 +79,16 @@ public class Order extends ShopifyObject {
     private String landingSite;
 
     @SerializedName("cancelled_at")
-    private Object cancelledAt;
+    private Date cancelledAt;
 
     @SerializedName("cancel_reason")
-    private Object cancelReason;
+    private String cancelReason;
 
     @SerializedName("total_price_usd")
     private String totalPriceUsd;
 
     @SerializedName("checkout_token")
     private String checkoutToken;
-
-    private Object reference;
 
     @SerializedName("user_id")
     private Object userId;
@@ -101,7 +100,7 @@ public class Order extends ShopifyObject {
     private Object sourceIdentifier;
 
     @SerializedName("source_url")
-    private Object sourceUrl;
+    private String sourceUrl;
 
     @SerializedName("processed_at")
     private String processedAt;
@@ -119,7 +118,7 @@ public class Order extends ShopifyObject {
     private Integer orderNumber;
 
     @SerializedName("discount_codes")
-    private List<Object> discountCodes = new ArrayList<Object>();
+    private List<Discount> discountCodes = new ArrayList<>();
 
     @SerializedName("note_attributes")
     private List<Object> noteAttributes = new ArrayList<Object>();
@@ -137,7 +136,7 @@ public class Order extends ShopifyObject {
     private String sourceName;
 
     @SerializedName("fulfillment_status")
-    private Object fulfillmentStatus;
+    private String fulfillmentStatus;
 
     @SerializedName("tax_lines")
     private List<TaxLine> taxLines = new ArrayList<TaxLine>();
@@ -318,7 +317,7 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return The buyerAcceptsMarketing
+     * @return Indicates whether or not the person who placed the order would like to receive email updates from the shop.
      */
     public Boolean getBuyerAcceptsMarketing() {
         return buyerAcceptsMarketing;
@@ -346,14 +345,14 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return The cancelledAt
+     * @return The date and time when the order was cancelled.
      */
     public Object getCancelledAt() {
         return cancelledAt;
     }
 
     /**
-     * @return The cancelReason
+     * @return The reason why the order was cancelled. If the order was not cancelled, this value is null.
      */
     public Object getCancelReason() {
         return cancelReason;
@@ -423,7 +422,7 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return The browserIp
+     * @return The IP address of the browser used by the customer when placing the order.
      */
     public String getBrowserIp() {
         return browserIp;
@@ -528,7 +527,7 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return The billingAddress
+     * @return The mailing address associated with the payment method. This address is an optional field that will not be available on orders that do not require one.
      */
     public Address getBillingAddress() {
         return billingAddress;
