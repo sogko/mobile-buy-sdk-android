@@ -185,24 +185,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param email The email
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
      * @return The closedAt
      */
     public Object getClosedAt() {
         return closedAt;
-    }
-
-    /**
-     * @param closedAt The closed_at
-     */
-    public void setClosedAt(Object closedAt) {
-        this.closedAt = closedAt;
     }
 
     /**
@@ -213,24 +199,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param createdAt The created_at
-     */
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    /**
      * @return The updatedAt
      */
     public String getUpdatedAt() {
         return updatedAt;
-    }
-
-    /**
-     * @param updatedAt The updated_at
-     */
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**
@@ -241,24 +213,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param number The number
-     */
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
-    /**
      * @return The note
      */
     public Object getNote() {
         return note;
-    }
-
-    /**
-     * @param note The note
-     */
-    public void setNote(Object note) {
-        this.note = note;
     }
 
     /**
@@ -269,24 +227,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param token The token
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    /**
      * @return The gateway
      */
     public String getGateway() {
         return gateway;
-    }
-
-    /**
-     * @param gateway The gateway
-     */
-    public void setGateway(String gateway) {
-        this.gateway = gateway;
     }
 
     /**
@@ -297,24 +241,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param test The test
-     */
-    public void setTest(Boolean test) {
-        this.test = test;
-    }
-
-    /**
      * @return The totalPrice
      */
     public String getTotalPrice() {
         return totalPrice;
-    }
-
-    /**
-     * @param totalPrice The total_price
-     */
-    public void setTotalPrice(String totalPrice) {
-        this.totalPrice = totalPrice;
     }
 
     /**
@@ -325,24 +255,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param subtotalPrice The subtotal_price
-     */
-    public void setSubtotalPrice(String subtotalPrice) {
-        this.subtotalPrice = subtotalPrice;
-    }
-
-    /**
      * @return The totalWeight
      */
     public Integer getTotalWeight() {
         return totalWeight;
-    }
-
-    /**
-     * @param totalWeight The total_weight
-     */
-    public void setTotalWeight(Integer totalWeight) {
-        this.totalWeight = totalWeight;
     }
 
     /**
@@ -353,24 +269,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param totalTax The total_tax
-     */
-    public void setTotalTax(String totalTax) {
-        this.totalTax = totalTax;
-    }
-
-    /**
      * @return The taxesIncluded
      */
     public Boolean getTaxesIncluded() {
         return taxesIncluded;
-    }
-
-    /**
-     * @param taxesIncluded The taxes_included
-     */
-    public void setTaxesIncluded(Boolean taxesIncluded) {
-        this.taxesIncluded = taxesIncluded;
     }
 
     /**
@@ -381,24 +283,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param currency The currency
-     */
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    /**
      * @return The financialStatus
      */
     public String getFinancialStatus() {
         return financialStatus;
-    }
-
-    /**
-     * @param financialStatus The financial_status
-     */
-    public void setFinancialStatus(String financialStatus) {
-        this.financialStatus = financialStatus;
     }
 
     /**
@@ -409,24 +297,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param confirmed The confirmed
-     */
-    public void setConfirmed(Boolean confirmed) {
-        this.confirmed = confirmed;
-    }
-
-    /**
      * @return The totalDiscounts
      */
     public String getTotalDiscounts() {
         return totalDiscounts;
-    }
-
-    /**
-     * @param totalDiscounts The total_discounts
-     */
-    public void setTotalDiscounts(String totalDiscounts) {
-        this.totalDiscounts = totalDiscounts;
     }
 
     /**
@@ -437,24 +311,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param totalLineItemsPrice The total_line_items_price
-     */
-    public void setTotalLineItemsPrice(String totalLineItemsPrice) {
-        this.totalLineItemsPrice = totalLineItemsPrice;
-    }
-
-    /**
      * @return The cartToken
      */
     public String getCartToken() {
         return cartToken;
-    }
-
-    /**
-     * @param cartToken The cart_token
-     */
-    public void setCartToken(String cartToken) {
-        this.cartToken = cartToken;
     }
 
     /**
@@ -465,24 +325,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param buyerAcceptsMarketing The buyer_accepts_marketing
-     */
-    public void setBuyerAcceptsMarketing(Boolean buyerAcceptsMarketing) {
-        this.buyerAcceptsMarketing = buyerAcceptsMarketing;
-    }
-
-    /**
      * @return The name
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * @param name The name
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -493,24 +339,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param referringSite The referring_site
-     */
-    public void setReferringSite(String referringSite) {
-        this.referringSite = referringSite;
-    }
-
-    /**
      * @return The landingSite
      */
     public String getLandingSite() {
         return landingSite;
-    }
-
-    /**
-     * @param landingSite The landing_site
-     */
-    public void setLandingSite(String landingSite) {
-        this.landingSite = landingSite;
     }
 
     /**
@@ -521,24 +353,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param cancelledAt The cancelled_at
-     */
-    public void setCancelledAt(Object cancelledAt) {
-        this.cancelledAt = cancelledAt;
-    }
-
-    /**
      * @return The cancelReason
      */
     public Object getCancelReason() {
         return cancelReason;
-    }
-
-    /**
-     * @param cancelReason The cancel_reason
-     */
-    public void setCancelReason(Object cancelReason) {
-        this.cancelReason = cancelReason;
     }
 
     /**
@@ -549,24 +367,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param totalPriceUsd The total_price_usd
-     */
-    public void setTotalPriceUsd(String totalPriceUsd) {
-        this.totalPriceUsd = totalPriceUsd;
-    }
-
-    /**
      * @return The checkoutToken
      */
     public String getCheckoutToken() {
         return checkoutToken;
-    }
-
-    /**
-     * @param checkoutToken The checkout_token
-     */
-    public void setCheckoutToken(String checkoutToken) {
-        this.checkoutToken = checkoutToken;
     }
 
     /**
@@ -577,24 +381,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param reference The reference
-     */
-    public void setReference(Object reference) {
-        this.reference = reference;
-    }
-
-    /**
      * @return The userId
      */
     public Object getUserId() {
         return userId;
-    }
-
-    /**
-     * @param userId The user_id
-     */
-    public void setUserId(Object userId) {
-        this.userId = userId;
     }
 
     /**
@@ -605,24 +395,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param locationId The location_id
-     */
-    public void setLocationId(Object locationId) {
-        this.locationId = locationId;
-    }
-
-    /**
      * @return The sourceIdentifier
      */
     public Object getSourceIdentifier() {
         return sourceIdentifier;
-    }
-
-    /**
-     * @param sourceIdentifier The source_identifier
-     */
-    public void setSourceIdentifier(Object sourceIdentifier) {
-        this.sourceIdentifier = sourceIdentifier;
     }
 
     /**
@@ -633,24 +409,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param sourceUrl The source_url
-     */
-    public void setSourceUrl(Object sourceUrl) {
-        this.sourceUrl = sourceUrl;
-    }
-
-    /**
      * @return The processedAt
      */
     public String getProcessedAt() {
         return processedAt;
-    }
-
-    /**
-     * @param processedAt The processed_at
-     */
-    public void setProcessedAt(String processedAt) {
-        this.processedAt = processedAt;
     }
 
     /**
@@ -661,24 +423,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param deviceId The device_id
-     */
-    public void setDeviceId(Object deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    /**
      * @return The browserIp
      */
     public String getBrowserIp() {
         return browserIp;
-    }
-
-    /**
-     * @param browserIp The browser_ip
-     */
-    public void setBrowserIp(String browserIp) {
-        this.browserIp = browserIp;
     }
 
     /**
@@ -689,24 +437,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param landingSiteRef The landing_site_ref
-     */
-    public void setLandingSiteRef(Object landingSiteRef) {
-        this.landingSiteRef = landingSiteRef;
-    }
-
-    /**
      * @return The orderNumber
      */
     public Integer getOrderNumber() {
         return orderNumber;
-    }
-
-    /**
-     * @param orderNumber The order_number
-     */
-    public void setOrderNumber(Integer orderNumber) {
-        this.orderNumber = orderNumber;
     }
 
     /**
@@ -717,24 +451,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param discountCodes The discount_codes
-     */
-    public void setDiscountCodes(List<Object> discountCodes) {
-        this.discountCodes = discountCodes;
-    }
-
-    /**
      * @return The noteAttributes
      */
     public List<Object> getNoteAttributes() {
         return noteAttributes;
-    }
-
-    /**
-     * @param noteAttributes The note_attributes
-     */
-    public void setNoteAttributes(List<Object> noteAttributes) {
-        this.noteAttributes = noteAttributes;
     }
 
     /**
@@ -745,24 +465,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param paymentGatewayNames The payment_gateway_names
-     */
-    public void setPaymentGatewayNames(List<String> paymentGatewayNames) {
-        this.paymentGatewayNames = paymentGatewayNames;
-    }
-
-    /**
      * @return The processingMethod
      */
     public String getProcessingMethod() {
         return processingMethod;
-    }
-
-    /**
-     * @param processingMethod The processing_method
-     */
-    public void setProcessingMethod(String processingMethod) {
-        this.processingMethod = processingMethod;
     }
 
     /**
@@ -773,24 +479,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param checkoutId The checkout_id
-     */
-    public void setCheckoutId(Integer checkoutId) {
-        this.checkoutId = checkoutId;
-    }
-
-    /**
      * @return The sourceName
      */
     public String getSourceName() {
         return sourceName;
-    }
-
-    /**
-     * @param sourceName The source_name
-     */
-    public void setSourceName(String sourceName) {
-        this.sourceName = sourceName;
     }
 
     /**
@@ -801,24 +493,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param fulfillmentStatus The fulfillment_status
-     */
-    public void setFulfillmentStatus(Object fulfillmentStatus) {
-        this.fulfillmentStatus = fulfillmentStatus;
-    }
-
-    /**
      * @return The taxLines
      */
     public List<TaxLine> getTaxLines() {
         return taxLines;
-    }
-
-    /**
-     * @param taxLines The tax_lines
-     */
-    public void setTaxLines(List<TaxLine> taxLines) {
-        this.taxLines = taxLines;
     }
 
     /**
@@ -829,24 +507,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param tags The tags
-     */
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    /**
      * @return The contactEmail
      */
     public String getContactEmail() {
         return contactEmail;
-    }
-
-    /**
-     * @param contactEmail The contact_email
-     */
-    public void setContactEmail(String contactEmail) {
-        this.contactEmail = contactEmail;
     }
 
     /**
@@ -857,24 +521,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param lineItems The line_items
-     */
-    public void setLineItems(List<LineItem> lineItems) {
-        this.lineItems = lineItems;
-    }
-
-    /**
      * @return The shippingLines
      */
     public List<ShippingLine> getShippingLines() {
         return shippingLines;
-    }
-
-    /**
-     * @param shippingLines The shipping_lines
-     */
-    public void setShippingLines(List<ShippingLine> shippingLines) {
-        this.shippingLines = shippingLines;
     }
 
     /**
@@ -885,24 +535,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param billingAddress The billing_address
-     */
-    public void setBillingAddress(Address billingAddress) {
-        this.billingAddress = billingAddress;
-    }
-
-    /**
      * @return The shippingAddress
      */
     public Address getShippingAddress() {
         return shippingAddress;
-    }
-
-    /**
-     * @param shippingAddress The shipping_address
-     */
-    public void setShippingAddress(Address shippingAddress) {
-        this.shippingAddress = shippingAddress;
     }
 
     /**
@@ -913,24 +549,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param fulfillments The fulfillments
-     */
-    public void setFulfillments(List<Object> fulfillments) {
-        this.fulfillments = fulfillments;
-    }
-
-    /**
      * @return The clientDetails
      */
     public ClientDetails getClientDetails() {
         return clientDetails;
-    }
-
-    /**
-     * @param clientDetails The client_details
-     */
-    public void setClientDetails(ClientDetails clientDetails) {
-        this.clientDetails = clientDetails;
     }
 
     /**
@@ -941,24 +563,10 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @param refunds The refunds
-     */
-    public void setRefunds(List<Object> refunds) {
-        this.refunds = refunds;
-    }
-
-    /**
      * @return The paymentDetails
      */
     public PaymentDetails getPaymentDetails() {
         return paymentDetails;
-    }
-
-    /**
-     * @param paymentDetails The payment_details
-     */
-    public void setPaymentDetails(PaymentDetails paymentDetails) {
-        this.paymentDetails = paymentDetails;
     }
 
     /**
@@ -967,14 +575,6 @@ public class Order extends ShopifyObject {
     public Customer getCustomer() {
         return customer;
     }
-
-    /**
-     * @param customer The customer
-     */
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
 
     /**
      * @return URL for the website showing the order status. This is only available for orders that are part of a complete {@link Checkout} returned using {@link BuyClient#getCheckout(String, Callback)}

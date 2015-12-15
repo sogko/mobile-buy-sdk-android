@@ -36,29 +36,11 @@ public class PaymentDetails {
 
     /**
      * 
-     * @param creditCardBin
-     *     The credit_card_bin
-     */
-    public void setCreditCardBin(String creditCardBin) {
-        this.creditCardBin = creditCardBin;
-    }
-
-    /**
-     * 
      * @return
      *     The avsResultCode
      */
     public String getAvsResultCode() {
         return avsResultCode;
-    }
-
-    /**
-     * 
-     * @param avsResultCode
-     *     The avs_result_code
-     */
-    public void setAvsResultCode(String avsResultCode) {
-        this.avsResultCode = avsResultCode;
     }
 
     /**
@@ -72,15 +54,6 @@ public class PaymentDetails {
 
     /**
      * 
-     * @param cvvResultCode
-     *     The cvv_result_code
-     */
-    public void setCvvResultCode(String cvvResultCode) {
-        this.cvvResultCode = cvvResultCode;
-    }
-
-    /**
-     * 
      * @return
      *     The creditCardNumber
      */
@@ -90,29 +63,11 @@ public class PaymentDetails {
 
     /**
      * 
-     * @param creditCardNumber
-     *     The credit_card_number
-     */
-    public void setCreditCardNumber(String creditCardNumber) {
-        this.creditCardNumber = creditCardNumber;
-    }
-
-    /**
-     * 
      * @return
      *     The creditCardCompany
      */
     public String getCreditCardCompany() {
         return creditCardCompany;
-    }
-
-    /**
-     * 
-     * @param creditCardCompany
-     *     The credit_card_company
-     */
-    public void setCreditCardCompany(String creditCardCompany) {
-        this.creditCardCompany = creditCardCompany;
     }
 
 }

@@ -61,27 +61,10 @@ public class ClientDetails {
 
     /**
      * 
-     * @param browserIp The browser_ip.
-     */
-    public void setBrowserIp(String browserIp) {
-        this.browserIp = browserIp;
-    }
-
-    /**
-     * 
      * @return The acceptLanguage.
      */
     public String getAcceptLanguage() {
         return acceptLanguage;
-    }
-
-    /**
-     * 
-     * @param acceptLanguage
-     *     The accept_language
-     */
-    public void setAcceptLanguage(String acceptLanguage) {
-        this.acceptLanguage = acceptLanguage;
     }
 
     /**
@@ -95,29 +78,11 @@ public class ClientDetails {
 
     /**
      * 
-     * @param userAgent
-     *     The user_agent
-     */
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    /**
-     * 
      * @return
      *     The sessionHash
      */
     public String getSessionHash() {
         return sessionHash;
-    }
-
-    /**
-     * 
-     * @param sessionHash
-     *     The session_hash
-     */
-    public void setSessionHash(String sessionHash) {
-        this.sessionHash = sessionHash;
     }
 
     /**
@@ -131,29 +96,11 @@ public class ClientDetails {
 
     /**
      * 
-     * @param browserWidth
-     *     The browser_width
-     */
-    public void setBrowserWidth(Integer browserWidth) {
-        this.browserWidth = browserWidth;
-    }
-
-    /**
-     * 
      * @return
      *     The browserHeight
      */
     public Integer getBrowserHeight() {
         return browserHeight;
-    }
-
-    /**
-     * 
-     * @param browserHeight
-     *     The browser_height
-     */
-    public void setBrowserHeight(Integer browserHeight) {
-        this.browserHeight = browserHeight;
     }
 
 }

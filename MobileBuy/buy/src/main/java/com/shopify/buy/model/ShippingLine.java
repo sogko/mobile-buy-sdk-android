@@ -38,29 +38,11 @@ public class ShippingLine {
 
     /**
      * 
-     * @param title
-     *     The title
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
-     * 
      * @return
      *     The price
      */
     public String getPrice() {
         return price;
-    }
-
-    /**
-     * 
-     * @param price
-     *     The price
-     */
-    public void setPrice(String price) {
-        this.price = price;
     }
 
     /**
@@ -74,29 +56,11 @@ public class ShippingLine {
 
     /**
      * 
-     * @param code
-     *     The code
-     */
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    /**
-     * 
      * @return
      *     The source
      */
     public String getSource() {
         return source;
-    }
-
-    /**
-     * 
-     * @param source
-     *     The source
-     */
-    public void setSource(String source) {
-        this.source = source;
     }
 
     /**
@@ -110,29 +74,11 @@ public class ShippingLine {
 
     /**
      * 
-     * @param phone
-     *     The phone
-     */
-    public void setPhone(Object phone) {
-        this.phone = phone;
-    }
-
-    /**
-     * 
      * @return
      *     The taxLines
      */
     public List<TaxLine> getTaxLines() {
         return taxLines;
-    }
-
-    /**
-     * 
-     * @param taxLines
-     *     The tax_lines
-     */
-    public void setTaxLines(List<TaxLine> taxLines) {
-        this.taxLines = taxLines;
     }
 
 }
