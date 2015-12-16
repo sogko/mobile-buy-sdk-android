@@ -236,6 +236,10 @@ public class Customer extends ShopifyObject {
         this.multipassIdentifier = multipassIdentifier;
     }
 
+    public void setDefaultAddress(Address defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -246,10 +250,6 @@ public class Customer extends ShopifyObject {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public void setDefaultAddress(Address address) {
-        this.defaultAddress = address;
     }
 
     public void setNote(String note) {
