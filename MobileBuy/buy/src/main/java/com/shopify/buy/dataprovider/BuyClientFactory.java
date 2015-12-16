@@ -30,6 +30,8 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
 import com.shopify.buy.BuildConfig;
 import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Customer.CustomerDeserializer;
@@ -42,7 +44,10 @@ import com.shopify.buy.utils.DateUtility;
 import com.shopify.buy.utils.DateUtility.DateDeserializer;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.RequestInterceptor;
@@ -117,13 +122,32 @@ public class BuyClientFactory {
     }
 
     public static Gson createDefaultGson() {
-        return new GsonBuilder().setDateFormat(DateUtility.DEFAULT_DATE_PATTERN)
-                .registerTypeAdapter(Product.class, new ProductDeserializer())
-                .registerTypeAdapter(Date.class, new DateDeserializer())
-                .registerTypeAdapter(Customer.class, new CustomerDeserializer())
-                .registerTypeAdapter(CustomerWrapper.class, new CustomerWrapperSerializer())
-                .registerTypeAdapter(Order.class, new Order.OrderDeserializer())
-                .create();
+        return createDefaultGson(null);
+    }
+
+    public static Gson createDefaultGson(Class forClass) {
+
+        GsonBuilder builder = new GsonBuilder()
+                .setDateFormat(DateUtility.DEFAULT_DATE_PATTERN)
+                .registerTypeAdapter(Date.class, new DateDeserializer());
+
+        if (!Product.class.equals(forClass)) {
+            builder.registerTypeAdapter(Product.class, new ProductDeserializer());
+        }
+
+        if (!Customer.class.equals(forClass)) {
+            builder.registerTypeAdapter(Customer.class, new CustomerDeserializer());
+        }
+
+        if (!CustomerWrapper.class.equals(forClass)) {
+            builder.registerTypeAdapter(CustomerWrapper.class, new CustomerWrapperSerializer());
+        }
+
+        if (!Order.class.equals(forClass)) {
+            builder.registerTypeAdapter(Order.class, new Order.OrderDeserializer());
+        }
+
+        return builder.create();
     }
 
 }
