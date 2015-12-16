@@ -24,12 +24,24 @@
 
 package com.shopify.buy.model;
 
+import android.text.TextUtils;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.utils.DateUtility;
 
 import retrofit.Callback;
 
@@ -116,10 +128,6 @@ public class Order extends ShopifyObject {
     @SerializedName("discount_codes")
     private List<String> discountCodes = new ArrayList<>();
 
-    // TODO test this to make sure they deserialize properly
-    @SerializedName("note_attributes")
-    private List<Attribute> noteAttributes = new ArrayList<>();
-
     @SerializedName("payment_gateway_names")
     private List<String> paymentGatewayNames = new ArrayList<String>();
 
@@ -139,6 +147,7 @@ public class Order extends ShopifyObject {
     private List<TaxLine> taxLines = new ArrayList<TaxLine>();
 
     private String tags;
+    private Set<String> tagSet;
 
     @SerializedName("contact_email")
     private String contactEmail;
@@ -353,13 +362,6 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return Extra information that was added to the order. Each array entry contains a hash with "name" and "value" keys.
-     */
-    public List<Attribute> getNoteAttributes() {
-        return noteAttributes;
-    }
-
-    /**
      * @return The list of all payment gateways used for the order.
      */
     public List<String> getPaymentGatewayNames() {
@@ -404,8 +406,8 @@ public class Order extends ShopifyObject {
     /**
      * @return The tags associated with this order.
      */
-    public String getTags() {
-        return tags;
+    public Set<String> getTags() {
+        return tagSet;
     }
 
     /**
@@ -448,5 +450,37 @@ public class Order extends ShopifyObject {
      */
     public String getStatusUrl() {
         return statusUrl;
+    }
+
+
+    public static class OrderDeserializer implements JsonDeserializer<Order> {
+        @Override
+        public Order deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return fromJson(json.toString());
+        }
+    }
+
+    /**
+     * An Order object created using the values in the JSON string.
+     */
+    public static Order fromJson(String json) {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new DateUtility.DateDeserializer())
+                .create();
+
+        Order order = gson.fromJson(json, Order.class);
+
+        // Create the tagSet.
+        order.tagSet = new HashSet<>();
+
+        // Populate the tagSet from the comma separated list.
+        if (!TextUtils.isEmpty(order.tags)) {
+            for (String tag : order.tags.split(",")) {
+                String myTag = tag.trim();
+                order.tagSet.add(myTag);
+            }
+        }
+
+        return order;
     }
 }

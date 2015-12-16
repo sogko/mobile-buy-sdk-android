@@ -35,6 +35,7 @@ import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Customer.CustomerDeserializer;
 import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.CustomerWrapper.CustomerWrapperSerializer;
+import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Product.ProductDeserializer;
 import com.shopify.buy.utils.DateUtility;
@@ -121,6 +122,7 @@ public class BuyClientFactory {
                 .registerTypeAdapter(Date.class, new DateDeserializer())
                 .registerTypeAdapter(Customer.class, new CustomerDeserializer())
                 .registerTypeAdapter(CustomerWrapper.class, new CustomerWrapperSerializer())
+                .registerTypeAdapter(Order.class, new Order.OrderDeserializer())
                 .create();
     }
 
