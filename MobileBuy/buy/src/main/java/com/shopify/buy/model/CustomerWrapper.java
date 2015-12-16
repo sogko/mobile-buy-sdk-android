@@ -78,7 +78,7 @@ public class CustomerWrapper {
 
         @Override
         public JsonElement serialize(final CustomerWrapper customerWrapper, final Type typeOfSrc, final JsonSerializationContext context) {
-            Gson gson = BuyClientFactory.createDefaultGson(Order.class);
+            Gson gson = BuyClientFactory.createDefaultGson(CustomerWrapper.class);
 
             Customer customer = customerWrapper.getCustomer();
             String password = customerWrapper.getPassword();
