@@ -176,6 +176,11 @@ public class SampleActivity extends Activity {
      */
     protected void updateOrderSummary() {
         final Checkout checkout = getSampleApplication().getCheckout();
+
+        if (checkout == null) {
+            return;
+        }
+
         ((TextView) findViewById(R.id.line_item_price_value)).setText('$' + checkout.getLineItems().get(0).getPrice());
 
         double totalDiscount = 0;

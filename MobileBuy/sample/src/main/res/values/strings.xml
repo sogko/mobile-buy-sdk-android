@@ -38,10 +38,12 @@
 
     <string name="native_checkout">Checkout with Fake Credit Card</string>
     <string name="web_checkout">Web Checkout</string>
+    <string name="cart_permalink">Cart Permalink</string>
     <string name="completing_checkout">Completing checkout...</string>
     <string name="getting_checkout_status">Getting checkout status...</string>
     <string name="checkout_complete">Checkout complete!</string>
     <string name="checkout_error">Could not complete checkout</string>
+    <string name="unsupported_gateway">Could not create a checkout. Is your payment gateway supported?</string>
 
     <string name="line_item_price">Line Item Price</string>
     <string name="discount">Discount</string>
