@@ -45,4 +45,11 @@ public class CartLineItem extends LineItem {
         return variant;
     }
 
+    /**
+     * @param quantity The quantity of the {@link ProductVariant} being purchased in this line item.
+     */
+    void setQuantity(long quantity) {
+        this.quantity = quantity;
+    }
+
 }

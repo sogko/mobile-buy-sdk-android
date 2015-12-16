@@ -245,13 +245,6 @@ public class LineItem {
     public boolean isGiftCard() { return giftCard; }
 
     /**
-     * @param quantity The quantity of the {@link ProductVariant} being purchased in this line item.
-     */
-    void setQuantity(long quantity) {
-        this.quantity = quantity;
-    }
-
-    /**
      * @return {@code true} if the product that is being purchased in this line item requires shipping, {@code false} otherwise.
      */
     public boolean isRequiresShipping() {
