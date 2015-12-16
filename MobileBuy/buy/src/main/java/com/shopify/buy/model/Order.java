@@ -466,6 +466,7 @@ public class Order extends ShopifyObject {
     public static Order fromJson(String json) {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new DateUtility.DateDeserializer())
+                .registerTypeAdapter(Customer.class, new Customer.CustomerDeserializer())
                 .create();
 
         Order order = gson.fromJson(json, Order.class);
