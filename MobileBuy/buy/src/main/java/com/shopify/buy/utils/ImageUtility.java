@@ -25,6 +25,7 @@
 package com.shopify.buy.utils;
 
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -63,10 +64,14 @@ public class ImageUtility {
 
         for (int i = lastVisibleIndex + 1; i < (lastVisibleIndex + 1 + numberToLoad) && i < objects.size(); i++) {
             ShopifyObject object = objects.get(i);
+            String url = null;
             if (object instanceof Collection) {
-                imageUrls.add(stripQueryFromUrl(((Collection) object).getImageUrl()));
+                url = stripQueryFromUrl(((Collection) object).getImageUrl());
             } else if (object instanceof Product) {
-                imageUrls.add(stripQueryFromUrl(((Product) object).getFirstImageUrl()));
+                url = stripQueryFromUrl(((Product) object).getFirstImageUrl());
+            }
+            if (!TextUtils.isEmpty(url)) {
+                imageUrls.add(url);
             }
         }
 
@@ -198,6 +203,10 @@ public class ImageUtility {
     }
 
     public static String stripQueryFromUrl(String url) {
+        if (url == null || !url.contains("?")) {
+            return url;
+        }
         return url.substring(0, url.lastIndexOf('?'));
     }
+    
 }
