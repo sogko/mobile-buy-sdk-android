@@ -32,13 +32,13 @@ import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
-import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.GiftCard;
+import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
-import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
 import com.shopify.buy.model.internal.GiftCardWrapper;
@@ -666,11 +666,13 @@ public class BuyClient {
         });
     }
 
-    public void loginCustomer(final Customer customer, final String password, final Callback<CustomerWrapper> callback) {
-        if (customer == null) {
-            throw new NullPointerException("customer cannot be null");
+    public void loginCustomer(final String email, final String password, final Callback<CustomerWrapper> callback) {
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            throw new NullPointerException("email and password cannot be null");
         }
 
+        Customer customer = new Customer();
+        customer.setEmail(email);
         final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
         customerWrapper.setPassword(password);
 
