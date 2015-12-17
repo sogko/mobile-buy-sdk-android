@@ -426,6 +426,13 @@ public class Checkout extends ShopifyObject {
     }
 
     /**
+     * @param customerId The customer's id.
+     */
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    /**
      * @param email The customer's email address.
      */
     public void setEmail(String email) {
