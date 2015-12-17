@@ -33,6 +33,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
+import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.utils.DateUtility;
 
 import java.lang.reflect.Type;
@@ -235,6 +236,10 @@ public class Customer extends ShopifyObject {
         this.multipassIdentifier = multipassIdentifier;
     }
 
+    public void setDefaultAddress(Address defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -245,10 +250,6 @@ public class Customer extends ShopifyObject {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public void setDefaultAddress(Address address) {
-        this.defaultAddress = address;
     }
 
     public void setNote(String note) {
@@ -271,10 +272,7 @@ public class Customer extends ShopifyObject {
      * A Customer object created using the values in the JSON string.
      */
     public static Customer fromJson(String json) {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new DateUtility.DateDeserializer())
-                .create();
-
+        Gson gson = BuyClientFactory.createDefaultGson(Customer.class);
         Customer customer = gson.fromJson(json, Customer.class);
 
         // Create the tagSet.

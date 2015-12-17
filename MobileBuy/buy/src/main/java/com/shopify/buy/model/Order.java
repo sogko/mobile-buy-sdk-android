@@ -34,14 +34,13 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.dataprovider.BuyClient;
-import com.shopify.buy.utils.DateUtility;
+import com.shopify.buy.dataprovider.BuyClientFactory;
 
 import retrofit.Callback;
 
@@ -464,11 +463,7 @@ public class Order extends ShopifyObject {
      * An Order object created using the values in the JSON string.
      */
     public static Order fromJson(String json) {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new DateUtility.DateDeserializer())
-                .registerTypeAdapter(Customer.class, new Customer.CustomerDeserializer())
-                .create();
-
+        Gson gson = BuyClientFactory.createDefaultGson(Order.class);
         Order order = gson.fromJson(json, Order.class);
 
         // Create the tagSet.
