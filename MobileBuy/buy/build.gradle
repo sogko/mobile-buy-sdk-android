@@ -203,13 +203,16 @@ project.gradle.taskGraph.whenReady {
     }
 }
 
-
 /*
 Great guide for publishing to JCenter:
 http://inthecheesefactory.com/blog/how-to-upload-library-to-jcenter-maven-central-as-dependency/en
 
 Also search for 'userOrg' here (we need this to publish to the Shopify organization on Bintray):
 https://github.com/bintray/gradle-bintray-plugin
+
+Steps:
+gradlew install
+gradlew bintrayUpload
 */
 
 group = publishedGroupId
