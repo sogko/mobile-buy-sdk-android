@@ -469,7 +469,6 @@ public class Checkout extends ShopifyObject {
      */
     public void setShippingRate(ShippingRate shippingRate) {
         this.shippingRate = shippingRate;
-        this.shippingRateId = shippingRate.getId();
     }
 
     /**
