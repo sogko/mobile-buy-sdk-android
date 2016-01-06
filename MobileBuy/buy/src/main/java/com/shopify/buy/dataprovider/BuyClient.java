@@ -795,7 +795,7 @@ public class BuyClient {
         try {
             return new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
         } catch (Throwable e) {
-            e.printStackTrace();
+            // ignore
         }
         return error.getMessage();
     }
