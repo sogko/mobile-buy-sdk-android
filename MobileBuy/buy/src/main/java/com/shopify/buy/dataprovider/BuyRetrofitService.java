@@ -24,8 +24,8 @@
 
 package com.shopify.buy.dataprovider;
 
-import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.CustomerWrapper;
+import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
 import com.shopify.buy.model.internal.GiftCardWrapper;
@@ -37,6 +37,7 @@ import java.util.HashMap;
 
 import retrofit.Callback;
 import retrofit.ResponseCallback;
+import retrofit.RestAdapter;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
@@ -46,7 +47,6 @@ import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import retrofit.RestAdapter;
 
 /**
  * Provides the interface for {@link RestAdapter} describing the endpoints and responses for the Mobile Buy endpoints
@@ -65,6 +65,9 @@ interface BuyRetrofitService {
 
     @GET("/api/channels/{channel}/product_publications.json")
     void getProducts(@Path("channel") String channelId, @Query("product_ids") String productId, Callback<ProductPublication> callback);
+
+    @GET("/api/channels/{channel}/product_publications.json")
+    void getProductsWithHandle(@Path("channel") String channelId, @Query("handle") String handle, Callback<ProductPublication> callback);
 
     @GET("/api/channels/{channel}/product_publications.json")
     void getProducts(@Path("channel") String channelId, @Query("collection_id") String collectionId, @Query("limit") int pageSize, @Query("page") int page, @Query("sort_by") String sortOrder, Callback<ProductPublication> callback);

@@ -206,6 +206,34 @@ public class BuyClient {
     }
 
     /**
+     * Fetch a list of products with the specified handle (usually just one product)
+     *
+     * @param handle   the handle for the product to fetch
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
+    public void getProductsWithHandle(String handle, final Callback<List<Product>> callback) {
+        if (handle == null) {
+            throw new NullPointerException("productId cannot be null");
+        }
+
+        retrofitService.getProductsWithHandle(channelId, handle, new Callback<ProductPublication>() {
+            @Override
+            public void success(ProductPublication productPublications, Response response) {
+                List<Product> products = null;
+                if (productPublications != null) {
+                    products = productPublications.getProducts();
+                }
+                callback.success(products, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    /**
      * Fetch a single Product
      *
      * @param productId the productId for the product to fetch
