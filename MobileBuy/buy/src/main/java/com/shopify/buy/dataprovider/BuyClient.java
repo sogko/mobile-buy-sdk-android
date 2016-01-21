@@ -213,7 +213,7 @@ public class BuyClient {
      */
     public void getProductsWithHandle(String handle, final Callback<List<Product>> callback) {
         if (handle == null) {
-            throw new NullPointerException("productId cannot be null");
+            throw new NullPointerException("handle cannot be null");
         }
 
         retrofitService.getProductsWithHandle(channelId, handle, new Callback<ProductPublication>() {
