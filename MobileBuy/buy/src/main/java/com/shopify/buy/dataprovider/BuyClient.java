@@ -48,6 +48,7 @@ import com.shopify.buy.model.internal.PaymentSessionCheckout;
 import com.shopify.buy.model.internal.PaymentSessionCheckoutWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;
+import com.shopify.buy.utils.CollectionUtils;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -206,24 +207,28 @@ public class BuyClient {
     }
 
     /**
-     * Fetch a list of products with the specified handle (usually just one product)
+     * Fetch the product with the specified handle
      *
      * @param handle   the handle for the product to fetch
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getProductsWithHandle(String handle, final Callback<List<Product>> callback) {
+    public void getProductWithHandle(String handle, final Callback<Product> callback) {
         if (handle == null) {
             throw new NullPointerException("handle cannot be null");
         }
 
-        retrofitService.getProductsWithHandle(channelId, handle, new Callback<ProductPublication>() {
+        retrofitService.getProductWithHandle(channelId, handle, new Callback<ProductPublication>() {
             @Override
             public void success(ProductPublication productPublications, Response response) {
                 List<Product> products = null;
                 if (productPublications != null) {
                     products = productPublications.getProducts();
                 }
-                callback.success(products, response);
+                if (!CollectionUtils.isEmpty(products)) {
+                    callback.success(products.get(0), response);
+                } else {
+                    callback.success(null, response);
+                }
             }
 
             @Override
