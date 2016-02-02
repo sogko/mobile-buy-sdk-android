@@ -30,9 +30,10 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
 import com.shopify.buy.BuildConfig;
+import com.shopify.buy.model.Checkout;
+import com.shopify.buy.model.Checkout.CheckoutDeserializer;
+import com.shopify.buy.model.Checkout.CheckoutSerializer;
 import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Customer.CustomerDeserializer;
 import com.shopify.buy.model.CustomerWrapper;
@@ -44,10 +45,7 @@ import com.shopify.buy.utils.DateUtility;
 import com.shopify.buy.utils.DateUtility.DateDeserializer;
 import com.squareup.okhttp.OkHttpClient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.RequestInterceptor;
@@ -145,6 +143,11 @@ public class BuyClientFactory {
 
         if (!Order.class.equals(forClass)) {
             builder.registerTypeAdapter(Order.class, new Order.OrderDeserializer());
+        }
+
+        if (!Checkout.class.equals(forClass)) {
+            builder.registerTypeAdapter(Checkout.class, new CheckoutSerializer());
+            builder.registerTypeAdapter(Checkout.class, new CheckoutDeserializer());
         }
 
         return builder.create();

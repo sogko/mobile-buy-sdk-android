@@ -27,7 +27,6 @@ package com.shopify.buy.model;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -36,7 +35,6 @@ import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.utils.CollectionUtils;
 import com.shopify.buy.utils.DateUtility;
-import com.shopify.buy.utils.DateUtility.DateDeserializer;
 
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -371,6 +369,7 @@ public class Product extends ShopifyObject {
      */
     public static Product fromJson(String json) {
         Gson gson = BuyClientFactory.createDefaultGson(Product.class);
+
         Product product = gson.fromJson(json, Product.class);
 
         List<ProductVariant> variants = product.getVariants();
