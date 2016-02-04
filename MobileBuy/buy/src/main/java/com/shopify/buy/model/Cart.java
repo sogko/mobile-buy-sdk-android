@@ -180,7 +180,7 @@ public class Cart {
     /**
      * @return The total number of product variants in the cart (the sum of quantities across all line items).
      */
-    public Object getTotalQuantity() {
+    public Integer getTotalQuantity() {
         if (CollectionUtils.isEmpty(lineItems)) {
             return 0;
         }
