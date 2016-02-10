@@ -26,9 +26,12 @@ package com.shopify.buy.dataprovider;
 
 import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.internal.AddressWrapper;
+import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
 import com.shopify.buy.model.internal.GiftCardWrapper;
+import com.shopify.buy.model.internal.OrderWrapper;
 import com.shopify.buy.model.internal.OrdersWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;
@@ -109,20 +112,56 @@ interface BuyRetrofitService {
 
     String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
 
-    @POST("/anywhere/customers.json")
+    @POST("/api/customers.json")
     void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
 
-    @POST("/anywhere/customers/login.json")
+    @POST("/api/customers/login.json")
     void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
 
-    @GET("/anywhere/customers.json")
+    @POST("/api/customers/logout.json")
+    void logoutCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<CustomerWrapper> callback);
+
+    // TODO Kris - this email will need to be wrapped
+    @POST("/api/customers/recover.json")
+    void recoverCustomer(@Body String email, Callback<CustomerWrapper> callback);
+
+    @PUT("/api/customers/renew.json")
+    void renewCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
+
+    @GET("/api/customers.json")
     void getCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<CustomerWrapper> callback);
 
-    @PUT("/anywhere/customers.json")
+    @PUT("/api/customers.json")
     void updateCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
 
-    @GET("/anywhere/customers/orders.json")
+
+    /*
+     * Customer Orders API
+     */
+
+    @GET("/api/customers/orders.json")
     void getOrders(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<OrdersWrapper> callback);
+
+    @GET("/api/customers/orders/{orderId}")
+    void getOrder(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("orderId") String orderId, Callback<OrderWrapper> callback);
+
+
+    /*
+     * Customer Address API
+     */
+
+    @GET("/api/customers/addresses")
+    void getAddresses(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<AddressesWrapper> callback);
+
+    @POST("/api/customers/addresses")
+    void createAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body AddressWrapper addresses, Callback<AddressesWrapper> callback);
+
+    @GET("/api/customers/addresses/{addressId}")
+    void getAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("addressId") String addressId, Callback<AddressesWrapper> callback);
+
+    @PATCH("/api/customers/addresses/{addressId")
+    void updateAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("addressId") AddressWrapper Address, String addressId, Callback<AddressesWrapper> callback);
+
 
     /*
      * Testing Integration

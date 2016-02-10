@@ -706,12 +706,19 @@ public class BuyClient {
 
         Customer customer = new Customer();
         customer.setEmail(email);
+
         final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
         customerWrapper.setPassword(password);
 
         retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
+                List<Header> headers = response.getHeaders();
+                for (Header header : headers) {
+                    if (BuyRetrofitService.CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
+                        customerWrapper.setToken(header.getValue());
+                    }
+                }
                 callback.success(customerWrapper, response);
             }
 
