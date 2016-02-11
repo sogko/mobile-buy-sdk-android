@@ -711,8 +711,12 @@ public class BuyClient {
     }
 
     public void loginCustomer(final String email, final String password, final Callback<CustomerWrapper> callback) {
-        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("email and password cannot be empty");
+        if (TextUtils.isEmpty(email)) {
+            throw new IllegalArgumentException("email cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("password cannot be empty");
         }
 
         Customer customer = new Customer();
@@ -728,6 +732,7 @@ public class BuyClient {
                 for (Header header : headers) {
                     if (BuyRetrofitService.CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
                         customerWrapper.setToken(header.getValue());
+                        break;
                     }
                 }
                 callback.success(customerWrapper, response);
