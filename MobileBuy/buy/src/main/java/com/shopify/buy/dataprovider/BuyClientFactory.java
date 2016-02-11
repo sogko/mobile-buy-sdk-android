@@ -66,7 +66,7 @@ public class BuyClientFactory {
      * @param shopDomain      the domain of the shop to checkout with, in the format 'shopname.myshopify.com'
      * @param apiKey          a valid Shopify API key
      * @param channelId       a valid Shopify Channel ID
-     * @param applicationName the name to attribute orders to. The value for {@code applicationName} should be the applications package name, as used to publish the application on the Play Store.  This is usually the value returned by {@link Activity#getPackageName()}, or {@link BuildConfig.APPLICATION_ID} if you are using gradle.
+     * @param applicationName the name to attribute orders to. The value for {@code applicationName} should be the application package name, as used to publish your application on the Play Store.  This is usually the value returned by {@link Activity#getPackageName()}, or BuildConfig.APPLICATION_ID if you are using gradle.
      * @return a {@link BuyClient}
      */
     public static BuyClient getBuyClient(final String shopDomain, final String apiKey, final String channelId, final String applicationName) throws IllegalArgumentException {
