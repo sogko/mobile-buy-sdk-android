@@ -154,13 +154,13 @@ interface BuyRetrofitService {
     void getAddresses(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<AddressesWrapper> callback);
 
     @POST("/api/customers/addresses")
-    void createAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body AddressWrapper addresses, Callback<AddressesWrapper> callback);
+    void createAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body AddressWrapper address, Callback<AddressWrapper> callback);
 
     @GET("/api/customers/addresses/{addressId}")
-    void getAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("addressId") String addressId, Callback<AddressesWrapper> callback);
+    void getAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("addressId") String addressId, Callback<AddressWrapper> callback);
 
     @PATCH("/api/customers/addresses/{addressId")
-    void updateAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("addressId") AddressWrapper Address, String addressId, Callback<AddressesWrapper> callback);
+    void updateAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("addressId") AddressWrapper Address, String addressId, Callback<AddressWrapper> callback);
 
 
     /*

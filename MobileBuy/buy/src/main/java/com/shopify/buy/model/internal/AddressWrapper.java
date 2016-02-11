@@ -39,6 +39,10 @@ public class AddressWrapper {
     public AddressWrapper() {
     }
 
+    public AddressWrapper(Address address) {
+        this.address = address;
+    }
+
     public Address getAddress() {
         return address;
     }

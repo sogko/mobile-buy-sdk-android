@@ -26,6 +26,7 @@ package com.shopify.buy.service;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.extensions.ShopifyAndroidTestCase;
+import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.Order;
@@ -43,6 +44,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
     private Customer customer;
     private String token;
+    private List<Order> orders;
 
     public void testCustomerCreation() throws InterruptedException {
         if (!ENABLED) {
@@ -210,6 +212,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
             public void success(List<Order> orders, Response response) {
                 assertNotNull(orders);
                 assertEquals(true, orders.size() > 0);
+                CustomerTest.this.orders = orders;
                 latch.countDown();
             }
 

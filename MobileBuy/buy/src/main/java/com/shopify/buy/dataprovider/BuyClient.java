@@ -28,6 +28,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 import com.google.gson.Gson;
+import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
@@ -39,11 +40,14 @@ import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.internal.AddressWrapper;
+import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
 import com.shopify.buy.model.internal.EmailWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
+import com.shopify.buy.model.internal.OrderWrapper;
 import com.shopify.buy.model.internal.OrdersWrapper;
 import com.shopify.buy.model.internal.PaymentSessionCheckout;
 import com.shopify.buy.model.internal.PaymentSessionCheckoutWrapper;
@@ -686,6 +690,10 @@ public class BuyClient {
             throw new IllegalArgumentException("customer cannot be empty");
         }
 
+        if (TextUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("password cannot be empty");
+        }
+
         final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
         customerWrapper.setPassword(password);
 
@@ -704,7 +712,7 @@ public class BuyClient {
 
     public void loginCustomer(final String email, final String password, final Callback<CustomerWrapper> callback) {
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            throw new NullPointerException("email and password cannot be null");
+            throw new IllegalArgumentException("email and password cannot be empty");
         }
 
         Customer customer = new Customer();
@@ -751,6 +759,10 @@ public class BuyClient {
     }
 
     public void updateCustomer(final String token, final Customer customer, final Callback<Customer> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
         if (customer == null) {
             throw new NullPointerException("customer cannot be null");
         }
@@ -838,6 +850,113 @@ public class BuyClient {
                 callback.failure(error);
             }
         });
+    }
+
+    public void getOrder(final String token, final String orderId, final Callback<Order> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(orderId)) {
+            throw new IllegalArgumentException("orderId cannot be empty");
+        }
+
+        retrofitService.getOrder(token, orderId, new Callback<OrderWrapper>() {
+            @Override
+            public void success(OrderWrapper orderWrapper, Response response) {
+                callback.success(orderWrapper.getOrder(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void createAddress(final String token, final Address address, final Callback<Address> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        if (address == null) {
+            throw new NullPointerException("address cannot be null");
+        }
+
+        retrofitService.createAddress(token, new AddressWrapper(address), new Callback<AddressWrapper>() {
+            @Override
+            public void success(AddressWrapper addressWrapper, Response response) {
+                callback.success(addressWrapper.getAddress(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void getAddresses(final String token, final Callback<List<Address>> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        retrofitService.getAddresses(token, new Callback<AddressesWrapper>() {
+            @Override
+            public void success(AddressesWrapper addressesWrapper, Response response) {
+                callback.success(addressesWrapper.getAddresses(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void getAddress(final String token, final String addressId, final Callback<Address> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(addressId)) {
+            throw new IllegalArgumentException("addressId cannot be empty");
+        }
+
+        retrofitService.getAddress(token, addressId, new Callback<AddressWrapper>() {
+            @Override
+            public void success(AddressWrapper addressWrapper, Response response) {
+                callback.success(addressWrapper.getAddress(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void updateAddress(final String token, final Address address, final Callback<Address> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        if (address == null) {
+            throw new NullPointerException("address cannot be null");
+        }
+
+        retrofitService.updateAddress(token, new AddressWrapper(address), address.getAddressId(), new Callback<AddressWrapper>() {
+            @Override
+            public void success(AddressWrapper addressWrapper, Response response) {
+                callback.success(addressWrapper.getAddress(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+
     }
 
     /**

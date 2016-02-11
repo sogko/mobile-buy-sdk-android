@@ -26,13 +26,6 @@ package com.shopify.buy.model;
 
 import android.text.TextUtils;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -41,6 +34,13 @@ import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.dataprovider.BuyClientFactory;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import retrofit.Callback;
 
@@ -169,6 +169,13 @@ public class Order extends ShopifyObject {
      * No args constructor for use in serialization
      */
     public Order() {
+    }
+
+    /**
+     * @return The unique identifier of this object within the Shopify platform.
+     */
+    public String getOrderId() {
+        return String.valueOf(id);
     }
 
     /**
