@@ -35,6 +35,7 @@ import com.shopify.buy.model.internal.OrderWrapper;
 import com.shopify.buy.model.internal.OrdersWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;
+import com.shopify.buy.model.internal.StringWrapper;
 
 import java.util.HashMap;
 
@@ -119,14 +120,14 @@ interface BuyRetrofitService {
     void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
 
     @POST("/api/customers/logout.json")
-    void logoutCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<CustomerWrapper> callback);
+    void logoutCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body String empty,  Callback<Void> callback);
 
     // TODO Kris - this email will need to be wrapped
     @POST("/api/customers/recover.json")
-    void recoverCustomer(@Body String email, Callback<CustomerWrapper> callback);
+    void recoverCustomer(@Body StringWrapper email, Callback<CustomerWrapper> callback);
 
     @PUT("/api/customers/renew.json")
-    void renewCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
+    void renewCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body String empty, Callback<Void> callback);
 
     @GET("/api/customers.json")
     void getCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<CustomerWrapper> callback);

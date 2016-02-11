@@ -81,6 +81,8 @@ public class BuyClient {
     public static final int MIN_PAGE_SIZE = 1;
     public static final int DEFAULT_PAGE_SIZE = 25;
 
+    public static final String EMPTY_BODY = "";
+
     private static final MediaType jsonMediateType = MediaType.parse("application/json; charset=utf-8");
     private final BuyRetrofitService retrofitService;
     private final OkHttpClient httpClient;
@@ -729,7 +731,25 @@ public class BuyClient {
         });
     }
 
-    public void updateCustomer(String token, final Customer customer, final Callback<Customer> callback) {
+    public void logoutCustomer(final String token, final Callback<Void> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        retrofitService.logoutCustomer(token, EMPTY_BODY, new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                callback.success(aVoid, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void updateCustomer(final String token, final Customer customer, final Callback<Customer> callback) {
         if (customer == null) {
             throw new NullPointerException("customer cannot be null");
         }
@@ -756,6 +776,24 @@ public class BuyClient {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void renewCustomer(final String token, final Callback<Void> callback) {
+        if (TextUtils.isEmpty(token)) {
+            throw new IllegalArgumentException("token cannot be empty");
+        }
+
+        retrofitService.renewCustomer(token, EMPTY_BODY, new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                callback.success(aVoid, response);
             }
 
             @Override

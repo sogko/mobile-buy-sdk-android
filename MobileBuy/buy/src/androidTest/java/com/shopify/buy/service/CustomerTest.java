@@ -99,6 +99,53 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         latch.await();
     }
 
+    public void testCustomerLogout() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testCustomerLogin();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.logoutCustomer(token, new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                CustomerTest.this.token = null;
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
+    public void testCustomerRenew() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testCustomerLogin();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.renewCustomer(token, new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
     public void testCustomerUpdate() throws InterruptedException {
         if (!ENABLED) {
             return;
