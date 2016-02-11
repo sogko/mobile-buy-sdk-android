@@ -41,6 +41,7 @@ import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.internal.EmailWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
 import com.shopify.buy.model.internal.OrdersWrapper;
@@ -791,6 +792,24 @@ public class BuyClient {
         }
 
         retrofitService.renewCustomer(token, EMPTY_BODY, new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                callback.success(aVoid, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+    }
+
+    public void recoverCustomer(final String email, final Callback<Void> callback) {
+        if (TextUtils.isEmpty(email)) {
+            throw new IllegalArgumentException("email cannot be empty");
+        }
+
+        retrofitService.recoverCustomer(new EmailWrapper(email), new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
                 callback.success(aVoid, response);

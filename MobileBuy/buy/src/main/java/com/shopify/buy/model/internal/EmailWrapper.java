@@ -24,17 +24,17 @@
 
 package com.shopify.buy.model.internal;
 
-public class StringWrapper {
+public class EmailWrapper {
 
-    private String value;
+    private String email;
 
     /**
      * No args constructor for use in serialization.
      */
-    public StringWrapper() {
+    public EmailWrapper() {
     }
 
-    public String getValue() {
-        return value;
+    public EmailWrapper(final String email) {
+     this.email = email;
     }
 }

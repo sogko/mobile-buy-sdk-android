@@ -146,6 +146,29 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         latch.await();
     }
 
+    public void testCustomerRecover() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        Customer customer = getCustomer();
+
+        buyClient.recoverCustomer("email", new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
     public void testCustomerUpdate() throws InterruptedException {
         if (!ENABLED) {
             return;
