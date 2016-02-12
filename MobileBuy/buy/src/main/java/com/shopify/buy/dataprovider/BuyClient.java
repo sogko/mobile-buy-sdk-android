@@ -685,6 +685,12 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Create a new Customer on Shopify
+     * @param customer the {@link Customer} to create, not null
+     * @param password the password for the customer, not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void createCustomer(final Customer customer, final String password, final Callback<CustomerWrapper> callback) {
         if (customer == null) {
             throw new IllegalArgumentException("customer cannot be empty");
@@ -710,6 +716,12 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Log an existing Customer into Shopify
+     * @param email the email address of the {@link Customer}, not null or empty
+     * @param password the password for the customer, not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void loginCustomer(final String email, final String password, final Callback<CustomerWrapper> callback) {
         if (TextUtils.isEmpty(email)) {
             throw new IllegalArgumentException("email cannot be empty");
@@ -745,6 +757,11 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Log a Customer out from Shopify
+     * @param token the token corresponding to the {@link Customer}, not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void logoutCustomer(final String token, final Callback<Void> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -763,6 +780,12 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Update an existing Customer's attributes.
+     * @param token the token corresponding to the customer, not null or empty
+     * @param customer the {@link Customer} to update
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void updateCustomer(final String token, final Customer customer, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -785,6 +808,11 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Retrieve a Customer's details from Shopify.
+     * @param token the token corresponding to the {@link Customer} not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void getCustomer(final String token, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -803,6 +831,11 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Renew a Customer login.  This should be called periodically to keep the token up to date.
+     * @param token the token corresponding to the customer, not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void renewCustomer(final String token, final Callback<Void> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -821,6 +854,11 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Send a password recovery email. An email will be sent to the email address specified if a customer with that email address exists on Shopify.
+     * @param email the email address to send the password recovery email to
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void recoverCustomer(final String email, final Callback<Void> callback) {
         if (TextUtils.isEmpty(email)) {
             throw new IllegalArgumentException("email cannot be empty");
@@ -839,6 +877,11 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Fetch the Orders associated with a Customer.
+     * @param token the token corresponding to the customer, not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void getOrders(final String token, final Callback<List<Order>> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -857,6 +900,12 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Fetch an existing Order from Shopify
+     * @param token the token corresponding to the customer, not null or empty
+     * @param orderId the identifier of the {@link Order} to retrieve
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void getOrder(final String token, final String orderId, final Callback<Order> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -879,6 +928,12 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Create an Address and associate it with a Customer
+     * @param token the token corresponding to the customer, not null or empty
+     * @param address the {@link Address} to create, not null
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void createAddress(final String token, final Address address, final Callback<Address> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -901,6 +956,11 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Fetch all of the Addresses associated with a Customer.
+     * @param token the token corresponding to the customer, not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void getAddresses(final String token, final Callback<List<Address>> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -919,6 +979,12 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Fetch an existing Address from Shopify
+     * @param token the token corresponding to the customer, not null or empty
+     * @param addressId the identifier of the {@link Address}
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void getAddress(final String token, final String addressId, final Callback<Address> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
@@ -941,6 +1007,12 @@ public class BuyClient {
         });
     }
 
+    /**
+     * Update the attributes of an existing Address
+     * @param token the token corresponding to the customer, not null or empty
+     * @param address the {@link Address} to update
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
     public void updateAddress(final String token, final Address address, final Callback<Address> callback) {
         if (TextUtils.isEmpty(token)) {
             throw new IllegalArgumentException("token cannot be empty");
