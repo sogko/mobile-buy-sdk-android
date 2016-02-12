@@ -931,7 +931,7 @@ public class BuyClient {
     /**
      * Create an Address and associate it with a Customer
      * @param token the token corresponding to the customer, not null or empty
-     * @param address the {@link @Address} to create, not null
+     * @param address the {@link Address} to create, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void createAddress(final String token, final Address address, final Callback<Address> callback) {
