@@ -30,7 +30,7 @@ import com.google.gson.annotations.SerializedName;
  * Represents a shipping or billing address on an order. This will be associated with the customer upon completion.
  */
 
-public class Address {
+public class Address extends ShopifyObject {
 
     private String address1;
 
@@ -59,6 +59,13 @@ public class Address {
     private String provinceCode;
 
     private String zip;
+
+    /**
+     * @return The unique identifier of this object within the Shopify platform.
+     */
+    public String getAddressId() {
+        return String.valueOf(id);
+    }
 
     /**
      * @return The street of the address.

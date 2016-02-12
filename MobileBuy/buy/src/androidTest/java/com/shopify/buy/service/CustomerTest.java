@@ -26,6 +26,7 @@ package com.shopify.buy.service;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.extensions.ShopifyAndroidTestCase;
+import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.Order;
@@ -43,6 +44,9 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
     private Customer customer;
     private String token;
+    private List<Order> orders;
+    private List<Address> addresses;
+    private Address address;
 
     public void testCustomerCreation() throws InterruptedException {
         if (!ENABLED) {
@@ -99,6 +103,76 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         latch.await();
     }
 
+    public void testCustomerLogout() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testCustomerLogin();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.logoutCustomer(token, new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                CustomerTest.this.token = null;
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
+    public void testCustomerRenew() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testCustomerLogin();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.renewCustomer(token, new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
+    public void testCustomerRecover() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        Customer customer = getCustomer();
+
+        buyClient.recoverCustomer("email", new Callback<Void>() {
+            @Override
+            public void success(Void aVoid, Response response) {
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
     public void testCustomerUpdate() throws InterruptedException {
         if (!ENABLED) {
             return;
@@ -140,6 +214,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
             public void success(List<Order> orders, Response response) {
                 assertNotNull(orders);
                 assertEquals(true, orders.size() > 0);
+                CustomerTest.this.orders = orders;
                 latch.countDown();
             }
 
@@ -148,6 +223,33 @@ public class CustomerTest extends ShopifyAndroidTestCase {
                 fail(BuyClient.getErrorBody(error));
             }
 
+        });
+        latch.await();
+    }
+
+    public void testGetOrder() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testGetCustomerOrders();
+
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        String orderId = orders.get(0).getOrderId();
+
+        buyClient.getOrder(token, orderId, new Callback<Order>() {
+            @Override
+            public void success(Order order, Response response) {
+                assertNotNull(order);
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
         });
         latch.await();
     }
@@ -178,10 +280,130 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
     private Customer getCustomer() {
         Customer customer = new Customer();
-        customer.setEmail("krisorr2@gmail.com");
+        customer.setEmail("krisorr@gmail.com");
         customer.setFirstName("Kristopher");
         customer.setLastName("Orr");
 
         return customer;
+    }
+
+    public void testCreateAddress() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testCustomerLogin();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.createAddress(token, getAddress(), new Callback<Address>() {
+            @Override
+            public void success(Address address, Response response) {
+                assertEquals(address, getAddress());
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
+    public void testGetAddresses() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testCustomerLogin();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.getAddresses(token, new Callback<List<Address>>() {
+            @Override
+            public void success(List<Address> addresses, Response response) {
+                assertNotNull(addresses);
+                assertEquals(true, addresses.size() > 0);
+                CustomerTest.this.addresses = addresses;
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+
+        latch.await();
+    }
+
+    public void testGetAddress() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testGetAddresses();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        String addressId = addresses.get(0).getAddressId();
+
+        buyClient.getAddress(token, addressId, new Callback<Address>() {
+            @Override
+            public void success(Address address, Response response) {
+                assertNotNull(address);
+                CustomerTest.this.address = address;
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+
+        latch.await();
+    }
+
+    public void testUpdateAddress() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        testGetAddress();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        address.setCity("Toledo");
+
+        buyClient.updateAddress(token, address, new Callback<Address>() {
+            @Override
+            public void success(Address address, Response response) {
+                assertNotNull(address);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+
+        latch.await();
+    }
+
+    private Address getAddress() {
+        Address shippingAddress = new Address();
+        shippingAddress.setAddress1("150 Elgin Street");
+        shippingAddress.setAddress2("8th Floor");
+        shippingAddress.setCity("Ottawa");
+        shippingAddress.setProvinceCode("ON");
+        shippingAddress.setCompany("Shopify Inc.");
+        shippingAddress.setFirstName("MobileBuy");
+        shippingAddress.setLastName("TestBot");
+        shippingAddress.setPhone("1-555-555-5555");
+        shippingAddress.setCountryCode("CA");
+        shippingAddress.setZip("K1N5T5");
+        return shippingAddress;
     }
 }

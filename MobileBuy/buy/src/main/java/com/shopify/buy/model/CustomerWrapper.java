@@ -72,6 +72,11 @@ public class CustomerWrapper {
     }
 
     /**
+     * @param token The access token to use for subsequent customer api calls.
+     */
+    public void setToken(String token) { this.token = token; }
+
+    /**
      * Custom serializer that add the password to the outgoing Customer json.
      */
     public static class CustomerWrapperSerializer implements JsonSerializer<CustomerWrapper> {
@@ -85,7 +90,6 @@ public class CustomerWrapper {
 
             JsonObject customerJsonObject = gson.toJsonTree(customer).getAsJsonObject();
             customerJsonObject.addProperty("password", password);
-            customerJsonObject.addProperty("password_confirmation", password);
 
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("customer", customerJsonObject);
