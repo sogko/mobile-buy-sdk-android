@@ -26,6 +26,7 @@ package com.shopify.buy.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,9 +39,6 @@ public class Order extends ShopifyObject {
 
     @SerializedName("processed_at")
     private Date processedAt;
-
-    @SerializedName("customer_url")
-    private String customerUrl;
 
     @SerializedName("order_status_url")
     private String orderStatusUrl;
@@ -58,14 +56,13 @@ public class Order extends ShopifyObject {
     @SerializedName("cancelled_at")
     private Date cancelledAt;
 
-
     @SerializedName("fulfilled_line_items")
     private List<LineItem> fulfilledLineItems;
-
 
     @SerializedName("unfulfilled_line_items")
     private List<LineItem> unfulfilledLineItems;
 
+    List<LineItem> lineItems;
 
     /**
      * No args constructor for use in serialization.
@@ -107,13 +104,6 @@ public class Order extends ShopifyObject {
      */
     public Date getProcessedAt() {
         return processedAt;
-    }
-
-    /**
-     * @return A URL for the customer order status page.
-     */
-    public String getCustomerUrl() {
-        return customerUrl;
     }
 
     /**
@@ -159,9 +149,21 @@ public class Order extends ShopifyObject {
     }
 
     /**
-     * @return A List of the unfulfilled Line Items in an Order
+     * @return A List of the unfulfilled Line Items in the Order
      */
     public List<LineItem> getUnfulfilledLineItems() {
         return unfulfilledLineItems;
+    }
+
+    /**
+     * @return A List of all the Line Items in the Order
+     */
+    public List<LineItem> getLineItems() {
+        if (lineItems == null) {
+            lineItems = new ArrayList<>();
+            lineItems.addAll(fulfilledLineItems);
+            lineItems.addAll(unfulfilledLineItems);
+        }
+        return lineItems;
     }
 }

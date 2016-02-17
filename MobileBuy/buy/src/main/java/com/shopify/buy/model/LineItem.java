@@ -43,8 +43,6 @@ public class LineItem {
 
     protected String price;
 
-    protected String vendor;
-
     @SerializedName("requires_shipping")
     protected boolean requiresShipping;
 
@@ -191,11 +189,6 @@ public class LineItem {
     public String getId() {
         return id;
     }
-
-    /**
-     * @return The vendor supplying the product.
-     */
-    public String getVendor() { return vendor; }
 
     /**
      * @return The total discount applied to this line item. This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}.
