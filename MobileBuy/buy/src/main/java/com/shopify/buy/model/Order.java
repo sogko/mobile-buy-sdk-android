@@ -160,7 +160,7 @@ public class Order extends ShopifyObject {
      */
     public List<LineItem> getLineItems() {
         if (lineItems == null) {
-            lineItems = new ArrayList<>();
+            lineItems = new ArrayList<>(fulfilledLineItems.size() + unfulfilledLineItems.size());
             lineItems.addAll(fulfilledLineItems);
             lineItems.addAll(unfulfilledLineItems);
         }
