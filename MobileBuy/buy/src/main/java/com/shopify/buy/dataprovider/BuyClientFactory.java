@@ -26,7 +26,6 @@ package com.shopify.buy.dataprovider;
 
 import android.app.Activity;
 import android.text.TextUtils;
-import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
