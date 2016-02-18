@@ -40,6 +40,9 @@ public class Order extends ShopifyObject {
     @SerializedName("processed_at")
     private Date processedAt;
 
+    @SerializedName("status_url")
+    private String statusUrl;
+
     @SerializedName("order_status_url")
     private String orderStatusUrl;
 
@@ -71,11 +74,20 @@ public class Order extends ShopifyObject {
     }
 
 
+    //TODO Kris we have order_status_url returned on orders from the Customers api, but order_status returned from Checkouts.  We need to harmonize before release. https://github.com/Shopify/mobile-buy-sdk-android-private/issues/714
     /**
      * @return URL for the website showing the order status.
      */
     public String getOrderStatusUrl() {
         return orderStatusUrl;
+    }
+
+
+    /**
+     * @return URL for the website showing the order status.
+     */
+    public String getStatusUrl() {
+        return statusUrl;
     }
 
     /**
