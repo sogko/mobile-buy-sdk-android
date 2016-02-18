@@ -94,7 +94,7 @@ public class BuyClient {
 
     public static final String EMPTY_BODY = "";
 
-    public static final String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
+    private static final String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
     private static final MediaType jsonMediateType = MediaType.parse("application/json; charset=utf-8");
 
     private final BuyRetrofitService retrofitService;
