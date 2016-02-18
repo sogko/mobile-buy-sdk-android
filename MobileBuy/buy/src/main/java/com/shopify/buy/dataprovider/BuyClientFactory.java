@@ -38,20 +38,12 @@ import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Customer.CustomerDeserializer;
 import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.CustomerWrapper.CustomerWrapperSerializer;
-import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Product.ProductDeserializer;
 import com.shopify.buy.utils.DateUtility;
 import com.shopify.buy.utils.DateUtility.DateDeserializer;
-import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
 
 /**
  * Provides the factory to initialize and build a {@link BuyClient}.
@@ -92,31 +84,7 @@ public class BuyClientFactory {
             throw new IllegalArgumentException("applicationName must be provided, and cannot be empty");
         }
 
-        RequestInterceptor requestInterceptor = new RequestInterceptor() {
-            @Override
-            public void intercept(RequestFacade request) {
-                request.addHeader("Authorization", "Basic " + Base64.encodeToString(apiKey.getBytes(), Base64.NO_WRAP));
-
-                // Using the full package name for BuildConfig here as a work around for Javadoc.  The source paths need to be adjusted
-                request.addHeader("User-Agent", "Mobile Buy SDK Android/" + com.shopify.buy.BuildConfig.VERSION_NAME + "/" + applicationName);
-            }
-        };
-
-        OkHttpClient httpClient = new OkHttpClient();
-
-        httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
-        httpClient.setReadTimeout(60, TimeUnit.SECONDS);
-        httpClient.setWriteTimeout(60, TimeUnit.SECONDS);
-
-        RestAdapter adapter = new RestAdapter.Builder()
-                .setEndpoint("https://" + shopDomain)
-                .setConverter(new GsonConverter(createDefaultGson()))
-                .setClient(new OkClient(httpClient))
-                .setLogLevel(BuildConfig.RETROFIT_LOG_LEVEL)
-                .setRequestInterceptor(requestInterceptor)
-                .build();
-
-        return new BuyClient(adapter.create(BuyRetrofitService.class), apiKey, channelId, applicationName, shopDomain, httpClient);
+        return new BuyClient(apiKey, channelId, applicationName, shopDomain);
     }
 
     public static Gson createDefaultGson() {

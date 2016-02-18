@@ -28,6 +28,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 import com.google.gson.Gson;
+import com.shopify.buy.BuildConfig;
 import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
@@ -68,12 +69,17 @@ import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
+import retrofit.RequestInterceptor;
 import retrofit.ResponseCallback;
+import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Header;
+import retrofit.client.OkClient;
 import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedByteArray;
 
 /**
@@ -99,6 +105,7 @@ public class BuyClient {
     private final String applicationName;
     private String webReturnToUrl;
     private String webReturnToLabel;
+    private String customerToken;
 
     public String getApiKey() {
         return apiKey;
@@ -124,13 +131,40 @@ public class BuyClient {
         return shopDomain;
     }
 
-    BuyClient(BuyRetrofitService retrofitService, String apiKey, String channelId, String applicationName, String shopDomain, OkHttpClient httpClient) {
-        this.retrofitService = retrofitService;
+    BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain) {
         this.apiKey = apiKey;
         this.channelId = channelId;
         this.applicationName = applicationName;
         this.shopDomain = shopDomain;
-        this.httpClient = httpClient;
+
+        RequestInterceptor requestInterceptor = new RequestInterceptor() {
+            @Override
+            public void intercept(RequestFacade request) {
+                request.addHeader("Authorization", "Basic " + Base64.encodeToString(apiKey.getBytes(), Base64.NO_WRAP));
+
+                if (!TextUtils.isEmpty(customerToken)) {
+                    request.addHeader("X-Shopify-Customer-Access-Token", customerToken);
+                }
+
+                // Using the full package name for BuildConfig here as a work around for Javadoc.  The source paths need to be adjusted
+                request.addHeader("User-Agent", "Mobile Buy SDK Android/" + com.shopify.buy.BuildConfig.VERSION_NAME + "/" + applicationName);
+            }
+        };
+
+        httpClient = new OkHttpClient();
+        httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
+        httpClient.setReadTimeout(60, TimeUnit.SECONDS);
+        httpClient.setWriteTimeout(60, TimeUnit.SECONDS);
+
+        RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint("https://" + shopDomain)
+                .setConverter(new GsonConverter(BuyClientFactory.createDefaultGson()))
+                .setClient(new OkClient(httpClient))
+                .setLogLevel(BuildConfig.RETROFIT_LOG_LEVEL)
+                .setRequestInterceptor(requestInterceptor)
+                .build();
+
+        retrofitService = adapter.create(BuyRetrofitService.class);
     }
 
     /**
@@ -138,6 +172,14 @@ public class BuyClient {
      */
     public void addInterceptor(Interceptor interceptor) {
         this.httpClient.interceptors().add(interceptor);
+    }
+
+    /**
+     * Sets the {@link Customer} specific token
+     * @param customerToken
+     */
+    public void setCustomerToken(String customerToken) {
+        this.customerToken = customerToken;
     }
 
     /**
