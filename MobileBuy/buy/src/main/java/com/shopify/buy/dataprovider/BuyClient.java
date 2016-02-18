@@ -706,6 +706,7 @@ public class BuyClient {
         retrofitService.createCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
+                lookForTokenHeader(customerWrapper, response);
                 callback.success(customerWrapper, response);
             }
 
@@ -740,13 +741,7 @@ public class BuyClient {
         retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                List<Header> headers = response.getHeaders();
-                for (Header header : headers) {
-                    if (BuyRetrofitService.CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
-                        customerWrapper.setToken(header.getValue());
-                        break;
-                    }
-                }
+                lookForTokenHeader(customerWrapper, response);
                 callback.success(customerWrapper, response);
             }
 
@@ -755,6 +750,22 @@ public class BuyClient {
                 callback.failure(error);
             }
         });
+    }
+
+    /**
+     * Extract the customer token from the response header and inject it into the CustomerWrapper object.
+     *
+     * @param customerWrapper
+     * @param response
+     */
+    private void lookForTokenHeader(CustomerWrapper customerWrapper, Response response) {
+        List<Header> headers = response.getHeaders();
+        for (Header header : headers) {
+            if (BuyRetrofitService.CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
+                customerWrapper.setToken(header.getValue());
+                break;
+            }
+        }
     }
 
     /**
