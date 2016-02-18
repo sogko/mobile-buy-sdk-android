@@ -141,10 +141,6 @@ public class BuyClientFactory {
             builder.registerTypeAdapter(CustomerWrapper.class, new CustomerWrapperSerializer());
         }
 
-        if (!Order.class.equals(forClass)) {
-            builder.registerTypeAdapter(Order.class, new Order.OrderDeserializer());
-        }
-
         if (!Checkout.class.equals(forClass)) {
             builder.registerTypeAdapter(Checkout.class, new CheckoutSerializer());
             builder.registerTypeAdapter(Checkout.class, new CheckoutDeserializer());
