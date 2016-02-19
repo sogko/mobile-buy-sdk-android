@@ -145,8 +145,8 @@ public class BuyClient {
             public void intercept(RequestFacade request) {
                 request.addHeader("Authorization", "Basic " + Base64.encodeToString(apiKey.getBytes(), Base64.NO_WRAP));
 
-                if (!TextUtils.isEmpty(customerToken)) {
-                    request.addHeader("X-Shopify-Customer-Access-Token", customerToken);
+                if (!TextUtils.isEmpty(BuyClient.this.customerToken)) {
+                    request.addHeader("X-Shopify-Customer-Access-Token", BuyClient.this.customerToken);
                 }
 
                 // Using the full package name for BuildConfig here as a work around for Javadoc.  The source paths need to be adjusted
