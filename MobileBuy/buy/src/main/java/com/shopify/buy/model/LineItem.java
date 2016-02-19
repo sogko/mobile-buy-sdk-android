@@ -191,7 +191,7 @@ public class LineItem {
     }
 
     /**
-     * @return The total discount applied to this line item. This is only available for line items returned using {@link BuyClient#getCustomer(String, Callback)}.
+     * @return The total discount applied to this line item. This is only available for line items returned using {@link BuyClient#getCustomer(Callback)}.
      */
     public String getTotalDiscount() {
         return totalDiscount;

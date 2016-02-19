@@ -28,6 +28,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 import com.google.gson.Gson;
+import com.shopify.buy.BuildConfig;
 import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
@@ -68,12 +69,17 @@ import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
+import retrofit.RequestInterceptor;
 import retrofit.ResponseCallback;
+import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Header;
+import retrofit.client.OkClient;
 import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedByteArray;
 
 /**
@@ -88,7 +94,9 @@ public class BuyClient {
 
     public static final String EMPTY_BODY = "";
 
+    private static final String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
     private static final MediaType jsonMediateType = MediaType.parse("application/json; charset=utf-8");
+
     private final BuyRetrofitService retrofitService;
     private final OkHttpClient httpClient;
     private int pageSize = DEFAULT_PAGE_SIZE;
@@ -99,6 +107,7 @@ public class BuyClient {
     private final String applicationName;
     private String webReturnToUrl;
     private String webReturnToLabel;
+    private String customerToken;
 
     public String getApiKey() {
         return apiKey;
@@ -124,13 +133,41 @@ public class BuyClient {
         return shopDomain;
     }
 
-    BuyClient(BuyRetrofitService retrofitService, String apiKey, String channelId, String applicationName, String shopDomain, OkHttpClient httpClient) {
-        this.retrofitService = retrofitService;
+    BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain, final String customerToken) {
         this.apiKey = apiKey;
         this.channelId = channelId;
         this.applicationName = applicationName;
         this.shopDomain = shopDomain;
-        this.httpClient = httpClient;
+        this.customerToken = customerToken;
+
+        RequestInterceptor requestInterceptor = new RequestInterceptor() {
+            @Override
+            public void intercept(RequestFacade request) {
+                request.addHeader("Authorization", "Basic " + Base64.encodeToString(apiKey.getBytes(), Base64.NO_WRAP));
+
+                if (!TextUtils.isEmpty(customerToken)) {
+                    request.addHeader("X-Shopify-Customer-Access-Token", customerToken);
+                }
+
+                // Using the full package name for BuildConfig here as a work around for Javadoc.  The source paths need to be adjusted
+                request.addHeader("User-Agent", "Mobile Buy SDK Android/" + com.shopify.buy.BuildConfig.VERSION_NAME + "/" + applicationName);
+            }
+        };
+
+        httpClient = new OkHttpClient();
+        httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
+        httpClient.setReadTimeout(60, TimeUnit.SECONDS);
+        httpClient.setWriteTimeout(60, TimeUnit.SECONDS);
+
+        RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint("https://" + shopDomain)
+                .setConverter(new GsonConverter(BuyClientFactory.createDefaultGson()))
+                .setClient(new OkClient(httpClient))
+                .setLogLevel(BuildConfig.RETROFIT_LOG_LEVEL)
+                .setRequestInterceptor(requestInterceptor)
+                .build();
+
+        retrofitService = adapter.create(BuyRetrofitService.class);
     }
 
     /**
@@ -138,6 +175,14 @@ public class BuyClient {
      */
     public void addInterceptor(Interceptor interceptor) {
         this.httpClient.interceptors().add(interceptor);
+    }
+
+    /**
+     * Sets the {@link Customer} specific token
+     * @param customerToken
+     */
+    public void setCustomerToken(String customerToken) {
+        this.customerToken = customerToken;
     }
 
     /**
@@ -761,8 +806,9 @@ public class BuyClient {
     private void lookForTokenHeader(CustomerWrapper customerWrapper, Response response) {
         List<Header> headers = response.getHeaders();
         for (Header header : headers) {
-            if (BuyRetrofitService.CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
+            if (CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
                 customerWrapper.setToken(header.getValue());
+                customerToken = header.getValue();
                 break;
             }
         }
@@ -770,17 +816,13 @@ public class BuyClient {
 
     /**
      * Log a Customer out from Shopify
-     * @param token the token corresponding to the {@link Customer}, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void logoutCustomer(final String token, final Callback<Void> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
-        retrofitService.logoutCustomer(token, EMPTY_BODY, new Callback<Void>() {
+    public void logoutCustomer(final Callback<Void> callback) {
+        retrofitService.logoutCustomer(EMPTY_BODY, new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
+                customerToken = null;
                 callback.success(aVoid, response);
             }
 
@@ -793,20 +835,15 @@ public class BuyClient {
 
     /**
      * Update an existing Customer's attributes.
-     * @param token the token corresponding to the customer, not null or empty
      * @param customer the {@link Customer} to update
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void updateCustomer(final String token, final Customer customer, final Callback<Customer> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
+    public void updateCustomer(final Customer customer, final Callback<Customer> callback) {
         if (customer == null) {
             throw new NullPointerException("customer cannot be null");
         }
 
-        retrofitService.updateCustomer(token, new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+        retrofitService.updateCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -821,15 +858,10 @@ public class BuyClient {
 
     /**
      * Retrieve a Customer's details from Shopify.
-     * @param token the token corresponding to the {@link Customer} not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getCustomer(final String token, final Callback<Customer> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
-        retrofitService.getCustomer(token, new Callback<CustomerWrapper>() {
+    public void getCustomer(final Callback<Customer> callback) {
+        retrofitService.getCustomer(new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -844,15 +876,10 @@ public class BuyClient {
 
     /**
      * Renew a Customer login.  This should be called periodically to keep the token up to date.
-     * @param token the token corresponding to the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void renewCustomer(final String token, final Callback<Void> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
-        retrofitService.renewCustomer(token, EMPTY_BODY, new Callback<Void>() {
+    public void renewCustomer(final Callback<Void> callback) {
+        retrofitService.renewCustomer(EMPTY_BODY, new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
                 callback.success(aVoid, response);
@@ -890,15 +917,10 @@ public class BuyClient {
 
     /**
      * Fetch the Orders associated with a Customer.
-     * @param token the token corresponding to the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getOrders(final String token, final Callback<List<Order>> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
-        retrofitService.getOrders(token, new Callback<OrdersWrapper>() {
+    public void getOrders(final Callback<List<Order>> callback) {
+        retrofitService.getOrders(new Callback<OrdersWrapper>() {
             @Override
             public void success(OrdersWrapper ordersWrapper, Response response) {
                 callback.success(ordersWrapper.getOrders(), response);
@@ -913,20 +935,15 @@ public class BuyClient {
 
     /**
      * Fetch an existing Order from Shopify
-     * @param token the token corresponding to the customer, not null or empty
      * @param orderId the identifier of the {@link Order} to retrieve
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getOrder(final String token, final String orderId, final Callback<Order> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
+    public void getOrder(final String orderId, final Callback<Order> callback) {
         if (TextUtils.isEmpty(orderId)) {
             throw new IllegalArgumentException("orderId cannot be empty");
         }
 
-        retrofitService.getOrder(token, orderId, new Callback<OrderWrapper>() {
+        retrofitService.getOrder(orderId, new Callback<OrderWrapper>() {
             @Override
             public void success(OrderWrapper orderWrapper, Response response) {
                 callback.success(orderWrapper.getOrder(), response);
@@ -941,20 +958,15 @@ public class BuyClient {
 
     /**
      * Create an Address and associate it with a Customer
-     * @param token the token corresponding to the customer, not null or empty
      * @param address the {@link Address} to create, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void createAddress(final String token, final Address address, final Callback<Address> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
+    public void createAddress(final Address address, final Callback<Address> callback) {
         if (address == null) {
             throw new NullPointerException("address cannot be null");
         }
 
-        retrofitService.createAddress(token, new AddressWrapper(address), new Callback<AddressWrapper>() {
+        retrofitService.createAddress(new AddressWrapper(address), new Callback<AddressWrapper>() {
             @Override
             public void success(AddressWrapper addressWrapper, Response response) {
                 callback.success(addressWrapper.getAddress(), response);
@@ -969,15 +981,10 @@ public class BuyClient {
 
     /**
      * Fetch all of the Addresses associated with a Customer.
-     * @param token the token corresponding to the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getAddresses(final String token, final Callback<List<Address>> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
-        retrofitService.getAddresses(token, new Callback<AddressesWrapper>() {
+    public void getAddresses(final Callback<List<Address>> callback) {
+        retrofitService.getAddresses(new Callback<AddressesWrapper>() {
             @Override
             public void success(AddressesWrapper addressesWrapper, Response response) {
                 callback.success(addressesWrapper.getAddresses(), response);
@@ -992,20 +999,15 @@ public class BuyClient {
 
     /**
      * Fetch an existing Address from Shopify
-     * @param token the token corresponding to the customer, not null or empty
      * @param addressId the identifier of the {@link Address}
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getAddress(final String token, final String addressId, final Callback<Address> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
+    public void getAddress(final String addressId, final Callback<Address> callback) {
         if (TextUtils.isEmpty(addressId)) {
             throw new IllegalArgumentException("addressId cannot be empty");
         }
 
-        retrofitService.getAddress(token, addressId, new Callback<AddressWrapper>() {
+        retrofitService.getAddress(addressId, new Callback<AddressWrapper>() {
             @Override
             public void success(AddressWrapper addressWrapper, Response response) {
                 callback.success(addressWrapper.getAddress(), response);
@@ -1020,20 +1022,15 @@ public class BuyClient {
 
     /**
      * Update the attributes of an existing Address
-     * @param token the token corresponding to the customer, not null or empty
      * @param address the {@link Address} to update
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void updateAddress(final String token, final Address address, final Callback<Address> callback) {
-        if (TextUtils.isEmpty(token)) {
-            throw new IllegalArgumentException("token cannot be empty");
-        }
-
+    public void updateAddress(final Address address, final Callback<Address> callback) {
         if (address == null) {
             throw new NullPointerException("address cannot be null");
         }
 
-        retrofitService.updateAddress(token, new AddressWrapper(address), address.getAddressId(), new Callback<AddressWrapper>() {
+        retrofitService.updateAddress(new AddressWrapper(address), address.getAddressId(), new Callback<AddressWrapper>() {
             @Override
             public void success(AddressWrapper addressWrapper, Response response) {
                 callback.success(addressWrapper.getAddress(), response);
@@ -1044,7 +1041,6 @@ public class BuyClient {
                 callback.failure(error);
             }
         });
-
     }
 
     /**

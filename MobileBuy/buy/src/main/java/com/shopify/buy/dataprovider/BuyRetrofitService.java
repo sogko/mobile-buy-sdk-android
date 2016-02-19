@@ -45,7 +45,6 @@ import retrofit.RestAdapter;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
-import retrofit.http.Header;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.PUT;
@@ -111,8 +110,6 @@ interface BuyRetrofitService {
      * Customer API
      */
 
-    String CUSTOMER_TOKEN_HEADER = "X-Shopify-Customer-Access-Token";
-
     @POST("/api/customers.json")
     void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
 
@@ -120,19 +117,19 @@ interface BuyRetrofitService {
     void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
 
     @POST("/api/customers/logout.json")
-    void logoutCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body String empty,  Callback<Void> callback);
+    void logoutCustomer(@Body String empty,  Callback<Void> callback);
 
     @POST("/api/customers/recover.json")
     void recoverCustomer(@Body EmailWrapper emailWrapper, Callback<Void> callback);
 
     @PUT("/api/customers/renew.json")
-    void renewCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body String empty, Callback<Void> callback);
+    void renewCustomer(@Body String empty, Callback<Void> callback);
 
     @GET("/api/customers.json")
-    void getCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<CustomerWrapper> callback);
+    void getCustomer(Callback<CustomerWrapper> callback);
 
     @PUT("/api/customers.json")
-    void updateCustomer(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
+    void updateCustomer(@Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
 
 
     /*
@@ -140,10 +137,10 @@ interface BuyRetrofitService {
      */
 
     @GET("/api/customers/orders.json")
-    void getOrders(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<OrdersWrapper> callback);
+    void getOrders(Callback<OrdersWrapper> callback);
 
     @GET("/api/customers/orders/{orderId}")
-    void getOrder(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("orderId") String orderId, Callback<OrderWrapper> callback);
+    void getOrder(@Path("orderId") String orderId, Callback<OrderWrapper> callback);
 
 
     /*
@@ -151,16 +148,16 @@ interface BuyRetrofitService {
      */
 
     @GET("/api/customers/addresses")
-    void getAddresses(@Header(CUSTOMER_TOKEN_HEADER) String token, Callback<AddressesWrapper> callback);
+    void getAddresses(Callback<AddressesWrapper> callback);
 
     @POST("/api/customers/addresses")
-    void createAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Body AddressWrapper address, Callback<AddressWrapper> callback);
+    void createAddress(@Body AddressWrapper address, Callback<AddressWrapper> callback);
 
     @GET("/api/customers/addresses/{addressId}")
-    void getAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("addressId") String addressId, Callback<AddressWrapper> callback);
+    void getAddress(@Path("addressId") String addressId, Callback<AddressWrapper> callback);
 
     @PATCH("/api/customers/addresses/{addressId")
-    void updateAddress(@Header(CUSTOMER_TOKEN_HEADER) String token, @Path("addressId") AddressWrapper Address, String addressId, Callback<AddressWrapper> callback);
+    void updateAddress(@Path("addressId") AddressWrapper Address, String addressId, Callback<AddressWrapper> callback);
 
 
     /*
