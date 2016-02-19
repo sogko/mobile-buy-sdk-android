@@ -25,10 +25,13 @@
 package com.shopify.buy.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.shopify.buy.dataprovider.BuyClient;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import retrofit.Callback;
 
 public class Order extends ShopifyObject {
 
@@ -73,18 +76,15 @@ public class Order extends ShopifyObject {
     public Order() {
     }
 
-
-    //TODO Kris we have order_status_url returned on orders from the Customers api, but order_status returned from Checkouts.  We need to harmonize before release. https://github.com/Shopify/mobile-buy-sdk-android-private/issues/714
     /**
-     * @return URL for the website showing the order status.
+     * @return URL for the website showing the order status.  This url will pass an authentication token for the currently logged in user. This is only available for Orders returned using {@link BuyClient#getOrder(String, Callback)} or {@link BuyClient#getOrders(Callback)}
      */
     public String getOrderStatusUrl() {
         return orderStatusUrl;
     }
 
-
     /**
-     * @return URL for the website showing the order status.
+     * @return URL for the website showing the order status. This is only available for Orders returned using {@link BuyClient#getCheckoutCompletionStatus(Checkout, Callback)}
      */
     public String getStatusUrl() {
         return statusUrl;
