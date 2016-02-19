@@ -26,6 +26,7 @@ package com.shopify.buy.model;
 
 import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.utils.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,39 +37,39 @@ import retrofit.Callback;
 public class Order extends ShopifyObject {
 
     @SerializedName("order_number")
-    private String orderNumber;
+    protected String orderNumber;
 
-    private String name;
+    protected String name;
 
     @SerializedName("processed_at")
-    private Date processedAt;
+    protected Date processedAt;
 
     @SerializedName("status_url")
-    private String statusUrl;
+    protected String statusUrl;
 
     @SerializedName("order_status_url")
-    private String orderStatusUrl;
+    protected String orderStatusUrl;
 
-    private String currency;
+    protected String currency;
 
     @SerializedName("total_price")
-    private String totalPrice;
+    protected String totalPrice;
 
-    private Boolean cancelled;
+    protected Boolean cancelled;
 
     @SerializedName("cancel_reason")
-    private String cancelReason;
+    protected String cancelReason;
 
     @SerializedName("cancelled_at")
-    private Date cancelledAt;
+    protected Date cancelledAt;
 
     @SerializedName("fulfilled_line_items")
-    private List<LineItem> fulfilledLineItems;
+    protected List<LineItem> fulfilledLineItems;
 
     @SerializedName("unfulfilled_line_items")
-    private List<LineItem> unfulfilledLineItems;
+    protected List<LineItem> unfulfilledLineItems;
 
-    List<LineItem> lineItems;
+    protected List<LineItem> lineItems;
 
     /**
      * No args constructor for use in serialization.
@@ -172,9 +173,13 @@ public class Order extends ShopifyObject {
      */
     public List<LineItem> getLineItems() {
         if (lineItems == null) {
-            lineItems = new ArrayList<>(fulfilledLineItems.size() + unfulfilledLineItems.size());
-            lineItems.addAll(fulfilledLineItems);
-            lineItems.addAll(unfulfilledLineItems);
+            lineItems = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(fulfilledLineItems)) {
+                lineItems.addAll(fulfilledLineItems);
+            }
+            if (!CollectionUtils.isEmpty(unfulfilledLineItems)) {
+                lineItems.addAll(unfulfilledLineItems);
+            }
         }
         return lineItems;
     }
