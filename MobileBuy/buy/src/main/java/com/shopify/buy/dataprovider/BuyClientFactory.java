@@ -58,9 +58,10 @@ public class BuyClientFactory {
      * @param apiKey          a valid Shopify API key
      * @param channelId       a valid Shopify Channel ID
      * @param applicationName the name to attribute orders to. The value for {@code applicationName} should be the application package name, as used to publish your application on the Play Store.  This is usually the value returned by {@link Activity#getPackageName()}, or BuildConfig.APPLICATION_ID if you are using gradle.
+     * @param customerToken   the token for a currently logged in {@link Customer}
      * @return a {@link BuyClient}
      */
-    public static BuyClient getBuyClient(final String shopDomain, final String apiKey, final String channelId, final String applicationName) throws IllegalArgumentException {
+    public static BuyClient getBuyClient(final String shopDomain, final String apiKey, final String channelId, final String applicationName, String customerToken) throws IllegalArgumentException {
         if (BuildConfig.DEBUG) {
             if (TextUtils.isEmpty(shopDomain) || shopDomain.contains(":") || shopDomain.contains("/")) {
                 throw new IllegalArgumentException("shopDomain must be a valid URL and cannot start with 'http://'");
@@ -83,7 +84,22 @@ public class BuyClientFactory {
             throw new IllegalArgumentException("applicationName must be provided, and cannot be empty");
         }
 
-        return new BuyClient(apiKey, channelId, applicationName, shopDomain);
+        return new BuyClient(apiKey, channelId, applicationName, shopDomain, customerToken);
+    }
+
+    /**
+     * Returns a BuyClient initialized with the given shop domain and API key.
+     * After you have <a href="https://docs.shopify.com/api/mobile-buy-sdk/adding-mobile-app-sales-channel">added the mobile sales channel to your store</a>,
+     * you can find the API Key and Channel ID in your store admin page. Click on Mobile App and then click on Integration.
+     *
+     * @param shopDomain      the domain of the shop to checkout with, in the format 'shopname.myshopify.com'
+     * @param apiKey          a valid Shopify API key
+     * @param channelId       a valid Shopify Channel ID
+     * @param applicationName the name to attribute orders to. The value for {@code applicationName} should be the application package name, as used to publish your application on the Play Store.  This is usually the value returned by {@link Activity#getPackageName()}, or BuildConfig.APPLICATION_ID if you are using gradle.
+     * @return a {@link BuyClient}
+     */
+    public static BuyClient getBuyClient(final String shopDomain, final String apiKey, final String channelId, final String applicationName) throws IllegalArgumentException {
+        return getBuyClient(shopDomain, apiKey, channelId, applicationName, null);
     }
 
     public static Gson createDefaultGson() {

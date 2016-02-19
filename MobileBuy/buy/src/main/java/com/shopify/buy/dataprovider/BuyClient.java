@@ -133,11 +133,12 @@ public class BuyClient {
         return shopDomain;
     }
 
-    BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain) {
+    BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain, final String customerToken) {
         this.apiKey = apiKey;
         this.channelId = channelId;
         this.applicationName = applicationName;
         this.shopDomain = shopDomain;
+        this.customerToken = customerToken;
 
         RequestInterceptor requestInterceptor = new RequestInterceptor() {
             @Override
