@@ -751,6 +751,7 @@ public class BuyClient {
         retrofitService.createCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
+                lookForTokenHeader(customerWrapper, response);
                 callback.success(customerWrapper, response);
             }
 
@@ -785,13 +786,7 @@ public class BuyClient {
         retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                List<Header> headers = response.getHeaders();
-                for (Header header : headers) {
-                    if (CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
-                        customerWrapper.setToken(header.getValue());
-                        break;
-                    }
-                }
+                lookForTokenHeader(customerWrapper, response);
                 callback.success(customerWrapper, response);
             }
 
@@ -803,6 +798,23 @@ public class BuyClient {
     }
 
     /**
+     * Extract the customer token from the response header and inject it into the CustomerWrapper object.
+     *
+     * @param customerWrapper
+     * @param response
+     */
+    private void lookForTokenHeader(CustomerWrapper customerWrapper, Response response) {
+        List<Header> headers = response.getHeaders();
+        for (Header header : headers) {
+            if (CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
+                customerWrapper.setToken(header.getValue());
+                customerToken = header.getValue();
+                break;
+            }
+        }
+    }
+
+    /**
      * Log a Customer out from Shopify
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
@@ -810,6 +822,7 @@ public class BuyClient {
         retrofitService.logoutCustomer(EMPTY_BODY, new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
+                customerToken = null;
                 callback.success(aVoid, response);
             }
 

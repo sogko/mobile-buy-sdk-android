@@ -90,6 +90,7 @@ public class CustomerWrapper {
 
             JsonObject customerJsonObject = gson.toJsonTree(customer).getAsJsonObject();
             customerJsonObject.addProperty("password", password);
+            customerJsonObject.addProperty("password_confirmation", password);
 
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("customer", customerJsonObject);
