@@ -43,7 +43,8 @@ public class CustomerWrapper {
     @SerializedName("access_token")
     private String token;
 
-    CustomerWrapper() {}
+    CustomerWrapper() {
+    }
 
     public CustomerWrapper(Customer customer) {
         this.customer = customer;
@@ -74,7 +75,9 @@ public class CustomerWrapper {
     /**
      * @param token The access token to use for subsequent customer api calls.
      */
-    public void setToken(String token) { this.token = token; }
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     /**
      * Custom serializer that add the password to the outgoing Customer json.

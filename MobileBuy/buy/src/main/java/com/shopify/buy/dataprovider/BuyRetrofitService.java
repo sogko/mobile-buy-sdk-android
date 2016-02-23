@@ -117,13 +117,13 @@ interface BuyRetrofitService {
     void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
 
     @POST("/api/customers/logout.json")
-    void logoutCustomer(@Body String empty,  Callback<Void> callback);
+    void logoutCustomer(@Body String empty, Callback<Void> callback);
 
     @POST("/api/customers/recover.json")
     void recoverCustomer(@Body EmailWrapper emailWrapper, Callback<Void> callback);
 
     @PUT("/api/customers/renew.json")
-    void renewCustomer(@Body String empty, Callback<Void> callback);
+    void renewCustomer(@Body String empty, Callback<CustomerWrapper> callback);
 
     @GET("/api/customers.json")
     void getCustomer(Callback<CustomerWrapper> callback);

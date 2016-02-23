@@ -179,6 +179,7 @@ public class BuyClient {
 
     /**
      * Sets the {@link Customer} specific token
+     *
      * @param customerToken
      */
     public void setCustomerToken(String customerToken) {
@@ -732,6 +733,7 @@ public class BuyClient {
 
     /**
      * Create a new Customer on Shopify
+     *
      * @param customer the {@link Customer} to create, not null
      * @param password the password for the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
@@ -764,7 +766,8 @@ public class BuyClient {
 
     /**
      * Log an existing Customer into Shopify
-     * @param email the email address of the {@link Customer}, not null or empty
+     *
+     * @param email    the email address of the {@link Customer}, not null or empty
      * @param password the password for the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
@@ -816,6 +819,7 @@ public class BuyClient {
 
     /**
      * Log a Customer out from Shopify
+     *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void logoutCustomer(final Callback<Void> callback) {
@@ -835,6 +839,7 @@ public class BuyClient {
 
     /**
      * Update an existing Customer's attributes.
+     *
      * @param customer the {@link Customer} to update
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
@@ -858,6 +863,7 @@ public class BuyClient {
 
     /**
      * Retrieve a Customer's details from Shopify.
+     *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void getCustomer(final Callback<Customer> callback) {
@@ -876,13 +882,15 @@ public class BuyClient {
 
     /**
      * Renew a Customer login.  This should be called periodically to keep the token up to date.
+     *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void renewCustomer(final Callback<Void> callback) {
-        retrofitService.renewCustomer(EMPTY_BODY, new Callback<Void>() {
+    public void renewCustomer(final Callback<CustomerWrapper> callback) {
+        retrofitService.renewCustomer(EMPTY_BODY, new Callback<CustomerWrapper>() {
             @Override
-            public void success(Void aVoid, Response response) {
-                callback.success(aVoid, response);
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                lookForTokenHeader(customerWrapper, response);
+                callback.success(customerWrapper, response);
             }
 
             @Override
@@ -894,7 +902,8 @@ public class BuyClient {
 
     /**
      * Send a password recovery email. An email will be sent to the email address specified if a customer with that email address exists on Shopify.
-     * @param email the email address to send the password recovery email to
+     *
+     * @param email    the email address to send the password recovery email to
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void recoverCustomer(final String email, final Callback<Void> callback) {
@@ -917,6 +926,7 @@ public class BuyClient {
 
     /**
      * Fetch the Orders associated with a Customer.
+     *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void getOrders(final Callback<List<Order>> callback) {
@@ -935,7 +945,8 @@ public class BuyClient {
 
     /**
      * Fetch an existing Order from Shopify
-     * @param orderId the identifier of the {@link Order} to retrieve
+     *
+     * @param orderId  the identifier of the {@link Order} to retrieve
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void getOrder(final String orderId, final Callback<Order> callback) {
@@ -958,7 +969,8 @@ public class BuyClient {
 
     /**
      * Create an Address and associate it with a Customer
-     * @param address the {@link Address} to create, not null
+     *
+     * @param address  the {@link Address} to create, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void createAddress(final Address address, final Callback<Address> callback) {
@@ -981,6 +993,7 @@ public class BuyClient {
 
     /**
      * Fetch all of the Addresses associated with a Customer.
+     *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void getAddresses(final Callback<List<Address>> callback) {
@@ -999,8 +1012,9 @@ public class BuyClient {
 
     /**
      * Fetch an existing Address from Shopify
+     *
      * @param addressId the identifier of the {@link Address}
-     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @param callback  the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void getAddress(final String addressId, final Callback<Address> callback) {
         if (TextUtils.isEmpty(addressId)) {
@@ -1022,7 +1036,8 @@ public class BuyClient {
 
     /**
      * Update the attributes of an existing Address
-     * @param address the {@link Address} to update
+     *
+     * @param address  the {@link Address} to update
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void updateAddress(final Address address, final Callback<Address> callback) {
