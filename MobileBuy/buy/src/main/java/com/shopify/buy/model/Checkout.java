@@ -24,8 +24,6 @@
 
 package com.shopify.buy.model;
 
-import android.text.TextUtils;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -167,6 +165,9 @@ public class Checkout extends ShopifyObject {
     private String note;
 
     private transient List<CheckoutAttribute> attributes;
+
+    public Checkout() {
+    }
 
     public Checkout(Cart cart) {
         lineItems = new ArrayList<LineItem>(cart.getLineItems());
@@ -555,6 +556,16 @@ public class Checkout extends ShopifyObject {
         this.note = note;
     }
 
+
+    /**
+     * Set the token for the Checkout.
+     *
+     * @param token
+     */
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     /**
      * For internal use only. To apply a gift card to your checkout, use {@link com.shopify.buy.dataprovider.BuyClient#applyGiftCard(String, Checkout, Callback) applyGiftCard(giftCardCode, checkout, callback)}.
      */
@@ -575,6 +586,17 @@ public class Checkout extends ShopifyObject {
         if (giftCards != null && giftCard != null) {
             giftCards.remove(giftCard);
         }
+    }
+
+    /**
+     * Creates a copy of the Checkout for use in updates, filtering out properties that should not be sent.
+     *
+     * @return A checkout suitable for sending in an update.
+     */
+    public Checkout copyForUpdate() {
+        Checkout copy = Checkout.fromJson(this.toJsonString());
+        copy.giftCards = null;
+        return copy;
     }
 
     /**
@@ -626,7 +648,7 @@ public class Checkout extends ShopifyObject {
             JsonObject checkoutObject = gson.toJsonTree(checkout).getAsJsonObject();
 
             // Replace the CheckoutAttributes List with a hash map which is the input expected by the server
-            if (checkout.getAttributes() != null) {
+            if (checkout.getAttributes() != null && checkout.getAttributes().size() > 0) {
                 HashMap<String, String> attributesHashMap = new HashMap<>();
                 for (CheckoutAttribute attribute : checkout.attributes) {
                     attributesHashMap.put(attribute.getName(), attribute.getValue());
