@@ -187,6 +187,15 @@ public class BuyClient {
     }
 
     /**
+     * Returns the {@link Customer} specific token
+     *
+     * @return customer token
+     */
+    public String getCustomerToken() {
+        return customerToken;
+    }
+
+    /**
      * Sets the web url to be invoked by the button on the completion page of the web checkout.
      *
      * @param webReturnToUrl a url defined as a custom scheme in the Android Manifest file.
@@ -740,7 +749,7 @@ public class BuyClient {
      * @param password the password for the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void createCustomer(final Customer customer, final String password, final Callback<CustomerWrapper> callback) {
+    public void createCustomer(final Customer customer, final String password, final Callback<Customer> callback) {
         if (customer == null) {
             throw new IllegalArgumentException("customer cannot be empty");
         }
@@ -755,8 +764,8 @@ public class BuyClient {
         retrofitService.createCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(customerWrapper, response);
-                callback.success(customerWrapper, response);
+                lookForTokenHeader(response);
+                callback.success(customerWrapper.getCustomer(), response);
             }
 
             @Override
@@ -766,6 +775,34 @@ public class BuyClient {
         });
     }
 
+    public void activateCustomer(final String activationToken, final String password, final Callback<Customer> callback) {
+        if (TextUtils.isEmpty(activationToken)) {
+            throw new IllegalArgumentException("activation token cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("password cannot be empty");
+        }
+
+        Customer customer = new Customer();
+        CustomerWrapper customerWrapper= new CustomerWrapper(customer);
+        customerWrapper.setPassword(password);
+
+        retrofitService.activateCustomer(activationToken, customerWrapper, new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                lookForTokenHeader(response);
+                callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+
+    }
+
     /**
      * Log an existing Customer into Shopify
      *
@@ -773,7 +810,7 @@ public class BuyClient {
      * @param password the password for the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void loginCustomer(final String email, final String password, final Callback<CustomerWrapper> callback) {
+    public void loginCustomer(final String email, final String password, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(email)) {
             throw new IllegalArgumentException("email cannot be empty");
         }
@@ -791,8 +828,8 @@ public class BuyClient {
         retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(customerWrapper, response);
-                callback.success(customerWrapper, response);
+                lookForTokenHeader(response);
+                callback.success(customerWrapper.getCustomer(), response);
             }
 
             @Override
@@ -803,16 +840,14 @@ public class BuyClient {
     }
 
     /**
-     * Extract the customer token from the response header and inject it into the CustomerWrapper object.
+     * Extract the customer token from the response header
      *
-     * @param customerWrapper
      * @param response
      */
-    private void lookForTokenHeader(CustomerWrapper customerWrapper, Response response) {
+    private void lookForTokenHeader(Response response) {
         List<Header> headers = response.getHeaders();
         for (Header header : headers) {
             if (CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
-                customerWrapper.setToken(header.getValue());
                 customerToken = header.getValue();
                 break;
             }
@@ -891,7 +926,7 @@ public class BuyClient {
         retrofitService.renewCustomer(EMPTY_BODY, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(customerWrapper, response);
+                lookForTokenHeader(response);
                 callback.success(customerWrapper, response);
             }
 

@@ -66,20 +66,6 @@ public class CustomerWrapper {
     }
 
     /**
-     * @return The access token to use for subsequent customer api calls.
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * @param token The access token to use for subsequent customer api calls.
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    /**
      * Custom serializer that add the password to the outgoing Customer json.
      */
     public static class CustomerWrapperSerializer implements JsonSerializer<CustomerWrapper> {

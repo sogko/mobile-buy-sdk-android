@@ -40,12 +40,13 @@ import retrofit.client.Response;
 
 public class CustomerTest extends ShopifyAndroidTestCase {
 
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     private Customer customer;
     private List<Order> orders;
     private List<Address> addresses;
     private Address address;
+    private String customerToken;
 
     public void testCustomerCreation() throws InterruptedException {
         if (!ENABLED) {
@@ -55,13 +56,11 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         final CountDownLatch latch = new CountDownLatch(1);
         final Customer customer = getCustomer();
 
-        buyClient.createCustomer(customer, "password", new Callback<CustomerWrapper>() {
+        buyClient.createCustomer(customer, "password", new Callback<Customer>() {
             @Override
-            public void success(CustomerWrapper customerWrapper, Response response) {
-                assertNotNull(customerWrapper);
-                assertNotNull(customerWrapper.getCustomer());
-                assertEquals(false, customerWrapper.getToken().isEmpty());
-                buyClient.setCustomerToken(customerWrapper.getToken());
+            public void success(Customer customer, Response response) {
+                assertNotNull(customer);
+                assertEquals(false, buyClient.getCustomerToken().isEmpty());
                 latch.countDown();
             }
 
@@ -73,6 +72,29 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         latch.await();
     }
 
+    public void testCustomerActivation() throws InterruptedException {
+        if (!ENABLED) {
+            return;
+        }
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.activateCustomer("notanactivationtoken", "notapassword", new Callback<Customer>() {
+            @Override
+            public void success(Customer customer, Response response) {
+                assertNotNull(customer);
+                assertEquals(false,buyClient.getCustomerToken().isEmpty());
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+        latch.await();
+    }
+
+
     public void testCustomerLogin() throws InterruptedException {
         if (!ENABLED) {
             return;
@@ -82,16 +104,14 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.loginCustomer(customer.getEmail(), "password", new Callback<CustomerWrapper>() {
+        buyClient.loginCustomer(customer.getEmail(), "password", new Callback<Customer>() {
             @Override
-            public void success(CustomerWrapper customerWrapper, Response response) {
-                assertNotNull(customerWrapper);
-                assertNotNull(customerWrapper.getCustomer());
-                assertEquals(false, customerWrapper.getToken().isEmpty());
+            public void success(Customer customer, Response response) {
+                assertNotNull(customer);
+                assertEquals(false, buyClient.getCustomerToken().isEmpty());
 
-                CustomerTest.this.customer = customerWrapper.getCustomer();
-
-                buyClient.setCustomerToken(customerWrapper.getToken());
+                CustomerTest.this.customer = customer;
+                CustomerTest.this.customerToken = buyClient.getCustomerToken();
 
                 latch.countDown();
             }
@@ -110,6 +130,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testCustomerLogin();
+        buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -133,6 +154,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testCustomerLogin();
+        buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -179,6 +201,8 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testCustomerLogin();
+        buyClient.setCustomerToken(customerToken);
+
 
         customer.setLastName("Foo");
 
@@ -206,6 +230,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testCustomerLogin();
+        buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -233,6 +258,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testGetCustomerOrders();
+        buyClient.setCustomerToken(customerToken);
 
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -260,6 +286,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testCustomerLogin();
+        buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -280,7 +307,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
     private Customer getCustomer() {
         Customer customer = new Customer();
-        customer.setEmail("krisorr@gmail.com");
+        customer.setEmail("krisorr3@gmail.com");
         customer.setFirstName("Kristopher");
         customer.setLastName("Orr");
 
@@ -293,6 +320,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testCustomerLogin();
+        buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -320,6 +348,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testCustomerLogin();
+        buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -347,6 +376,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testGetAddresses();
+        buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -375,6 +405,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         }
 
         testGetAddress();
+        buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
