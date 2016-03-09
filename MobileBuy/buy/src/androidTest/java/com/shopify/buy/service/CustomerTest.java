@@ -39,7 +39,7 @@ import retrofit.client.Response;
 
 public class CustomerTest extends ShopifyAndroidTestCase {
 
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
     private Customer customer;
     private List<Order> orders;
