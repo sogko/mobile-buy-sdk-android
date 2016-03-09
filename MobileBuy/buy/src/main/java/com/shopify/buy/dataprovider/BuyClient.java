@@ -775,7 +775,14 @@ public class BuyClient {
         });
     }
 
-    public void activateCustomer(final String activationToken, final String password, final Callback<Customer> callback) {
+    /**
+     *
+     * @param customerId the id of the {@link Customer} to activate
+     * @param activationToken the activation token for the Customer, not null or empty
+     * @param password the password for the customer, not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
+    public void activateCustomer(final Long customerId, final String activationToken, final String password, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(activationToken)) {
             throw new IllegalArgumentException("activation token cannot be empty");
         }
@@ -784,11 +791,10 @@ public class BuyClient {
             throw new IllegalArgumentException("password cannot be empty");
         }
 
-        Customer customer = new Customer();
-        CustomerWrapper customerWrapper= new CustomerWrapper(customer);
+        CustomerWrapper customerWrapper= new CustomerWrapper(new Customer());
         customerWrapper.setPassword(password);
 
-        retrofitService.activateCustomer(activationToken, customerWrapper, new Callback<CustomerWrapper>() {
+        retrofitService.activateCustomer(activationToken, customerWrapper, customerId, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 lookForTokenHeader(response);

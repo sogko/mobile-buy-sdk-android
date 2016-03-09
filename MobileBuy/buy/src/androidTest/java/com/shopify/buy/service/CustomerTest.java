@@ -39,7 +39,7 @@ import retrofit.client.Response;
 
 public class CustomerTest extends ShopifyAndroidTestCase {
 
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     private Customer customer;
     private List<Order> orders;
@@ -76,13 +76,18 @@ public class CustomerTest extends ShopifyAndroidTestCase {
             return;
         }
 
+        testCustomerLogin();
+        buyClient.setCustomerToken(customerToken);
+
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.activateCustomer("notanactivationtoken", "notapassword", new Callback<Customer>() {
+        // TODO update this test when we start to get real tokens
+        buyClient.activateCustomer(customer.getId(), "notanactivationtoken", "notapassword", new Callback<Customer>() {
             @Override
             public void success(Customer customer, Response response) {
                 assertNotNull(customer);
                 assertEquals(false,buyClient.getCustomerToken().isEmpty());
+                latch.countDown();
             }
 
             @Override
@@ -306,7 +311,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
     private Customer getCustomer() {
         Customer customer = new Customer();
-        customer.setEmail("krisorr3@gmail.com");
+        customer.setEmail("krisorr@gmail.com");
         customer.setFirstName("Kristopher");
         customer.setLastName("Orr");
 
