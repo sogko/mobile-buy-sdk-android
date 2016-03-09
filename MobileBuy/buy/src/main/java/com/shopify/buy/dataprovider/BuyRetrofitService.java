@@ -24,7 +24,7 @@
 
 package com.shopify.buy.dataprovider;
 
-import com.shopify.buy.model.CustomerWrapper;
+import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;

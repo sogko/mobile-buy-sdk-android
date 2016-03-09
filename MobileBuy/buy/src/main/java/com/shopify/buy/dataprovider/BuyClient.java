@@ -35,7 +35,7 @@ import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
 import com.shopify.buy.model.Customer;
-import com.shopify.buy.model.CustomerWrapper;
+import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
@@ -922,12 +922,12 @@ public class BuyClient {
      *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void renewCustomer(final Callback<CustomerWrapper> callback) {
+    public void renewCustomer(final Callback<Customer> callback) {
         retrofitService.renewCustomer(EMPTY_BODY, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 lookForTokenHeader(response);
-                callback.success(customerWrapper, response);
+                callback.success(customerWrapper.getCustomer(), response);
             }
 
             @Override

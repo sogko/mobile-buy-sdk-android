@@ -28,7 +28,6 @@ import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.extensions.ShopifyAndroidTestCase;
 import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Customer;
-import com.shopify.buy.model.CustomerWrapper;
 import com.shopify.buy.model.Order;
 
 import java.util.List;
@@ -158,9 +157,9 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.renewCustomer(new Callback<CustomerWrapper>() {
+        buyClient.renewCustomer(new Callback<Customer>() {
             @Override
-            public void success(CustomerWrapper customerWrapper, Response response) {
+            public void success(Customer customer, Response response) {
                 latch.countDown();
             }
 
