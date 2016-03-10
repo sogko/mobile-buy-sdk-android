@@ -24,7 +24,7 @@
 
 package com.shopify.buy.dataprovider;
 
-import com.shopify.buy.model.CustomerWrapper;
+import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.Shop;
 import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;
@@ -112,6 +112,9 @@ interface BuyRetrofitService {
 
     @POST("/api/customers.json")
     void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
+
+    @PUT("/api/customers/{customerId}/activate.json")
+    void activateCustomer(@Query("activationToken") String activationToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
     @POST("/api/customers/login.json")
     void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);

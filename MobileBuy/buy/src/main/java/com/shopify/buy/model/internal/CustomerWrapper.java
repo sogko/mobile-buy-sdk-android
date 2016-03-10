@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.model;
+package com.shopify.buy.model.internal;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -31,6 +31,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
 import com.shopify.buy.dataprovider.BuyClientFactory;
+import com.shopify.buy.model.Customer;
 
 import java.lang.reflect.Type;
 
@@ -63,20 +64,6 @@ public class CustomerWrapper {
      */
     public Customer getCustomer() {
         return customer;
-    }
-
-    /**
-     * @return The access token to use for subsequent customer api calls.
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * @param token The access token to use for subsequent customer api calls.
-     */
-    public void setToken(String token) {
-        this.token = token;
     }
 
     /**

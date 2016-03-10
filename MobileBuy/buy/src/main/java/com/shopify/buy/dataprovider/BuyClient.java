@@ -35,7 +35,7 @@ import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
 import com.shopify.buy.model.Customer;
-import com.shopify.buy.model.CustomerWrapper;
+import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
@@ -184,6 +184,15 @@ public class BuyClient {
      */
     public void setCustomerToken(String customerToken) {
         this.customerToken = customerToken;
+    }
+
+    /**
+     * Returns the {@link Customer} specific token
+     *
+     * @return customer token
+     */
+    public String getCustomerToken() {
+        return customerToken;
     }
 
     /**
@@ -740,7 +749,7 @@ public class BuyClient {
      * @param password the password for the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void createCustomer(final Customer customer, final String password, final Callback<CustomerWrapper> callback) {
+    public void createCustomer(final Customer customer, final String password, final Callback<Customer> callback) {
         if (customer == null) {
             throw new IllegalArgumentException("customer cannot be empty");
         }
@@ -755,8 +764,8 @@ public class BuyClient {
         retrofitService.createCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(customerWrapper, response);
-                callback.success(customerWrapper, response);
+                lookForTokenHeader(response);
+                callback.success(customerWrapper.getCustomer(), response);
             }
 
             @Override
@@ -767,13 +776,47 @@ public class BuyClient {
     }
 
     /**
+     *
+     * @param customerId the id of the {@link Customer} to activate
+     * @param activationToken the activation token for the Customer, not null or empty
+     * @param password the password for the customer, not null or empty
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
+    public void activateCustomer(final Long customerId, final String activationToken, final String password, final Callback<Customer> callback) {
+        if (TextUtils.isEmpty(activationToken)) {
+            throw new IllegalArgumentException("activation token cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("password cannot be empty");
+        }
+
+        CustomerWrapper customerWrapper= new CustomerWrapper(new Customer());
+        customerWrapper.setPassword(password);
+
+        retrofitService.activateCustomer(activationToken, customerWrapper, customerId, new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                lookForTokenHeader(response);
+                callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+
+    }
+
+    /**
      * Log an existing Customer into Shopify
      *
      * @param email    the email address of the {@link Customer}, not null or empty
      * @param password the password for the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void loginCustomer(final String email, final String password, final Callback<CustomerWrapper> callback) {
+    public void loginCustomer(final String email, final String password, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(email)) {
             throw new IllegalArgumentException("email cannot be empty");
         }
@@ -791,8 +834,8 @@ public class BuyClient {
         retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(customerWrapper, response);
-                callback.success(customerWrapper, response);
+                lookForTokenHeader(response);
+                callback.success(customerWrapper.getCustomer(), response);
             }
 
             @Override
@@ -803,16 +846,14 @@ public class BuyClient {
     }
 
     /**
-     * Extract the customer token from the response header and inject it into the CustomerWrapper object.
+     * Extract the customer token from the response header
      *
-     * @param customerWrapper
      * @param response
      */
-    private void lookForTokenHeader(CustomerWrapper customerWrapper, Response response) {
+    private void lookForTokenHeader(Response response) {
         List<Header> headers = response.getHeaders();
         for (Header header : headers) {
             if (CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
-                customerWrapper.setToken(header.getValue());
                 customerToken = header.getValue();
                 break;
             }
@@ -887,12 +928,12 @@ public class BuyClient {
      *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void renewCustomer(final Callback<CustomerWrapper> callback) {
+    public void renewCustomer(final Callback<Customer> callback) {
         retrofitService.renewCustomer(EMPTY_BODY, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(customerWrapper, response);
-                callback.success(customerWrapper, response);
+                lookForTokenHeader(response);
+                callback.success(customerWrapper.getCustomer(), response);
             }
 
             @Override
