@@ -114,7 +114,7 @@ interface BuyRetrofitService {
     void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
 
     @PUT("/api/customers/{customerId}/activate.json")
-    void activateCustomer(@Query("activationToken") String activationToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
+    void activateCustomer(@Query("token") String activationToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
     @POST("/api/customers/login.json")
     void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
