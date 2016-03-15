@@ -24,6 +24,7 @@
 
 package com.shopify.buy.utils;
 
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -144,15 +145,32 @@ public class ImageUtility {
      * Fetches and loads an image into an ImageView that has layout params with MATCH_PARENT as width and/or height. You must pass in non-zero values for
      * {@code parentWidth} and {@code parentHeight} so that an appropriately sized image can be fetched from the server.
      */
-    public static void loadRemoteImageIntoViewWithoutSize(final Picasso imageLoader, String imageSrc, final ImageView imageView, int parentWidth, int parentHeight, boolean crop, Callback callback) {
+    public static void loadRemoteImageIntoViewWithoutSize(final Picasso imageLoader, String imageSrc, final ImageView imageView, int parentWidth, int parentHeight, boolean crop, Drawable placeholderDrawable, Drawable errorDrawable, Callback callback) {
         String imageUrl = getSizedImageUrl(imageSrc, parentWidth, parentHeight);
         RequestCreator c = imageLoader.load(imageUrl).fit();
+
+        if (placeholderDrawable != null) {
+            c.placeholder(placeholderDrawable);
+        }
+
+        if (errorDrawable != null) {
+            c.error(errorDrawable);
+        }
+
         if (crop) {
             c = c.centerCrop();
         } else {
             c = c.centerInside();
         }
         c.into(imageView, callback);
+    }
+
+    /**
+     * Fetches and loads an image into an ImageView that has layout params with MATCH_PARENT as width and/or height. You must pass in non-zero values for
+     * {@code parentWidth} and {@code parentHeight} so that an appropriately sized image can be fetched from the server.
+     */
+    public static void loadRemoteImageIntoViewWithoutSize(final Picasso imageLoader, String imageSrc, final ImageView imageView, int parentWidth, int parentHeight, boolean crop, Callback callback) {
+        loadRemoteImageIntoViewWithoutSize(imageLoader, imageSrc, imageView, parentWidth, parentHeight, crop, null, null, callback);
     }
 
     /**
