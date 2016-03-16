@@ -133,6 +133,10 @@ public class BuyClient {
         return shopDomain;
     }
 
+    public int getPageSize() {
+        return pageSize;
+    }
+
     BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain, final String customerToken) {
         this.apiKey = apiKey;
         this.channelId = channelId;
