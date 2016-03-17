@@ -35,7 +35,6 @@ import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
 import com.shopify.buy.model.Customer;
-import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
@@ -45,6 +44,7 @@ import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.internal.EmailWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
 import com.shopify.buy.model.internal.MarketingAttribution;
@@ -780,11 +780,12 @@ public class BuyClient {
     }
 
     /**
+     * Activate the customer account.
      *
-     * @param customerId the id of the {@link Customer} to activate
+     * @param customerId      the id of the {@link Customer} to activate
      * @param activationToken the activation token for the Customer, not null or empty
-     * @param password the password for the customer, not null or empty
-     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @param password        the password for the customer, not null or empty
+     * @param callback        the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void activateCustomer(final Long customerId, final String activationToken, final String password, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(activationToken)) {
@@ -795,10 +796,45 @@ public class BuyClient {
             throw new IllegalArgumentException("password cannot be empty");
         }
 
-        CustomerWrapper customerWrapper= new CustomerWrapper(new Customer());
+        CustomerWrapper customerWrapper = new CustomerWrapper(new Customer());
         customerWrapper.setPassword(password);
 
         retrofitService.activateCustomer(activationToken, customerWrapper, customerId, new Callback<CustomerWrapper>() {
+            @Override
+            public void success(CustomerWrapper customerWrapper, Response response) {
+                lookForTokenHeader(response);
+                callback.success(customerWrapper.getCustomer(), response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
+
+    }
+
+    /**
+     * Reset the password for the customer account.
+     *
+     * @param customerId the id of the {@link Customer} to activate
+     * @param resetToken the reset token for the Customer, not null or empty
+     * @param password   the password for the customer, not null or empty
+     * @param callback   the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
+    public void resetPassword(final Long customerId, final String resetToken, final String password, final Callback<Customer> callback) {
+        if (TextUtils.isEmpty(resetToken)) {
+            throw new IllegalArgumentException("reset token cannot be empty");
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("password cannot be empty");
+        }
+
+        CustomerWrapper customerWrapper = new CustomerWrapper(new Customer());
+        customerWrapper.setPassword(password);
+
+        retrofitService.resetPassword(resetToken, customerWrapper, customerId, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 lookForTokenHeader(response);
