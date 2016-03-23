@@ -32,10 +32,12 @@ package com.shopify.buy.model;
 public class CartLineItem extends LineItem {
 
     private final ProductVariant variant;
+    private String errorMessage;
 
     public CartLineItem(ProductVariant variant) {
         super(variant);
         this.variant = variant;
+        this.errorMessage = null;
     }
 
     /**
@@ -50,6 +52,20 @@ public class CartLineItem extends LineItem {
      */
     void setQuantity(long quantity) {
         this.quantity = quantity;
+    }
+
+    /**
+     * @return The {@link #errorMessage} associated with this line item.
+     */
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    /**
+     * @param errorMessage The error message of the {@link ProductVariant} to be displayed in this line item.
+     */
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
 }
