@@ -180,9 +180,9 @@ public class BuyError {
 
             BuyError error = list.get(i);
 
-            if (error != null && !TextUtils.isEmpty(error.getCode()) && error.getOptions() != null && error.getOptions().containsKey("email")) {
+            if (error != null && !TextUtils.isEmpty(error.getCode()) && error.getOptions() != null && error.getOptions().containsKey("value")) {
 
-                if (error.getCode().equals("taken") && error.getOptions().get("email").toString().equals(email)) {
+                if (error.getCode().equals("taken") && error.getOptions().get("value").toString().equals(email)) {
                     return true;
                 }
 
