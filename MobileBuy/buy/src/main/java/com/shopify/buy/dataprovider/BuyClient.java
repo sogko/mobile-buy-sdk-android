@@ -35,6 +35,7 @@ import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
 import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.CustomerToken;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
@@ -44,6 +45,7 @@ import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.internal.CustomerTokenWrapper;
 import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.internal.EmailWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
@@ -107,7 +109,7 @@ public class BuyClient {
     private final String applicationName;
     private String webReturnToUrl;
     private String webReturnToLabel;
-    private String customerToken;
+    private CustomerToken customerToken;
 
     public String getApiKey() {
         return apiKey;
@@ -137,7 +139,7 @@ public class BuyClient {
         return pageSize;
     }
 
-    BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain, final String customerToken) {
+    BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain, final CustomerToken customerToken) {
         this.apiKey = apiKey;
         this.channelId = channelId;
         this.applicationName = applicationName;
@@ -149,8 +151,8 @@ public class BuyClient {
             public void intercept(RequestFacade request) {
                 request.addHeader("Authorization", "Basic " + Base64.encodeToString(apiKey.getBytes(), Base64.NO_WRAP));
 
-                if (!TextUtils.isEmpty(BuyClient.this.customerToken)) {
-                    request.addHeader("X-Shopify-Customer-Access-Token", BuyClient.this.customerToken);
+                if (BuyClient.this.customerToken != null && !TextUtils.isEmpty(BuyClient.this.customerToken.getAccessToken())) {
+                    request.addHeader("X-Shopify-Customer-Access-Token", BuyClient.this.customerToken.getAccessToken());
                 }
 
                 // Using the full package name for BuildConfig here as a work around for Javadoc.  The source paths need to be adjusted
@@ -186,7 +188,7 @@ public class BuyClient {
      *
      * @param customerToken
      */
-    public void setCustomerToken(String customerToken) {
+    public void setCustomerToken(CustomerToken customerToken) {
         this.customerToken = customerToken;
     }
 
@@ -195,7 +197,7 @@ public class BuyClient {
      *
      * @return customer token
      */
-    public String getCustomerToken() {
+    public CustomerToken getCustomerToken() {
         return customerToken;
     }
 
@@ -856,7 +858,7 @@ public class BuyClient {
      * @param password the password for the customer, not null or empty
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void loginCustomer(final String email, final String password, final Callback<Customer> callback) {
+    public void loginCustomer(final String email, final String password, final Callback<CustomerToken> callback) {
         if (TextUtils.isEmpty(email)) {
             throw new IllegalArgumentException("email cannot be empty");
         }
@@ -871,11 +873,12 @@ public class BuyClient {
         final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
         customerWrapper.setPassword(password);
 
-        retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {
+        retrofitService.getCustomerToken(customerWrapper, new Callback<CustomerTokenWrapper>() {
+
             @Override
-            public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(response);
-                callback.success(customerWrapper.getCustomer(), response);
+            public void success(CustomerTokenWrapper customerTokenWrapper, Response response) {
+                customerToken = customerTokenWrapper.getCustomerToken();
+                callback.success(customerTokenWrapper.getCustomerToken(), response);
             }
 
             @Override
@@ -894,7 +897,7 @@ public class BuyClient {
         List<Header> headers = response.getHeaders();
         for (Header header : headers) {
             if (CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
-                customerToken = header.getValue();
+                //customerToken = header.getValue();
                 break;
             }
         }

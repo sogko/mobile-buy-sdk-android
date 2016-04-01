@@ -29,6 +29,7 @@ import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.internal.CustomerTokenWrapper;
 import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.internal.EmailWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
@@ -119,9 +120,6 @@ interface BuyRetrofitService {
     @PUT("/api/customers/{customerId}/reset.json")
     void resetPassword(@Query("token") String resetToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
-    @POST("/api/customers/login.json")
-    void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
-
     @POST("/api/customers/logout.json")
     void logoutCustomer(@Body String empty, Callback<Void> callback);
 
@@ -137,6 +135,18 @@ interface BuyRetrofitService {
     @PUT("/api/customers.json")
     void updateCustomer(@Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
 
+    /*
+     * Customer Token API
+     */
+
+    @POST("/api/customers/customer_token.json")
+    void getCustomerToken(@Body CustomerWrapper customer, Callback<CustomerTokenWrapper> callback);
+
+    /*@DELETE("/api/customers/{customerId}/customer_token.json")
+    void removeCustomerToken(@Path("customerId") Long customerId, Callback<Void> callback);
+
+    @PUT("/api/customers/{customerId}/customer_token/renew.json")
+    void renewCustomerToken(@Path("customerId") Long customerId, Callback<CustomerWrapper> callback);*/
 
     /*
      * Customer Orders API
