@@ -161,9 +161,9 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.renewCustomer(new Callback<Customer>() {
+        buyClient.renewCustomer(new Callback<CustomerToken>() {
             @Override
-            public void success(Customer customer, Response response) {
+            public void success(CustomerToken customerToken, Response response) {
                 latch.countDown();
             }
 
