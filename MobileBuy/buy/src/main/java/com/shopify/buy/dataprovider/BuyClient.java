@@ -1010,10 +1010,14 @@ public class BuyClient {
     /**
      * Fetch the Orders associated with a Customer.
      *
-     * @param customer the {@link Customer} to fetch the orders for
+     * @param customer the {@link Customer} to fetch the orders for, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void getOrders(final Customer customer, final Callback<List<Order>> callback) {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
         retrofitService.getOrders(customer.getId(), new Callback<OrdersWrapper>() {
             @Override
             public void success(OrdersWrapper ordersWrapper, Response response) {
@@ -1037,6 +1041,10 @@ public class BuyClient {
     public void getOrder(final Customer customer, final String orderId, final Callback<Order> callback) {
         if (TextUtils.isEmpty(orderId)) {
             throw new IllegalArgumentException("orderId cannot be empty");
+        }
+
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
         }
 
         retrofitService.getOrder(customer.getId(), orderId, new Callback<OrderWrapper>() {
