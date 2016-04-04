@@ -1010,10 +1010,11 @@ public class BuyClient {
     /**
      * Fetch the Orders associated with a Customer.
      *
+     * @param customer the {@link Customer} to fetch the orders for
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getOrders(final Callback<List<Order>> callback) {
-        retrofitService.getOrders(new Callback<OrdersWrapper>() {
+    public void getOrders(final Customer customer, final Callback<List<Order>> callback) {
+        retrofitService.getOrders(customer.getId(), new Callback<OrdersWrapper>() {
             @Override
             public void success(OrdersWrapper ordersWrapper, Response response) {
                 callback.success(ordersWrapper.getOrders(), response);
@@ -1029,15 +1030,16 @@ public class BuyClient {
     /**
      * Fetch an existing Order from Shopify
      *
+     * @param customer the {@link Customer} to fetch the order for
      * @param orderId  the identifier of the {@link Order} to retrieve
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getOrder(final String orderId, final Callback<Order> callback) {
+    public void getOrder(final Customer customer, final String orderId, final Callback<Order> callback) {
         if (TextUtils.isEmpty(orderId)) {
             throw new IllegalArgumentException("orderId cannot be empty");
         }
 
-        retrofitService.getOrder(orderId, new Callback<OrderWrapper>() {
+        retrofitService.getOrder(customer.getId(), orderId, new Callback<OrderWrapper>() {
             @Override
             public void success(OrderWrapper orderWrapper, Response response) {
                 callback.success(orderWrapper.getOrder(), response);

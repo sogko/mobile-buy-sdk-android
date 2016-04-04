@@ -142,11 +142,12 @@ interface BuyRetrofitService {
      * Customer Orders API
      */
 
-    @GET("/api/customers/orders.json")
-    void getOrders(Callback<OrdersWrapper> callback);
 
-    @GET("/api/customers/orders/{orderId}")
-    void getOrder(@Path("orderId") String orderId, Callback<OrderWrapper> callback);
+    @GET("/api/customers/{customerId}/orders.json")
+    void getOrders(@Path("customerId") Long customerId, Callback<OrdersWrapper> callback);
+
+    @GET("/api/customers/{customerId}/orders/{orderId}")
+    void getOrder(@Path("customerId") Long customerId, @Path("orderId") String orderId, Callback<OrderWrapper> callback);
 
 
     /*
