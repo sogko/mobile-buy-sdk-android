@@ -123,9 +123,6 @@ interface BuyRetrofitService {
     @POST("/api/customers/recover.json")
     void recoverCustomer(@Body EmailWrapper emailWrapper, Callback<Void> callback);
 
-    @PUT("/api/customers/renew.json")
-    void renewCustomer(@Body String empty, Callback<CustomerWrapper> callback);
-
     @GET("/api/customers.json")
     void getCustomer(Callback<CustomerWrapper> callback);
 
@@ -142,8 +139,8 @@ interface BuyRetrofitService {
     @DELETE("/api/customers/{customerId}/customer_token.json")
     void removeCustomerToken(@Path("customerId") Long customerId, Callback<Void> callback);
 
-    /*@PUT("/api/customers/{customerId}/customer_token/renew.json")
-    void renewCustomerToken(@Path("customerId") Long customerId, Callback<CustomerWrapper> callback);*/
+    @PUT("/api/customers/{customerId}/customer_token/renew.json")
+    void renewCustomerToken(@Body String empty, @Path("customerId") Long customerId, Callback<CustomerTokenWrapper> callback);
 
     /*
      * Customer Orders API

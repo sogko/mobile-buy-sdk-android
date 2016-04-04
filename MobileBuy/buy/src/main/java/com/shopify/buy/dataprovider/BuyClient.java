@@ -909,6 +909,10 @@ public class BuyClient {
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void logoutCustomer(final Callback<Void> callback) {
+        if (customerToken == null) {
+            return;
+        }
+
         retrofitService.removeCustomerToken(customerToken.getCustomerId(), new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
@@ -971,12 +975,16 @@ public class BuyClient {
      *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void renewCustomer(final Callback<Customer> callback) {
-        retrofitService.renewCustomer(EMPTY_BODY, new Callback<CustomerWrapper>() {
+    public void renewCustomer(final Callback<CustomerToken> callback) {
+        if (customerToken == null) {
+            return;
+        }
+
+        retrofitService.renewCustomerToken(EMPTY_BODY, customerToken.getCustomerId(), new Callback<CustomerTokenWrapper>() {
             @Override
-            public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(response);
-                callback.success(customerWrapper.getCustomer(), response);
+            public void success(CustomerTokenWrapper customerTokenWrapper, Response response) {
+                customerToken = customerTokenWrapper.getCustomerToken();
+                callback.success(customerTokenWrapper.getCustomerToken(), response);
             }
 
             @Override
