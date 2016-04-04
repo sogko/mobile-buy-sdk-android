@@ -120,9 +120,6 @@ interface BuyRetrofitService {
     @PUT("/api/customers/{customerId}/reset.json")
     void resetPassword(@Query("token") String resetToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
-    @POST("/api/customers/logout.json")
-    void logoutCustomer(@Body String empty, Callback<Void> callback);
-
     @POST("/api/customers/recover.json")
     void recoverCustomer(@Body EmailWrapper emailWrapper, Callback<Void> callback);
 
@@ -142,10 +139,10 @@ interface BuyRetrofitService {
     @POST("/api/customers/customer_token.json")
     void getCustomerToken(@Body CustomerWrapper customer, Callback<CustomerTokenWrapper> callback);
 
-    /*@DELETE("/api/customers/{customerId}/customer_token.json")
+    @DELETE("/api/customers/{customerId}/customer_token.json")
     void removeCustomerToken(@Path("customerId") Long customerId, Callback<Void> callback);
 
-    @PUT("/api/customers/{customerId}/customer_token/renew.json")
+    /*@PUT("/api/customers/{customerId}/customer_token/renew.json")
     void renewCustomerToken(@Path("customerId") Long customerId, Callback<CustomerWrapper> callback);*/
 
     /*

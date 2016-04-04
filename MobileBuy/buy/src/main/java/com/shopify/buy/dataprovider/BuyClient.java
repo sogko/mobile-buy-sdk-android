@@ -909,7 +909,7 @@ public class BuyClient {
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void logoutCustomer(final Callback<Void> callback) {
-        retrofitService.logoutCustomer(EMPTY_BODY, new Callback<Void>() {
+        retrofitService.removeCustomerToken(customerToken.getCustomerId(), new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
                 customerToken = null;
