@@ -920,7 +920,7 @@ public class BuyClient {
             throw new NullPointerException("customer cannot be null");
         }
 
-        retrofitService.updateCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+        retrofitService.updateCustomer(customer.getId(), new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -936,10 +936,15 @@ public class BuyClient {
     /**
      * Retrieve a Customer's details from Shopify.
      *
+     * @param customerId of {@link Customer} or {@link CustomerToken} to get data for
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getCustomer(final Callback<Customer> callback) {
-        retrofitService.getCustomer(new Callback<CustomerWrapper>() {
+    public void getCustomer(final Long customerId, final Callback<Customer> callback) {
+        if (customerId == null) {
+            throw new NullPointerException("customer Id cannot be null");
+        }
+
+        retrofitService.getCustomer(customerId, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);

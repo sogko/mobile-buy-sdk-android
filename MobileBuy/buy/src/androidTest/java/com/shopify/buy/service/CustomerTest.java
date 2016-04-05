@@ -293,7 +293,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.getCustomer(new Callback<Customer>() {
+        buyClient.getCustomer(customerToken.getCustomerId(), new Callback<Customer>() {
             @Override
             public void success(Customer customer, Response response) {
                 assertNotNull(customer);
@@ -446,7 +446,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
     private void getCustomerAfterLogin(final CountDownLatch latch) {
 
-        buyClient.getCustomer(new Callback<Customer>() {
+        buyClient.getCustomer(customerToken.getCustomerId(), new Callback<Customer>() {
 
             @Override
             public void success(Customer customer, Response response) {

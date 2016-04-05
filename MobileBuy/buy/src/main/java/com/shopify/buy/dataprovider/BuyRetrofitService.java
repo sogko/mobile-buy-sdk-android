@@ -123,11 +123,11 @@ interface BuyRetrofitService {
     @POST("/api/customers/recover.json")
     void recoverCustomer(@Body EmailWrapper emailWrapper, Callback<Void> callback);
 
-    @GET("/api/customers.json")
-    void getCustomer(Callback<CustomerWrapper> callback);
+    @GET("/api/customers/{customerId}.json")
+    void getCustomer(@Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
-    @PUT("/api/customers.json")
-    void updateCustomer(@Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
+    @PUT("/api/customers/{customerId}.json")
+    void updateCustomer(@Path("customerId") Long customerId, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
 
     /*
      * Customer Token API
