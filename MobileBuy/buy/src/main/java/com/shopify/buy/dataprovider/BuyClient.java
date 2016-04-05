@@ -936,7 +936,7 @@ public class BuyClient {
     /**
      * Retrieve a Customer's details from Shopify.
      *
-     * @param customerId of {@link Customer} or {@link CustomerToken} to get data for
+     * @param customerId the identifier of a {@link CustomerToken} or {@link Customer}
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void getCustomer(final Long customerId, final Callback<Customer> callback) {
