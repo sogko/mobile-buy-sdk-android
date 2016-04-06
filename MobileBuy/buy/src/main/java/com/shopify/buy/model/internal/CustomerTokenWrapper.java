@@ -24,33 +24,19 @@
 
 package com.shopify.buy.model.internal;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
-import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.CustomerToken;
 
-import java.lang.reflect.Type;
+/**
+ * Wrapper class used by Gson Serialization
+ */
+public class CustomerTokenWrapper {
 
-public class CustomerWrapper {
+    @SerializedName("customer_access_token")
+    private CustomerToken customerToken;
 
-    private Customer customer;
-
-    CustomerWrapper() {
-    }
-
-    public CustomerWrapper(Customer customer) {
-        this.customer = customer;
-    }
-
-    /**
-     * @return The up to date customer.
-     */
-    public Customer getCustomer() {
-        return customer;
+    public CustomerToken getCustomerToken() {
+        return customerToken;
     }
 
 }

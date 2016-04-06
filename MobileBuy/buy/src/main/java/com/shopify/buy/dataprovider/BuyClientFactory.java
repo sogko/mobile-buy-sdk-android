@@ -35,8 +35,8 @@ import com.shopify.buy.model.Checkout.CheckoutDeserializer;
 import com.shopify.buy.model.Checkout.CheckoutSerializer;
 import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Customer.CustomerDeserializer;
+import com.shopify.buy.model.CustomerToken;
 import com.shopify.buy.model.internal.CustomerWrapper;
-import com.shopify.buy.model.internal.CustomerWrapper.CustomerWrapperSerializer;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Product.ProductDeserializer;
 import com.shopify.buy.utils.DateUtility;
@@ -61,7 +61,7 @@ public class BuyClientFactory {
      * @param customerToken   the token for a currently logged in {@link Customer}
      * @return a {@link BuyClient}
      */
-    public static BuyClient getBuyClient(final String shopDomain, final String apiKey, final String channelId, final String applicationName, String customerToken) throws IllegalArgumentException {
+    public static BuyClient getBuyClient(final String shopDomain, final String apiKey, final String channelId, final String applicationName, CustomerToken customerToken) throws IllegalArgumentException {
         if (BuildConfig.DEBUG) {
             if (TextUtils.isEmpty(shopDomain) || shopDomain.contains(":") || shopDomain.contains("/")) {
                 throw new IllegalArgumentException("shopDomain must be a valid URL and cannot start with 'http://'");
@@ -118,10 +118,6 @@ public class BuyClientFactory {
 
         if (!Customer.class.equals(forClass)) {
             builder.registerTypeAdapter(Customer.class, new CustomerDeserializer());
-        }
-
-        if (!CustomerWrapper.class.equals(forClass)) {
-            builder.registerTypeAdapter(CustomerWrapper.class, new CustomerWrapperSerializer());
         }
 
         if (!Checkout.class.equals(forClass)) {

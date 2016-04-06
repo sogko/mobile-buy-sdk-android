@@ -29,21 +29,25 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.shopify.buy.BuildConfig;
+import com.shopify.buy.model.AccountCredentials;
 import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
 import com.shopify.buy.model.Collection.SortOrder;
 import com.shopify.buy.model.CreditCard;
 import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.CustomerToken;
 import com.shopify.buy.model.GiftCard;
 import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.internal.AccountCredentialsWrapper;
 import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.internal.CustomerTokenWrapper;
 import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.internal.EmailWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
@@ -107,7 +111,7 @@ public class BuyClient {
     private final String applicationName;
     private String webReturnToUrl;
     private String webReturnToLabel;
-    private String customerToken;
+    private CustomerToken customerToken;
 
     public String getApiKey() {
         return apiKey;
@@ -137,7 +141,7 @@ public class BuyClient {
         return pageSize;
     }
 
-    BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain, final String customerToken) {
+    BuyClient(final String apiKey, final String channelId, final String applicationName, final String shopDomain, final CustomerToken customerToken) {
         this.apiKey = apiKey;
         this.channelId = channelId;
         this.applicationName = applicationName;
@@ -149,8 +153,8 @@ public class BuyClient {
             public void intercept(RequestFacade request) {
                 request.addHeader("Authorization", "Basic " + Base64.encodeToString(apiKey.getBytes(), Base64.NO_WRAP));
 
-                if (!TextUtils.isEmpty(BuyClient.this.customerToken)) {
-                    request.addHeader("X-Shopify-Customer-Access-Token", BuyClient.this.customerToken);
+                if (BuyClient.this.customerToken != null && !TextUtils.isEmpty(BuyClient.this.customerToken.getAccessToken())) {
+                    request.addHeader("X-Shopify-Customer-Access-Token", BuyClient.this.customerToken.getAccessToken());
                 }
 
                 // Using the full package name for BuildConfig here as a work around for Javadoc.  The source paths need to be adjusted
@@ -186,7 +190,7 @@ public class BuyClient {
      *
      * @param customerToken
      */
-    public void setCustomerToken(String customerToken) {
+    public void setCustomerToken(CustomerToken customerToken) {
         this.customerToken = customerToken;
     }
 
@@ -195,7 +199,7 @@ public class BuyClient {
      *
      * @return customer token
      */
-    public String getCustomerToken() {
+    public CustomerToken getCustomerToken() {
         return customerToken;
     }
 
@@ -748,27 +752,19 @@ public class BuyClient {
 
     /**
      * Create a new Customer on Shopify
-     *
-     * @param customer the {@link Customer} to create, not null
-     * @param password the password for the customer, not null or empty
+     * @param accountCredentials the account credentials with an email, password, first name, and last name of the {@link Customer} to be created, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void createCustomer(final Customer customer, final String password, final Callback<Customer> callback) {
-        if (customer == null) {
-            throw new IllegalArgumentException("customer cannot be empty");
+    public void createCustomer(final AccountCredentials accountCredentials, final Callback<Customer> callback) {
+        if (accountCredentials == null) {
+            throw new NullPointerException("accountCredentials cannot be null");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password cannot be empty");
-        }
+        final AccountCredentialsWrapper accountCredentialsWrapper = new AccountCredentialsWrapper(accountCredentials);
 
-        final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
-        customerWrapper.setPassword(password);
-
-        retrofitService.createCustomer(customerWrapper, new Callback<CustomerWrapper>() {
+        retrofitService.createCustomer(accountCredentialsWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(response);
                 callback.success(customerWrapper.getCustomer(), response);
             }
 
@@ -781,28 +777,25 @@ public class BuyClient {
 
     /**
      * Activate the customer account.
-     *
-     * @param customerId      the id of the {@link Customer} to activate
-     * @param activationToken the activation token for the Customer, not null or empty
-     * @param password        the password for the customer, not null or empty
-     * @param callback        the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @param customerId         the id of the {@link Customer} to activate
+     * @param activationToken    the activation token for the Customer, not null or empty
+     * @param accountCredentials the account credentials with a password of the {@link Customer} to be activated, not null
+     * @param callback           the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void activateCustomer(final Long customerId, final String activationToken, final String password, final Callback<Customer> callback) {
+    public void activateCustomer(final Long customerId, final String activationToken, final AccountCredentials accountCredentials, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(activationToken)) {
             throw new IllegalArgumentException("activation token cannot be empty");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password cannot be empty");
+        if (accountCredentials == null) {
+            throw new NullPointerException("accountCredentials cannot be null");
         }
 
-        CustomerWrapper customerWrapper = new CustomerWrapper(new Customer());
-        customerWrapper.setPassword(password);
+        AccountCredentialsWrapper accountCredentialsWrapper = new AccountCredentialsWrapper(accountCredentials);
 
-        retrofitService.activateCustomer(activationToken, customerWrapper, customerId, new Callback<CustomerWrapper>() {
+        retrofitService.activateCustomer(activationToken, accountCredentialsWrapper, customerId, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(response);
                 callback.success(customerWrapper.getCustomer(), response);
             }
 
@@ -816,28 +809,25 @@ public class BuyClient {
 
     /**
      * Reset the password for the customer account.
-     *
-     * @param customerId the id of the {@link Customer} to activate
-     * @param resetToken the reset token for the Customer, not null or empty
-     * @param password   the password for the customer, not null or empty
-     * @param callback   the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @param customerId         the id of the {@link Customer} to activate
+     * @param resetToken         the reset token for the Customer, not null or empty
+     * @param accountCredentials the account credentials with the new password of the {@link Customer}. not null
+     * @param callback           the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void resetPassword(final Long customerId, final String resetToken, final String password, final Callback<Customer> callback) {
+    public void resetPassword(final Long customerId, final String resetToken, final AccountCredentials accountCredentials, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(resetToken)) {
             throw new IllegalArgumentException("reset token cannot be empty");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password cannot be empty");
+        if (accountCredentials == null) {
+            throw new NullPointerException("accountCredentials cannot be null");
         }
 
-        CustomerWrapper customerWrapper = new CustomerWrapper(new Customer());
-        customerWrapper.setPassword(password);
+        AccountCredentialsWrapper accountCredentialsWrapper = new AccountCredentialsWrapper(accountCredentials);
 
-        retrofitService.resetPassword(resetToken, customerWrapper, customerId, new Callback<CustomerWrapper>() {
+        retrofitService.resetPassword(resetToken, accountCredentialsWrapper, customerId, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(response);
                 callback.success(customerWrapper.getCustomer(), response);
             }
 
@@ -851,31 +841,22 @@ public class BuyClient {
 
     /**
      * Log an existing Customer into Shopify
-     *
-     * @param email    the email address of the {@link Customer}, not null or empty
-     * @param password the password for the customer, not null or empty
+     * @param accountCredentials the account credentials with an email and password of the {@link Customer}, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void loginCustomer(final String email, final String password, final Callback<Customer> callback) {
-        if (TextUtils.isEmpty(email)) {
-            throw new IllegalArgumentException("email cannot be empty");
+    public void loginCustomer(final AccountCredentials accountCredentials, final Callback<CustomerToken> callback) {
+        if (accountCredentials == null) {
+            throw new NullPointerException("accountCredentials cannot be null");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password cannot be empty");
-        }
+        final AccountCredentialsWrapper accountCredentialsWrapper = new AccountCredentialsWrapper(accountCredentials);
 
-        Customer customer = new Customer();
-        customer.setEmail(email);
+        retrofitService.getCustomerToken(accountCredentialsWrapper, new Callback<CustomerTokenWrapper>() {
 
-        final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
-        customerWrapper.setPassword(password);
-
-        retrofitService.loginCustomer(customerWrapper, new Callback<CustomerWrapper>() {
             @Override
-            public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(response);
-                callback.success(customerWrapper.getCustomer(), response);
+            public void success(CustomerTokenWrapper customerTokenWrapper, Response response) {
+                customerToken = customerTokenWrapper.getCustomerToken();
+                callback.success(customerTokenWrapper.getCustomerToken(), response);
             }
 
             @Override
@@ -886,27 +867,16 @@ public class BuyClient {
     }
 
     /**
-     * Extract the customer token from the response header
-     *
-     * @param response
-     */
-    private void lookForTokenHeader(Response response) {
-        List<Header> headers = response.getHeaders();
-        for (Header header : headers) {
-            if (CUSTOMER_TOKEN_HEADER.equals(header.getName())) {
-                customerToken = header.getValue();
-                break;
-            }
-        }
-    }
-
-    /**
      * Log a Customer out from Shopify
      *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
     public void logoutCustomer(final Callback<Void> callback) {
-        retrofitService.logoutCustomer(EMPTY_BODY, new Callback<Void>() {
+        if (customerToken == null) {
+            return;
+        }
+
+        retrofitService.removeCustomerToken(customerToken.getCustomerId(), new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
                 customerToken = null;
@@ -931,7 +901,7 @@ public class BuyClient {
             throw new NullPointerException("customer cannot be null");
         }
 
-        retrofitService.updateCustomer(new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
+        retrofitService.updateCustomer(customer.getId(), new CustomerWrapper(customer), new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -947,10 +917,15 @@ public class BuyClient {
     /**
      * Retrieve a Customer's details from Shopify.
      *
+     * @param customerId the identifier of a {@link CustomerToken} or {@link Customer}
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getCustomer(final Callback<Customer> callback) {
-        retrofitService.getCustomer(new Callback<CustomerWrapper>() {
+    public void getCustomer(final Long customerId, final Callback<Customer> callback) {
+        if (customerId == null) {
+            throw new NullPointerException("customer Id cannot be null");
+        }
+
+        retrofitService.getCustomer(customerId, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -968,12 +943,16 @@ public class BuyClient {
      *
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void renewCustomer(final Callback<Customer> callback) {
-        retrofitService.renewCustomer(EMPTY_BODY, new Callback<CustomerWrapper>() {
+    public void renewCustomer(final Callback<CustomerToken> callback) {
+        if (customerToken == null) {
+            return;
+        }
+
+        retrofitService.renewCustomerToken(EMPTY_BODY, customerToken.getCustomerId(), new Callback<CustomerTokenWrapper>() {
             @Override
-            public void success(CustomerWrapper customerWrapper, Response response) {
-                lookForTokenHeader(response);
-                callback.success(customerWrapper.getCustomer(), response);
+            public void success(CustomerTokenWrapper customerTokenWrapper, Response response) {
+                customerToken = customerTokenWrapper.getCustomerToken();
+                callback.success(customerTokenWrapper.getCustomerToken(), response);
             }
 
             @Override
@@ -989,7 +968,7 @@ public class BuyClient {
      * @param email    the email address to send the password recovery email to
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void recoverCustomer(final String email, final Callback<Void> callback) {
+    public void recoverPassword(final String email, final Callback<Void> callback) {
         if (TextUtils.isEmpty(email)) {
             throw new IllegalArgumentException("email cannot be empty");
         }

@@ -26,8 +26,10 @@ package com.shopify.buy.service;
 
 import com.shopify.buy.dataprovider.BuyClient;
 import com.shopify.buy.extensions.ShopifyAndroidTestCase;
+import com.shopify.buy.model.AccountCredentials;
 import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Customer;
+import com.shopify.buy.model.CustomerToken;
 import com.shopify.buy.model.Order;
 
 import java.util.List;
@@ -45,7 +47,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
     private List<Order> orders;
     private List<Address> addresses;
     private Address address;
-    private String customerToken;
+    private CustomerToken customerToken;
 
     public void testCustomerCreation() throws InterruptedException {
         if (!ENABLED) {
@@ -54,12 +56,14 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final Customer customer = getCustomer();
+        final AccountCredentials accountCredentials = new AccountCredentials(customer.getEmail(), "password", customer.getFirstName(), customer.getLastName());
 
-        buyClient.createCustomer(customer, "password", new Callback<Customer>() {
+        buyClient.createCustomer(accountCredentials, new Callback<Customer>() {
             @Override
             public void success(Customer customer, Response response) {
                 assertNotNull(customer);
-                assertEquals(false, buyClient.getCustomerToken().isEmpty());
+                assertNotNull(buyClient.getCustomerToken());
+                assertEquals(false, buyClient.getCustomerToken().getAccessToken().isEmpty());
                 latch.countDown();
             }
 
@@ -80,13 +84,15 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         buyClient.setCustomerToken(customerToken);
 
         final CountDownLatch latch = new CountDownLatch(1);
+        final AccountCredentials accountCredentials = new AccountCredentials("notapassword");
 
         // TODO update this test when we start to get real tokens
-        buyClient.activateCustomer(customer.getId(), "notanactivationtoken", "notapassword", new Callback<Customer>() {
+        buyClient.activateCustomer(customer.getId(), "notanactivationtoken", accountCredentials, new Callback<Customer>() {
             @Override
             public void success(Customer customer, Response response) {
                 assertNotNull(customer);
-                assertEquals(false,buyClient.getCustomerToken().isEmpty());
+                assertNotNull(buyClient.getCustomerToken());
+                assertEquals(false, buyClient.getCustomerToken().getAccessToken().isEmpty());
                 latch.countDown();
             }
 
@@ -107,17 +113,14 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         customer = getCustomer();
 
         final CountDownLatch latch = new CountDownLatch(1);
+        final AccountCredentials accountCredentials = new AccountCredentials(customer.getEmail(), "password");
 
-        buyClient.loginCustomer(customer.getEmail(), "password", new Callback<Customer>() {
+        buyClient.loginCustomer(accountCredentials, new Callback<CustomerToken>() {
             @Override
-            public void success(Customer customer, Response response) {
-                assertNotNull(customer);
-                assertEquals(false, buyClient.getCustomerToken().isEmpty());
-
-                CustomerTest.this.customer = customer;
-                CustomerTest.this.customerToken = buyClient.getCustomerToken();
-
-                latch.countDown();
+            public void success(CustomerToken customerToken, Response response) {
+                assertNotNull(buyClient.getCustomerToken());
+                assertEquals(false, buyClient.getCustomerToken().getAccessToken().isEmpty());
+                getCustomerAfterLogin(latch);
             }
 
             @Override
@@ -162,9 +165,9 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.renewCustomer(new Callback<Customer>() {
+        buyClient.renewCustomer(new Callback<CustomerToken>() {
             @Override
-            public void success(Customer customer, Response response) {
+            public void success(CustomerToken customerToken, Response response) {
                 latch.countDown();
             }
 
@@ -185,7 +188,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         Customer customer = getCustomer();
 
-        buyClient.recoverCustomer("email", new Callback<Void>() {
+        buyClient.recoverPassword("email", new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
                 latch.countDown();
@@ -294,7 +297,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.getCustomer(new Callback<Customer>() {
+        buyClient.getCustomer(customerToken.getCustomerId(), new Callback<Customer>() {
             @Override
             public void success(Customer customer, Response response) {
                 assertNotNull(customer);
@@ -443,5 +446,25 @@ public class CustomerTest extends ShopifyAndroidTestCase {
         shippingAddress.setCountryCode("CA");
         shippingAddress.setZip("K1N5T5");
         return shippingAddress;
+    }
+
+    private void getCustomerAfterLogin(final CountDownLatch latch) {
+
+        buyClient.getCustomer(customerToken.getCustomerId(), new Callback<Customer>() {
+
+            @Override
+            public void success(Customer customer, Response response) {
+                assertNotNull(customer);
+                CustomerTest.this.customer = customer;
+                CustomerTest.this.customerToken = buyClient.getCustomerToken();
+                latch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(BuyClient.getErrorBody(error));
+            }
+        });
+
     }
 }

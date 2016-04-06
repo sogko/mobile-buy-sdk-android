@@ -22,35 +22,35 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.model.internal;
+package com.shopify.buy.model;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
-import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.model.Customer;
 
-import java.lang.reflect.Type;
+import java.util.Date;
 
-public class CustomerWrapper {
+/**
+ * Represents the token object associated with a logged in Customer
+ */
+public class CustomerToken {
 
-    private Customer customer;
+    @SerializedName("access_token")
+    private String accessToken;
 
-    CustomerWrapper() {
+    @SerializedName("customer_id")
+    private Long customerId;
+
+    @SerializedName("expires_at")
+    private Date expiresAt;
+
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public CustomerWrapper(Customer customer) {
-        this.customer = customer;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    /**
-     * @return The up to date customer.
-     */
-    public Customer getCustomer() {
-        return customer;
+    public Date getExpiresAt() {
+        return expiresAt;
     }
-
 }

@@ -25,10 +25,12 @@
 package com.shopify.buy.dataprovider;
 
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.internal.AccountCredentialsWrapper;
 import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
 import com.shopify.buy.model.internal.CollectionPublication;
+import com.shopify.buy.model.internal.CustomerTokenWrapper;
 import com.shopify.buy.model.internal.CustomerWrapper;
 import com.shopify.buy.model.internal.EmailWrapper;
 import com.shopify.buy.model.internal.GiftCardWrapper;
@@ -111,32 +113,35 @@ interface BuyRetrofitService {
      */
 
     @POST("/api/customers.json")
-    void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
+    void createCustomer(@Body AccountCredentialsWrapper accountCredentialsWrapper, Callback<CustomerWrapper> callback);
 
     @PUT("/api/customers/{customerId}/activate.json")
-    void activateCustomer(@Query("token") String activationToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
+    void activateCustomer(@Query("token") String activationToken, @Body AccountCredentialsWrapper accountCredentialsWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
     @PUT("/api/customers/{customerId}/reset.json")
-    void resetPassword(@Query("token") String resetToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
-
-    @POST("/api/customers/login.json")
-    void loginCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
-
-    @POST("/api/customers/logout.json")
-    void logoutCustomer(@Body String empty, Callback<Void> callback);
+    void resetPassword(@Query("token") String resetToken, @Body AccountCredentialsWrapper accountCredentialsWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
     @POST("/api/customers/recover.json")
     void recoverCustomer(@Body EmailWrapper emailWrapper, Callback<Void> callback);
 
-    @PUT("/api/customers/renew.json")
-    void renewCustomer(@Body String empty, Callback<CustomerWrapper> callback);
+    @GET("/api/customers/{customerId}.json")
+    void getCustomer(@Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
-    @GET("/api/customers.json")
-    void getCustomer(Callback<CustomerWrapper> callback);
+    @PUT("/api/customers/{customerId}.json")
+    void updateCustomer(@Path("customerId") Long customerId, @Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
 
-    @PUT("/api/customers.json")
-    void updateCustomer(@Body CustomerWrapper customer, Callback<CustomerWrapper> callback);
+    /*
+     * Customer Token API
+     */
 
+    @POST("/api/customers/customer_token.json")
+    void getCustomerToken(@Body AccountCredentialsWrapper accountCredentialsWrapper, Callback<CustomerTokenWrapper> callback);
+
+    @DELETE("/api/customers/{customerId}/customer_token.json")
+    void removeCustomerToken(@Path("customerId") Long customerId, Callback<Void> callback);
+
+    @PUT("/api/customers/{customerId}/customer_token/renew.json")
+    void renewCustomerToken(@Body String empty, @Path("customerId") Long customerId, Callback<CustomerTokenWrapper> callback);
 
     /*
      * Customer Orders API
