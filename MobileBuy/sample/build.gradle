@@ -49,11 +49,6 @@ android {
             buildConfigField "String", "API_KEY", "\"" + apiKey.toString() + "\""
             buildConfigField "String", "CHANNEL_ID", "\"" + channelId.toString() + "\""
         }
-
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
     }
 
     lintOptions {
