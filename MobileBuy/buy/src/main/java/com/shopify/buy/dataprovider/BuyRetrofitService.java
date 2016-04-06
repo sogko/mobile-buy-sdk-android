@@ -146,28 +146,29 @@ interface BuyRetrofitService {
      * Customer Orders API
      */
 
-    @GET("/api/customers/orders.json")
-    void getOrders(Callback<OrdersWrapper> callback);
 
-    @GET("/api/customers/orders/{orderId}")
-    void getOrder(@Path("orderId") String orderId, Callback<OrderWrapper> callback);
+    @GET("/api/customers/{customerId}/orders.json")
+    void getOrders(@Path("customerId") Long customerId, Callback<OrdersWrapper> callback);
+
+    @GET("/api/customers/{customerId}/orders/{orderId}")
+    void getOrder(@Path("customerId") Long customerId, @Path("orderId") String orderId, Callback<OrderWrapper> callback);
 
 
     /*
      * Customer Address API
      */
 
-    @GET("/api/customers/addresses")
-    void getAddresses(Callback<AddressesWrapper> callback);
+    @GET("/api/customers/{customer_id}/addresses")
+    void getAddresses(@Path("customerId") Long customerId, Callback<AddressesWrapper> callback);
 
-    @POST("/api/customers/addresses")
-    void createAddress(@Body AddressWrapper address, Callback<AddressWrapper> callback);
+    @POST("/api/customers/{customer_id}/addresses")
+    void createAddress(@Path("customerId") Long customerId, @Body AddressWrapper address, Callback<AddressWrapper> callback);
 
-    @GET("/api/customers/addresses/{addressId}")
-    void getAddress(@Path("addressId") String addressId, Callback<AddressWrapper> callback);
+    @GET("/api/customers/{customer_id}/addresses/{addressId}")
+    void getAddress(@Path("customerId") Long customerId, @Path("addressId") String addressId, Callback<AddressWrapper> callback);
 
     @PATCH("/api/customers/addresses/{addressId")
-    void updateAddress(@Path("addressId") AddressWrapper Address, String addressId, Callback<AddressWrapper> callback);
+    void updateAddress(@Path("customerId") Long customerId, @Path("addressId") AddressWrapper Address, String addressId, Callback<AddressWrapper> callback);
 
 
     /*
