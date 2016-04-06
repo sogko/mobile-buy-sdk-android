@@ -238,7 +238,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        buyClient.getOrders(new Callback<List<Order>>() {
+        buyClient.getOrders(customer, new Callback<List<Order>>() {
             @Override
             public void success(List<Order> orders, Response response) {
                 assertNotNull(orders);
@@ -269,7 +269,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         String orderId = orders.get(0).getOrderId();
 
-        buyClient.getOrder(orderId, new Callback<Order>() {
+        buyClient.getOrder(customer, orderId, new Callback<Order>() {
             @Override
             public void success(Order order, Response response) {
                 assertNotNull(order);
