@@ -25,6 +25,7 @@
 package com.shopify.buy.dataprovider;
 
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.internal.AccountCredentialsWrapper;
 import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
@@ -112,13 +113,13 @@ interface BuyRetrofitService {
      */
 
     @POST("/api/customers.json")
-    void createCustomer(@Body CustomerWrapper customerWrapper, Callback<CustomerWrapper> callback);
+    void createCustomer(@Body AccountCredentialsWrapper accountCredentialsWrapper, Callback<CustomerWrapper> callback);
 
     @PUT("/api/customers/{customerId}/activate.json")
-    void activateCustomer(@Query("token") String activationToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
+    void activateCustomer(@Query("token") String activationToken, @Body AccountCredentialsWrapper accountCredentialsWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
     @PUT("/api/customers/{customerId}/reset.json")
-    void resetPassword(@Query("token") String resetToken, @Body CustomerWrapper customerWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
+    void resetPassword(@Query("token") String resetToken, @Body AccountCredentialsWrapper accountCredentialsWrapper, @Path("customerId") Long customerId, Callback<CustomerWrapper> callback);
 
     @POST("/api/customers/recover.json")
     void recoverCustomer(@Body EmailWrapper emailWrapper, Callback<Void> callback);
@@ -134,7 +135,7 @@ interface BuyRetrofitService {
      */
 
     @POST("/api/customers/customer_token.json")
-    void getCustomerToken(@Body CustomerWrapper customer, Callback<CustomerTokenWrapper> callback);
+    void getCustomerToken(@Body AccountCredentialsWrapper accountCredentialsWrapper, Callback<CustomerTokenWrapper> callback);
 
     @DELETE("/api/customers/{customerId}/customer_token.json")
     void removeCustomerToken(@Path("customerId") Long customerId, Callback<Void> callback);

@@ -22,35 +22,42 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.buy.model.internal;
+package com.shopify.buy.model;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
-import com.shopify.buy.dataprovider.BuyClientFactory;
-import com.shopify.buy.model.Customer;
 
-import java.lang.reflect.Type;
+/**
+ * Represents the account credentials of a customer
+ */
+public class AccountCredentials {
 
-public class CustomerWrapper {
+    private String email;
 
-    private Customer customer;
+    private String password;
 
-    CustomerWrapper() {
+    @SerializedName("password_confirmation")
+    private String passwordConfirmation;
+
+    @SerializedName("first_name")
+    private String firstName;
+
+    @SerializedName("last_name")
+    private String lastName;
+
+    public AccountCredentials(String password) {
+        this(null, password);
     }
 
-    public CustomerWrapper(Customer customer) {
-        this.customer = customer;
+    public AccountCredentials(String email, String password) {
+        this(email, password, null, null);
     }
 
-    /**
-     * @return The up to date customer.
-     */
-    public Customer getCustomer() {
-        return customer;
+    public AccountCredentials(String email, String password, String firstName, String lastName) {
+        this.email = email;
+        this.password = password;
+        this.passwordConfirmation = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
 }

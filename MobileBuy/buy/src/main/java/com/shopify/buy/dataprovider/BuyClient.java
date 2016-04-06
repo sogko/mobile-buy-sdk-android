@@ -29,6 +29,7 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.shopify.buy.BuildConfig;
+import com.shopify.buy.model.AccountCredentials;
 import com.shopify.buy.model.Address;
 import com.shopify.buy.model.Checkout;
 import com.shopify.buy.model.Collection;
@@ -41,6 +42,7 @@ import com.shopify.buy.model.Order;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.ShippingRate;
 import com.shopify.buy.model.Shop;
+import com.shopify.buy.model.internal.AccountCredentialsWrapper;
 import com.shopify.buy.model.internal.AddressWrapper;
 import com.shopify.buy.model.internal.AddressesWrapper;
 import com.shopify.buy.model.internal.CheckoutWrapper;
@@ -750,24 +752,17 @@ public class BuyClient {
 
     /**
      * Create a new Customer on Shopify
-     *
-     * @param customer the {@link Customer} to create, not null
-     * @param password the password for the customer, not null or empty
+     * @param accountCredentials the account credentials with an email, password, first name, and last name of the {@link Customer} to be created, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void createCustomer(final Customer customer, final String password, final Callback<Customer> callback) {
-        if (customer == null) {
-            throw new IllegalArgumentException("customer cannot be empty");
+    public void createCustomer(final AccountCredentials accountCredentials, final Callback<Customer> callback) {
+        if (accountCredentials == null) {
+            throw new NullPointerException("accountCredentials cannot be null");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password cannot be empty");
-        }
+        final AccountCredentialsWrapper accountCredentialsWrapper = new AccountCredentialsWrapper(accountCredentials);
 
-        final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
-        customerWrapper.setPassword(password);
-
-        retrofitService.createCustomer(customerWrapper, new Callback<CustomerWrapper>() {
+        retrofitService.createCustomer(accountCredentialsWrapper, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -782,25 +777,23 @@ public class BuyClient {
 
     /**
      * Activate the customer account.
-     *
-     * @param customerId      the id of the {@link Customer} to activate
-     * @param activationToken the activation token for the Customer, not null or empty
-     * @param password        the password for the customer, not null or empty
-     * @param callback        the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @param customerId         the id of the {@link Customer} to activate
+     * @param activationToken    the activation token for the Customer, not null or empty
+     * @param accountCredentials the account credentials with a password of the {@link Customer} to be activated, not null
+     * @param callback           the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void activateCustomer(final Long customerId, final String activationToken, final String password, final Callback<Customer> callback) {
+    public void activateCustomer(final Long customerId, final String activationToken, final AccountCredentials accountCredentials, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(activationToken)) {
             throw new IllegalArgumentException("activation token cannot be empty");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password cannot be empty");
+        if (accountCredentials == null) {
+            throw new NullPointerException("accountCredentials cannot be null");
         }
 
-        CustomerWrapper customerWrapper = new CustomerWrapper(new Customer());
-        customerWrapper.setPassword(password);
+        AccountCredentialsWrapper accountCredentialsWrapper = new AccountCredentialsWrapper(accountCredentials);
 
-        retrofitService.activateCustomer(activationToken, customerWrapper, customerId, new Callback<CustomerWrapper>() {
+        retrofitService.activateCustomer(activationToken, accountCredentialsWrapper, customerId, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -816,25 +809,23 @@ public class BuyClient {
 
     /**
      * Reset the password for the customer account.
-     *
-     * @param customerId the id of the {@link Customer} to activate
-     * @param resetToken the reset token for the Customer, not null or empty
-     * @param password   the password for the customer, not null or empty
-     * @param callback   the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @param customerId         the id of the {@link Customer} to activate
+     * @param resetToken         the reset token for the Customer, not null or empty
+     * @param accountCredentials the account credentials with the new password of the {@link Customer}. not null
+     * @param callback           the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void resetPassword(final Long customerId, final String resetToken, final String password, final Callback<Customer> callback) {
+    public void resetPassword(final Long customerId, final String resetToken, final AccountCredentials accountCredentials, final Callback<Customer> callback) {
         if (TextUtils.isEmpty(resetToken)) {
             throw new IllegalArgumentException("reset token cannot be empty");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password cannot be empty");
+        if (accountCredentials == null) {
+            throw new NullPointerException("accountCredentials cannot be null");
         }
 
-        CustomerWrapper customerWrapper = new CustomerWrapper(new Customer());
-        customerWrapper.setPassword(password);
+        AccountCredentialsWrapper accountCredentialsWrapper = new AccountCredentialsWrapper(accountCredentials);
 
-        retrofitService.resetPassword(resetToken, customerWrapper, customerId, new Callback<CustomerWrapper>() {
+        retrofitService.resetPassword(resetToken, accountCredentialsWrapper, customerId, new Callback<CustomerWrapper>() {
             @Override
             public void success(CustomerWrapper customerWrapper, Response response) {
                 callback.success(customerWrapper.getCustomer(), response);
@@ -850,27 +841,17 @@ public class BuyClient {
 
     /**
      * Log an existing Customer into Shopify
-     *
-     * @param email    the email address of the {@link Customer}, not null or empty
-     * @param password the password for the customer, not null or empty
+     * @param accountCredentials the account credentials with an email and password of the {@link Customer}, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void loginCustomer(final String email, final String password, final Callback<CustomerToken> callback) {
-        if (TextUtils.isEmpty(email)) {
-            throw new IllegalArgumentException("email cannot be empty");
+    public void loginCustomer(final AccountCredentials accountCredentials, final Callback<CustomerToken> callback) {
+        if (accountCredentials == null) {
+            throw new NullPointerException("accountCredentials cannot be null");
         }
 
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password cannot be empty");
-        }
+        final AccountCredentialsWrapper accountCredentialsWrapper = new AccountCredentialsWrapper(accountCredentials);
 
-        Customer customer = new Customer();
-        customer.setEmail(email);
-
-        final CustomerWrapper customerWrapper = new CustomerWrapper(customer);
-        customerWrapper.setPassword(password);
-
-        retrofitService.getCustomerToken(customerWrapper, new Callback<CustomerTokenWrapper>() {
+        retrofitService.getCustomerToken(accountCredentialsWrapper, new Callback<CustomerTokenWrapper>() {
 
             @Override
             public void success(CustomerTokenWrapper customerTokenWrapper, Response response) {

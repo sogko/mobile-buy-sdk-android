@@ -37,7 +37,6 @@ import com.shopify.buy.model.Customer;
 import com.shopify.buy.model.Customer.CustomerDeserializer;
 import com.shopify.buy.model.CustomerToken;
 import com.shopify.buy.model.internal.CustomerWrapper;
-import com.shopify.buy.model.internal.CustomerWrapper.CustomerWrapperSerializer;
 import com.shopify.buy.model.Product;
 import com.shopify.buy.model.Product.ProductDeserializer;
 import com.shopify.buy.utils.DateUtility;
@@ -119,10 +118,6 @@ public class BuyClientFactory {
 
         if (!Customer.class.equals(forClass)) {
             builder.registerTypeAdapter(Customer.class, new CustomerDeserializer());
-        }
-
-        if (!CustomerWrapper.class.equals(forClass)) {
-            builder.registerTypeAdapter(CustomerWrapper.class, new CustomerWrapperSerializer());
         }
 
         if (!Checkout.class.equals(forClass)) {
