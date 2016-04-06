@@ -184,7 +184,7 @@ public class CustomerTest extends ShopifyAndroidTestCase {
 
         Customer customer = getCustomer();
 
-        buyClient.recoverCustomer("email", new Callback<Void>() {
+        buyClient.recoverPassword("email", new Callback<Void>() {
             @Override
             public void success(Void aVoid, Response response) {
                 latch.countDown();

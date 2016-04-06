@@ -987,7 +987,7 @@ public class BuyClient {
      * @param email    the email address to send the password recovery email to
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void recoverCustomer(final String email, final Callback<Void> callback) {
+    public void recoverPassword(final String email, final Callback<Void> callback) {
         if (TextUtils.isEmpty(email)) {
             throw new IllegalArgumentException("email cannot be empty");
         }
