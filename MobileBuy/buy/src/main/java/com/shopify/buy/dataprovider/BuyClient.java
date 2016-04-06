@@ -1053,15 +1053,20 @@ public class BuyClient {
     /**
      * Create an Address and associate it with a Customer
      *
+     * @param customer the {@link Customer} to create and address for, not null
      * @param address  the {@link Address} to create, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void createAddress(final Address address, final Callback<Address> callback) {
+    public void createAddress(final Customer customer, final Address address, final Callback<Address> callback) {
         if (address == null) {
             throw new NullPointerException("address cannot be null");
         }
 
-        retrofitService.createAddress(new AddressWrapper(address), new Callback<AddressWrapper>() {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
+        retrofitService.createAddress(customer.getId(), new AddressWrapper(address), new Callback<AddressWrapper>() {
             @Override
             public void success(AddressWrapper addressWrapper, Response response) {
                 callback.success(addressWrapper.getAddress(), response);
@@ -1077,10 +1082,15 @@ public class BuyClient {
     /**
      * Fetch all of the Addresses associated with a Customer.
      *
+     * @param customer the {@link Customer} to fetch addresses for, not null
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getAddresses(final Callback<List<Address>> callback) {
-        retrofitService.getAddresses(new Callback<AddressesWrapper>() {
+    public void getAddresses(final Customer customer, final Callback<List<Address>> callback) {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
+        retrofitService.getAddresses(customer.getId(), new Callback<AddressesWrapper>() {
             @Override
             public void success(AddressesWrapper addressesWrapper, Response response) {
                 callback.success(addressesWrapper.getAddresses(), response);
@@ -1096,15 +1106,20 @@ public class BuyClient {
     /**
      * Fetch an existing Address from Shopify
      *
+     * @param customer the {@link Customer} to fetch an address for, not null
      * @param addressId the identifier of the {@link Address}
      * @param callback  the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void getAddress(final String addressId, final Callback<Address> callback) {
+    public void getAddress(final Customer customer, final String addressId, final Callback<Address> callback) {
         if (TextUtils.isEmpty(addressId)) {
             throw new IllegalArgumentException("addressId cannot be empty");
         }
 
-        retrofitService.getAddress(addressId, new Callback<AddressWrapper>() {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
+        retrofitService.getAddress(customer.getId(), addressId, new Callback<AddressWrapper>() {
             @Override
             public void success(AddressWrapper addressWrapper, Response response) {
                 callback.success(addressWrapper.getAddress(), response);
@@ -1120,15 +1135,20 @@ public class BuyClient {
     /**
      * Update the attributes of an existing Address
      *
+     * @param customer the {@link Customer} to updatne an address for, not null
      * @param address  the {@link Address} to update
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      */
-    public void updateAddress(final Address address, final Callback<Address> callback) {
+    public void updateAddress(final Customer customer, final Address address, final Callback<Address> callback) {
         if (address == null) {
             throw new NullPointerException("address cannot be null");
         }
 
-        retrofitService.updateAddress(new AddressWrapper(address), address.getAddressId(), new Callback<AddressWrapper>() {
+        if (customer == null) {
+            throw new NullPointerException("customer cannot be null");
+        }
+
+        retrofitService.updateAddress(customer.getId(), new AddressWrapper(address), address.getAddressId(), new Callback<AddressWrapper>() {
             @Override
             public void success(AddressWrapper addressWrapper, Response response) {
                 callback.success(addressWrapper.getAddress(), response);
