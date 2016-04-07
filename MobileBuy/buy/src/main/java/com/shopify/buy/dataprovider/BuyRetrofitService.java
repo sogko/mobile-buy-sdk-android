@@ -168,8 +168,8 @@ interface BuyRetrofitService {
     @GET("/api/customers/{customerId}/addresses/{addressId}")
     void getAddress(@Path("customerId") Long customerId, @Path("addressId") String addressId, Callback<AddressWrapper> callback);
 
-    @PATCH("/api/customers/addresses/{addressId")
-    void updateAddress(@Path("customerId") Long customerId, @Path("addressId") AddressWrapper Address, String addressId, Callback<AddressWrapper> callback);
+    @PATCH("/api/customers/{customerId}/addresses/{addressId}")
+    void updateAddress(@Path("customerId") Long customerId, @Body AddressWrapper address, @Path("addressId") String addressId, Callback<AddressWrapper> callback);
 
 
     /*
