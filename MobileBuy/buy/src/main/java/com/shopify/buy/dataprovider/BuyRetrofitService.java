@@ -159,13 +159,13 @@ interface BuyRetrofitService {
      * Customer Address API
      */
 
-    @GET("/api/customers/{customer_id}/addresses")
+    @GET("/api/customers/{customerId}/addresses")
     void getAddresses(@Path("customerId") Long customerId, Callback<AddressesWrapper> callback);
 
-    @POST("/api/customers/{customer_id}/addresses")
+    @POST("/api/customers/{customerId}/addresses")
     void createAddress(@Path("customerId") Long customerId, @Body AddressWrapper address, Callback<AddressWrapper> callback);
 
-    @GET("/api/customers/{customer_id}/addresses/{addressId}")
+    @GET("/api/customers/{customerId}/addresses/{addressId}")
     void getAddress(@Path("customerId") Long customerId, @Path("addressId") String addressId, Callback<AddressWrapper> callback);
 
     @PATCH("/api/customers/addresses/{addressId")
