@@ -40,6 +40,15 @@ public class CartLineItem extends LineItem {
         this.errorMessage = null;
     }
 
+    public CartLineItem(LineItem lineItem, ProductVariant variant) {
+        variantId = lineItem.getVariantId();
+        price = lineItem.getPrice();
+        title = lineItem.getTitle();
+        requiresShipping = lineItem.isRequiresShipping();
+        quantity = lineItem.getQuantity();
+        this.variant = variant;
+    }
+
     /**
      * @return The {@link ProductVariant} object associated with this line item.
      */
