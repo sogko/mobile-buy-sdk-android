@@ -192,7 +192,7 @@ public class BuyClient {
     }
 
     public void createCacheForOkHTTP(File directory) {
-        Cache cache = new Cache(directory, 1024 * 1024 * 10);
+        Cache cache = new Cache(directory, 1024 * 1024 * 10); // 10 MiB
         httpClient.setCache(cache);
     }
 
