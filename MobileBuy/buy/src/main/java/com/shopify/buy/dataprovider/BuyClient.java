@@ -59,6 +59,7 @@ import com.shopify.buy.model.internal.PaymentSessionCheckoutWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;
 import com.shopify.buy.utils.CollectionUtils;
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -68,6 +69,7 @@ import com.squareup.okhttp.RequestBody;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Collections;
@@ -183,6 +185,15 @@ public class BuyClient {
      */
     public void addInterceptor(Interceptor interceptor) {
         this.httpClient.interceptors().add(interceptor);
+    }
+
+    public void addNetworkInterceptor(Interceptor interceptor) {
+        this.httpClient.networkInterceptors().add(interceptor);
+    }
+
+    public void createCacheForOkHTTP(File directory) {
+        Cache cache = new Cache(directory, 1024 * 1024 * 10);
+        httpClient.setCache(cache);
     }
 
     /**
