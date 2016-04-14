@@ -181,8 +181,9 @@ public class Checkout extends ShopifyObject {
         lineItems.add(lineItem);
     }
 
-    public void updateCheckout(Cart cart) {
-        lineItems = new ArrayList<LineItem>(cart.getLineItems());
+    public void setLineItems(Cart cart) {
+        this.lineItems.clear();
+        this.lineItems.addAll(cart.getLineItems());
     }
 
     /**
@@ -603,6 +604,11 @@ public class Checkout extends ShopifyObject {
     public Checkout copyForUpdate() {
         Checkout copy = Checkout.fromJson(this.toJsonString());
         copy.giftCards = null;
+
+        if (TextUtils.isEmpty(copy.email)) {
+            copy.email = null;
+        }
+
         return copy;
     }
 
