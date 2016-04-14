@@ -184,15 +184,14 @@ public class BuyClient {
      * For internal use only.
      */
     public void addInterceptor(Interceptor interceptor) {
-        this.httpClient.interceptors().add(interceptor);
+        httpClient.interceptors().add(interceptor);
     }
 
     public void addNetworkInterceptor(Interceptor interceptor) {
-        this.httpClient.networkInterceptors().add(interceptor);
+        httpClient.networkInterceptors().add(interceptor);
     }
 
-    public void createCacheForOkHTTP(File directory) {
-        Cache cache = new Cache(directory, 1024 * 1024 * 10); // 10 MiB
+    public void setCacheForOkHTTP(Cache cache) {
         httpClient.setCache(cache);
     }
 
