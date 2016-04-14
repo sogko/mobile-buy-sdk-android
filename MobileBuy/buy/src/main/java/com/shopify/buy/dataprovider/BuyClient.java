@@ -59,6 +59,7 @@ import com.shopify.buy.model.internal.PaymentSessionCheckoutWrapper;
 import com.shopify.buy.model.internal.ProductPublication;
 import com.shopify.buy.model.internal.ShippingRatesWrapper;
 import com.shopify.buy.utils.CollectionUtils;
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -182,7 +183,15 @@ public class BuyClient {
      * For internal use only.
      */
     public void addInterceptor(Interceptor interceptor) {
-        this.httpClient.interceptors().add(interceptor);
+        httpClient.interceptors().add(interceptor);
+    }
+
+    public void addNetworkInterceptor(Interceptor interceptor) {
+        httpClient.networkInterceptors().add(interceptor);
+    }
+
+    public void setCacheForOkHTTP(Cache cache) {
+        httpClient.setCache(cache);
     }
 
     /**
