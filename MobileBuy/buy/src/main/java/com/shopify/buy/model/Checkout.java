@@ -38,6 +38,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.shopify.buy.dataprovider.BuyClientFactory;
 import com.shopify.buy.model.internal.MarketingAttribution;
+import com.shopify.buy.utils.CollectionUtils;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -178,6 +179,11 @@ public class Checkout extends ShopifyObject {
     public Checkout(LineItem lineItem) {
         lineItems = new ArrayList<>();
         lineItems.add(lineItem);
+    }
+
+    public void setLineItems(Cart cart) {
+        this.lineItems.clear();
+        this.lineItems.addAll(cart.getLineItems());
     }
 
     /**
@@ -598,7 +604,27 @@ public class Checkout extends ShopifyObject {
     public Checkout copyForUpdate() {
         Checkout copy = Checkout.fromJson(this.toJsonString());
         copy.giftCards = null;
+
+        if (TextUtils.isEmpty(copy.email)) {
+            copy.email = null;
+        }
+
         return copy;
+    }
+
+    /**
+     * @return The total number of product variants in the cart (the sum of quantities across all line items).
+     */
+    public Integer getTotalQuantity() {
+        if (CollectionUtils.isEmpty(lineItems)) {
+            return 0;
+        }
+
+        int quantity = 0;
+        for (LineItem lineItem : lineItems) {
+            quantity += lineItem.getQuantity();
+        }
+        return quantity;
     }
 
     /**
