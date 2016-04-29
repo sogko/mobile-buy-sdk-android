@@ -56,17 +56,14 @@ public class BuyTest extends ShopifyAndroidTestCase {
     @Test
     public void testApplyingInvalidGiftCardToCheckout() throws InterruptedException {
         createValidCheckout();
-        buyClient.applyGiftCard(data.getGiftCardCode(TestData.GiftCardType.INVALID), checkout, new Callback<Checkout>() {
-            @Override
-            public void success(Checkout checkout) {
-                fail("Retrofit succeeded. Expected: 422 error");
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, error.getResponse().code());
-            }
-        });
+        final TestCallback<Checkout> callback = new TestCallback<>();
+        buyClient.applyGiftCard(data.getGiftCardCode(TestData.GiftCardType.INVALID), checkout, callback);
+        if (callback.lastSuccess) {
+            fail("Retrofit succeeded. Expected: 422 error");
+        } else {
+            assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, callback.lastError.getResponse().code());
+        }
     }
 
     @Test

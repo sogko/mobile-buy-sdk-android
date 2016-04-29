@@ -10,6 +10,8 @@ import com.shopify.buy.data.MockResponseGenerator;
 import com.shopify.buy.data.TestData;
 import com.shopify.buy.dataprovider.BuyClientBuilder;
 import com.shopify.buy.dataprovider.BuyClient;
+import com.shopify.buy.dataprovider.Callback;
+import com.shopify.buy.dataprovider.RetrofitError;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +28,32 @@ import rx.schedulers.Schedulers;
  * Base class for Mobile Buy SDK Tests
  */
 public class ShopifyAndroidTestCase {
+
+    public static class TestCallback<T> implements Callback<T> {
+
+        public boolean lastSuccess;
+
+        public boolean lastFailure;
+
+        public T lastSuccessResponse;
+
+        public RetrofitError lastError;
+
+        @Override
+        public void success(final T response) {
+            lastSuccess = true;
+            lastFailure = false;
+            lastSuccessResponse = response;
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            lastSuccess = false;
+            lastFailure = true;
+            lastSuccessResponse = null;
+            lastError = error;
+        }
+    }
 
     @Rule
     public TestName name = new TestName();
