@@ -690,7 +690,7 @@ public class BuyTest extends ShopifyAndroidTestCase {
 
     private void completeCheckout() throws InterruptedException {
 
-        buyClient.completeCheckout(checkout, new Callback<Checkout>() {
+        buyClient.completeAndGetCheckout(checkout, new Callback<Checkout>() {
             @Override
             public void success(Checkout checkout) {
                 assertNotNull(checkout);

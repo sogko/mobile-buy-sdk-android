@@ -76,27 +76,89 @@ public interface CheckoutService {
     Observable<Checkout> updateCheckout(Checkout checkout);
 
     /**
-     * Complete the checkout and process the payment session
+     * Complete the checkout and process the payment session.
+     * This call will:
      *
      * @param checkout a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      * @return cancelable task
      */
-    CancellableTask completeCheckout(Checkout checkout, Callback<Checkout> callback);
+    CancellableTask completeAndGetCheckout(Checkout checkout, Callback<Checkout> callback);
 
     /**
      * Complete the checkout and process the payment session
+     * This call will complete the checkout, wait for processing to complete, and return the completed Checkout.
      *
      * @param checkout a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
      * @return cold observable that emits completed checkout
      */
-    Observable<Checkout> completeCheckout(Checkout checkout);
+    Observable<Checkout> completeAndGetCheckout(Checkout checkout);
+
+    /**
+     * Complete the checkout and process the payment session
+     *
+     * @param checkout        a {@link Checkout} to complete using Android Pay
+     * @param androidPayToken the token returned in the {@link com.google.android.gms.wallet.FullWallet}
+     * @param callback        the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     */
+    CancellableTask completeAndGetCheckout(String androidPayToken, Checkout checkout, Callback<Checkout> callback);
+
+    /**
+     * Complete the checkout and process the payment session
+     *
+     * @param checkout        a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
+     * @param androidPayToken the token returned in the {@link com.google.android.gms.wallet.FullWallet}
+     * @return cold observable that emits completed checkout
+     */
+    Observable<Checkout> completeAndGetCheckout(String androidPayToken, Checkout checkout);
+
+    /**
+     * Complete the checkout and process the payment session.
+     * This call will complete the checkout, wait for processing to complete, and return the completed Checkout.
+     * @param checkout a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @return cancelable task
+     */
+    CancellableTask completeCheckout(Checkout checkout, Callback<Void> callback);
+
+    /**
+     * Complete the checkout and process the payment session
+     * This call will initiate completion of the Checkout, and return immediately.
+     * To get the current status of the checkout being processed, poll {@link #getCheckoutCompletionStatus(Checkout)}
+     *
+     * @param checkout a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
+     * @return cold observable that emits completed checkout
+     *
+     * To get the current status of the checkout being processed, poll {@link #getCheckoutCompletionStatus(Checkout)}
+     */
+    Observable<Void> completeCheckout(Checkout checkout);
+
+    /**
+     * Complete the checkout and process the payment session.
+     * This call will complete the checkout, wait for processing to complete, and return the completed Checkout.
+     * @param checkout a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
+     * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
+     * @return cancelable task
+     */
+    CancellableTask completeCheckout(String androidPayToken, Checkout checkout, Callback<Void> callback);
+
+    /**
+     * Complete the checkout and process the payment session
+     * This call will initiate completion of the Checkout, and return immediately.
+     * To get the current status of the checkout being processed, poll {@link #getCheckoutCompletionStatus(Checkout)}
+     *
+     * @param checkout a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
+     * @return cold observable that emits completed checkout
+     *
+     * To get the current status of the checkout being processed, poll {@link #getCheckoutCompletionStatus(Checkout)}
+     */
+    Observable<Void> completeCheckout(String androidPayToken, Checkout checkout);
 
     /**
      * Get the status of the payment session associated with {@code checkout}. {@code callback} will be
      * called with a boolean value indicating whether the session has completed or not.
      *
-     * @param checkout a {@link Checkout} that has been passed as a parameter to {@link #completeCheckout(Checkout, Callback)} or {@link #completeCheckout(Checkout)}
+     * @param checkout a {@link Checkout} that has been passed as a parameter to {@link #completeAndGetCheckout(Checkout, Callback)} or {@link #completeAndGetCheckout(Checkout)}
      * @param callback the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
      *
      */
@@ -106,29 +168,11 @@ public interface CheckoutService {
      * Get the status of the payment session associated with {@code checkout}. {@code callback} will be
      * called with a boolean value indicating whether the session has completed or not.
      *
-     * @param checkout a {@link Checkout} that has been passed as a parameter to {@link #completeCheckout(Checkout, Callback)} or {@link #completeCheckout(Checkout)}
+     * @param checkout a {@link Checkout} that has been passed as a parameter to {@link #completeAndGetCheckout(Checkout, Callback)} or {@link #completeAndGetCheckout(Checkout)}
      * @return cold observable that emits a Boolean that indicates whether the checkout has been completed
      *
      */
     Observable<Boolean> getCheckoutCompletionStatus(Checkout checkout);
-
-    /**
-     * Complete the checkout and process the payment session
-     *
-     * @param checkout        a {@link Checkout} to complete using Android Pay
-     * @param androidPayToken the token returned in the {@link com.google.android.gms.wallet.FullWallet}
-     * @param callback        the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null
-     */
-    CancellableTask completeCheckout(String androidPayToken, Checkout checkout, Callback<Checkout> callback);
-
-    /**
-     * Complete the checkout and process the payment session
-     *
-     * @param checkout        a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
-     * @param androidPayToken the token returned in the {@link com.google.android.gms.wallet.FullWallet}
-     * @return cold observable that emits completed checkout
-     */
-    Observable<Checkout> completeCheckout(String androidPayToken, Checkout checkout);
 
     /**
      * Fetch an existing Checkout from Shopify

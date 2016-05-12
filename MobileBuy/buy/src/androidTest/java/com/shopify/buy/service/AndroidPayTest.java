@@ -77,24 +77,24 @@ public class AndroidPayTest extends ShopifyAndroidTestCase {
 //        };
 //
 //        try {
-//            buyClient.completeCheckout(androidPayToken, checkout, callback);
+//            buyClient.completeAndGetCheckout(androidPayToken, checkout, callback);
 //            fail("Should have thrown an UnsupportedOperationException");
 //        } catch (Exception e) {}
 //
 //        buyClient.enableAndroidPay(androidPayPublicKey);
 //
 //        try {
-//            buyClient.completeCheckout(null, checkout, callback);
+//            buyClient.completeAndGetCheckout(null, checkout, callback);
 //            fail("Should have thrown an IllegalArgumentException");
 //        } catch (IllegalArgumentException e) {}
 //
 //        try {
-//            buyClient.completeCheckout("", checkout, callback);
+//            buyClient.completeAndGetCheckout("", checkout, callback);
 //            fail("Should have thrown an IllegalArgumentException");
 //        } catch (IllegalArgumentException e) {}
 //
 //        try {
-//            buyClient.completeCheckout(androidPayToken, null, callback);
+//            buyClient.completeAndGetCheckout(androidPayToken, null, callback);
 //            fail("Should have thrown a NullPointerException");
 //        } catch (NullPointerException e) {}
 //

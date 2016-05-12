@@ -94,7 +94,7 @@ public class SampleApplication extends Application {
     public static final String ANDROID_PAY_FLOW = "com.shopify.sample.androidpayflow";
 
     // Use ENVIRONMENT_TEST for testing
-    public static final int WALLET_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST;
+    public static final int WALLET_ENVIRONMENT = WalletConstants.ENVIRONMENT_SANDBOX;
 
     @Override
     public void onCreate() {
@@ -316,11 +316,11 @@ public class SampleApplication extends Application {
     }
 
     public void completeCheckout(final Callback<Checkout> callback) {
-        buyClient.completeCheckout(checkout, wrapCheckoutCallback(callback));
+        buyClient.completeAndGetCheckout(checkout, wrapCheckoutCallback(callback));
     }
 
     public void completeCheckout(FullWallet fullWallet, final Callback<Checkout> callback) {
-        buyClient.completeCheckout(fullWallet.getPaymentMethodToken().getToken(), checkout, wrapCheckoutCallback(callback));
+        buyClient.completeAndGetCheckout(fullWallet.getPaymentMethodToken().getToken(), checkout, wrapCheckoutCallback(callback));
     }
 
     public void launchProductDetailsActivity(Activity activity, Product product, ProductDetailsTheme theme) {

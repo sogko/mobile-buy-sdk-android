@@ -228,8 +228,8 @@ final class BuyClientDefault implements BuyClient {
     }
 
     @Override
-    public CancellableTask completeCheckout(final Checkout checkout, final Callback<Checkout> callback) {
-        return checkoutService.completeCheckout(checkout, callback);
+    public CancellableTask completeAndGetCheckout(final Checkout checkout, final Callback<Checkout> callback) {
+        return checkoutService.completeAndGetCheckout(checkout, callback);
     }
 
     @Override
@@ -238,23 +238,43 @@ final class BuyClientDefault implements BuyClient {
     }
 
     @Override
+    public Observable<Checkout> completeAndGetCheckout(final Checkout checkout) {
+        return checkoutService.completeAndGetCheckout(checkout);
+    }
+
+    @Override
+    public CancellableTask completeAndGetCheckout(final String token, final Checkout checkout, final Callback<Checkout> callback) {
+        return checkoutService.completeAndGetCheckout(token, checkout, callback);
+    }
+
+    @Override
+    public Observable<Void> completeCheckout(final Checkout checkout) {
+        return checkoutService.completeCheckout(checkout);
+    }
+
+    @Override
+    public CancellableTask completeCheckout(final Checkout checkout, final Callback<Void> callback) {
+        return checkoutService.completeCheckout(checkout, callback);
+    }
+
+    @Override
+    public Observable<Void> completeCheckout(final String androidPayToken, final Checkout checkout) {
+        return checkoutService.completeCheckout(checkout);
+    }
+
+    @Override
+    public CancellableTask completeCheckout(final String androidPayToken, final Checkout checkout, final Callback<Void> callback) {
+        return checkoutService.completeCheckout(checkout, callback);
+    }
+
+    @Override
     public Observable<Boolean> getCheckoutCompletionStatus(final Checkout checkout) {
         return checkoutService.getCheckoutCompletionStatus(checkout);
     }
 
     @Override
-    public Observable<Checkout> completeCheckout(final Checkout checkout) {
-        return checkoutService.completeCheckout(checkout);
-    }
-
-    @Override
-    public CancellableTask completeCheckout(final String token, final Checkout checkout, final Callback<Checkout> callback) {
-        return checkoutService.completeCheckout(token, checkout, callback);
-    }
-
-    @Override
-    public Observable<Checkout> completeCheckout(final String token, final Checkout checkout) {
-        return checkoutService.completeCheckout(checkout);
+    public Observable<Checkout> completeAndGetCheckout(final String token, final Checkout checkout) {
+        return checkoutService.completeAndGetCheckout(checkout);
     }
 
     public CancellableTask getCheckout(final String checkoutToken, final Callback<Checkout> callback) {

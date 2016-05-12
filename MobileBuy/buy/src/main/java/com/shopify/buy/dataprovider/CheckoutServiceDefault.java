@@ -226,12 +226,28 @@ final class CheckoutServiceDefault implements CheckoutService {
     }
 
     @Override
-    public CancellableTask completeCheckout(final Checkout checkout, final Callback<Checkout> callback) {
-        return new CancellableTaskSubscriptionWrapper(completeCheckout(checkout).subscribe(new InternalCallbackSubscriber<>(callback)));
+    public CancellableTask completeAndGetCheckout(final Checkout checkout, final Callback<Checkout> callback) {
+        return new CancellableTaskSubscriptionWrapper(completeAndGetCheckout(checkout).subscribe(new InternalCallbackSubscriber<>(callback)));
     }
 
     @Override
-    public Observable<Checkout> completeCheckout(final Checkout checkout) {
+    public Observable<Checkout> completeAndGetCheckout(final Checkout checkout) {
+        return completeCheckout(checkout)
+                .flatMap(new Func1<Void, Observable<Checkout>>() {
+                    @Override
+                    public Observable<Checkout> call(Void aVoid) {
+                        return getCompletedCheckout(checkout);
+                    }
+                });
+    }
+
+    @Override
+    public CancellableTask completeCheckout(Checkout checkout, Callback<Void> callback) {
+        return new CancellableTaskSubscriptionWrapper(completeCheckout(checkout).subscribe(new InternalCallbackSubscriber<Void>(callback)));
+    }
+
+    @Override
+    public Observable<Void> completeCheckout(Checkout checkout) {
         if (checkout == null) {
             throw new NullPointerException("checkout cannot be null");
         }
@@ -243,26 +259,40 @@ final class CheckoutServiceDefault implements CheckoutService {
             requestBodyMap.put("payment_session_id", checkout.getPaymentSessionId());
         }
 
-        return retrofitService
-                .completeCheckout(requestBodyMap, checkout.getToken())
-                .doOnNext(new RetrofitSuccessHttpStatusCodeHandler<Response<CheckoutWrapper>>())
-                .compose(new UnwrapRetrofitBodyTransformer<CheckoutWrapper, Checkout>())
-                .flatMap(new Func1<Checkout, Observable<Checkout>>() {
+        return retrofitService.completeCheckout(requestBodyMap, checkout.getToken())
+                .doOnNext(new RetrofitSuccessHttpStatusCodeHandler<>())
+                .map(new Func1<Response<Void>, Void>() {
                     @Override
-                    public Observable<Checkout> call(final Checkout checkout) {
-                        return getCompletedCheckout(checkout);
+                    public Void call(Response<Void> voidResponse) {
+                        return null;
                     }
                 })
                 .observeOn(callbackScheduler);
     }
 
     @Override
-    public CancellableTask completeCheckout(final String androidPayToken, final Checkout checkout, final Callback<Checkout> callback) {
-        return new CancellableTaskSubscriptionWrapper(completeCheckout(androidPayToken, checkout).subscribe(new InternalCallbackSubscriber<>(callback)));
+    public CancellableTask completeAndGetCheckout(final String androidPayToken, final Checkout checkout, final Callback<Checkout> callback) {
+        return new CancellableTaskSubscriptionWrapper(completeAndGetCheckout(androidPayToken, checkout).subscribe(new InternalCallbackSubscriber<>(callback)));
     }
 
     @Override
-    public Observable<Checkout> completeCheckout(final String androidPayToken, final Checkout checkout) {
+    public Observable<Checkout> completeAndGetCheckout(final String androidPayToken, final Checkout checkout) {
+        return completeCheckout(androidPayToken, checkout)
+                .flatMap(new Func1<Void, Observable<Checkout>>() {
+                    @Override
+                    public Observable<Checkout> call(Void aVoid) {
+                        return getCompletedCheckout(checkout);
+                    }
+                });
+    }
+
+    @Override
+    public CancellableTask completeCheckout(String androidPayToken, Checkout checkout, Callback<Void> callback) {
+        return new CancellableTaskSubscriptionWrapper(completeCheckout(androidPayToken, checkout).subscribe(new InternalCallbackSubscriber<Void>(callback)));
+    }
+
+    @Override
+    public Observable<Void> completeCheckout(String androidPayToken, Checkout checkout) {
         if (!androidPayIsEnabled()) {
             throw new UnsupportedOperationException("Android Pay is not enabled");
         }
@@ -274,16 +304,14 @@ final class CheckoutServiceDefault implements CheckoutService {
         }
 
         PaymentToken paymentToken = new PaymentToken(androidPayToken, PAYMENT_TOKEN_TYPE_ANDROID_PAY, androidPayPublicKeyHash);
-        PaymentTokenWrapper paymentTokenWrapper= new PaymentTokenWrapper(paymentToken);
+        PaymentTokenWrapper paymentTokenWrapper = new PaymentTokenWrapper(paymentToken);
 
-        return retrofitService
-                .completeCheckout(paymentTokenWrapper, checkout.getToken())
-                .doOnNext(new RetrofitSuccessHttpStatusCodeHandler<Response<CheckoutWrapper>>())
-                .compose(new UnwrapRetrofitBodyTransformer<CheckoutWrapper, Checkout>())
-                .flatMap(new Func1<Checkout, Observable<Checkout>>() {
+        return retrofitService.completeCheckout(paymentTokenWrapper, checkout.getToken())
+                .doOnNext(new RetrofitSuccessHttpStatusCodeHandler<>())
+                .map(new Func1<Response<Void>, Void>() {
                     @Override
-                    public Observable<Checkout> call(final Checkout checkout) {
-                        return getCompletedCheckout(checkout);
+                    public Void call(Response<Void> voidResponse) {
+                        return null;
                     }
                 })
                 .observeOn(callbackScheduler);
