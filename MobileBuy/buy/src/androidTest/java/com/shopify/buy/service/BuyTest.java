@@ -291,6 +291,28 @@ public class BuyTest extends ShopifyAndroidTestCase {
     }
 
     @Test
+    public void testGetCompletedCheckoutWithoutCheckoutStarted() throws InterruptedException {
+        createValidCheckout();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        buyClient.getCompletedCheckout(checkout, new Callback<Checkout>() {
+            @Override
+            public void success(Checkout body) {
+                fail("Retrofit succeeded. Expected: 424 error");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                assertEquals(HttpStatus.SC_FAILED_DEPENDENCY, error.getCode());
+                latch.countDown();
+            }
+        });
+
+        latch.await();
+    }
+
+    @Test
     public void testChangedShippingAddress() throws InterruptedException {
         createValidCheckout();
         fetchShippingRates(HttpStatus.SC_OK);
