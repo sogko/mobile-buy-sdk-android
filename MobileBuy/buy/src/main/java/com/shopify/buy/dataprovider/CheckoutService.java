@@ -126,12 +126,28 @@ public interface CheckoutService {
      *
      * @param checkout        a {@link Checkout} that has had a {@link CreditCard} associated with it using {@link #storeCreditCard(CreditCard, Checkout)}
      * @param androidPayToken the token returned in the {@link com.google.android.gms.wallet.FullWallet}
-     * @return cold observable that emits completed checkout
+     * @return cold observable that emits the completed checkout
      */
     Observable<Checkout> completeCheckout(String androidPayToken, Checkout checkout);
 
     /**
-     * Fetch an existing Checkout from Shopify
+     * Fetch an existing checkout, after processing has been completed.
+     *
+     * @param checkout Get an existing Checkout from Shopify.  This will
+     * @return cold observable that emits the completed checkout
+     */
+    CancellableTask getCompletedCheckout(final Checkout checkout, Callback<Checkout> callback);
+
+    /**
+     * Fetch an existing checkout, after processing has been completed.
+     *
+     * @param checkout Get an existing Checkout from Shopify.  This will
+     * @return cold observable that emits the completed checkout
+     */
+    Observable<Checkout> getCompletedCheckout(final Checkout checkout);
+
+    /**
+     * Fetch an existing Checkout from Shopify.
      *
      * @param checkoutToken the token associated with the existing {@link Checkout}
      * @param callback      the {@link Callback} that will be used to indicate the response from the asynchronous network operation, not null

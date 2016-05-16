@@ -289,7 +289,13 @@ final class CheckoutServiceDefault implements CheckoutService {
                 .observeOn(callbackScheduler);
     }
 
-    private Observable<Checkout> getCompletedCheckout(final Checkout checkout) {
+    @Override
+    public CancellableTask getCompletedCheckout(final Checkout checkout, Callback<Checkout> callback) {
+        return new CancellableTaskSubscriptionWrapper(getCompletedCheckout(checkout).subscribe(new InternalCallbackSubscriber<Checkout>(callback)));
+    }
+
+    @Override
+    public Observable<Checkout> getCompletedCheckout(final Checkout checkout) {
         return getCheckoutCompletionStatus(checkout)
                 .flatMap(new Func1<Boolean, Observable<Checkout>>() {
                     @Override
